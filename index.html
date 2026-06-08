@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PPDB Mandiri - MA Wali Songo Lilbanat</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        /* CSS Magis: Membuat semua text input otomatis ngetik dengan huruf KAPITAL */
+        input[type="text"], textarea {
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased">
+
+    <header class="bg-emerald-700 text-white py-12 px-4 text-center shadow-md">
+        <h1 class="text-2xl md:text-4xl font-bold tracking-wide">FORMULIR ONLINE PPDB MANDIRI</h1>
+        <p class="text-lg mt-2 text-emerald-100 font-medium">MA WALI SONGO LILBANAT</p>
+        <p class="text-sm mt-1 text-emerald-200/80">Tahun Pelajaran 2026/2027</p>
+    </header>
+
+    <main class="max-w-4xl mx-auto my-10 p-4 md:p-8 bg-white rounded-2xl shadow-sm border border-slate-200/80">
+        
+        <form id="ppdbForm" action="https://script.google.com/macros/s/AKfycbwNf6X1QPHHfFRc1mZoG1Tmzss39N026ldLGJDMLYg-Fxfi2moq2-xIuK7GpWmvp9tv/exec" method="POST" class="space-y-8">
+            
+            <section class="space-y-5">
+                <h2 class="text-xl font-bold text-emerald-700 border-b-2 border-emerald-500 pb-2">1. Data Identitas Siswa</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Nama Lengkap (Sesuai Ijazah/SKL) *</label>
+                        <input type="text" name="nama" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="CONTOH: SITI AMINAH">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">NISN (Wajib 10 Digit) *</label>
+                        <input type="text" name="nisn" required inputmode="numeric" pattern="[0-9]{10}" minlength="10" maxlength="10" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Contoh: 0123456789">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Jenis Kelamin *</label>
+                        <select name="jk" required class="w-full px-4 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            <option value="">-- Pilih Jenis Kelamin --</option>
+                            <option value="L">Laki-laki</option>
+                            <option value="P">Perempuan</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">NIK Siswa (Wajib 16 Digit) *</label>
+                        <input type="text" name="nik" required inputmode="numeric" pattern="[0-9]{16}" minlength="16" maxlength="16" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="16 digit nomor NIK">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Tempat Lahir Siswa *</label>
+                        <input type="text" name="tempat_lahir" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="CONTOH: SITUBONDO">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Tanggal Lahir *</label>
+                        <input type="date" name="tanggal_lahir" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Kelas Saat Ini *</label>
+                        <input type="text" name="kelas_sekarang" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="CONTOH: IX A">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Kelas Madin Sekarang *</label>
+                        <input type="text" name="kelas_madin" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="CONTOH: 3 ULA">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Asrama *</label>
+                        <input type="text" name="asrama" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="CONTOH: KOMPLEK A">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Nomor Kamar *</label>
+                        <input type="text" name="nomor_asrama" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="CONTOH: KAMAR 05">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Agama *</label>
+                        <input type="text" name="agama" value="ISLAM" readonly class="w-full px-4 py-2 border border-slate-300 rounded-lg bg-slate-100 focus:outline-none cursor-not-allowed">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Anak Ke *</label>
+                        <input type="number" name="anak_ke" required min="1" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Jumlah Saudara Kandung *</label>
+                        <input type="number" name="saudara" required min="0" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Status Anak *</label>
+                        <select name="status_anak" required class="w-full px-4 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            <option value="ANAK KANDUNG">ANAK KANDUNG</option>
+                            <option value="ANAK TIRI">ANAK TIRI</option>
+                            <option value="ANAK ANGKAT">ANAK ANGKAT</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <section class="space-y-5">
+                <h2 class="text-xl font-bold text-emerald-700 border-b-2 border-emerald-500 pb-2">2. Data Pendidikan Asal</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Nama Sekolah Asal *</label>
+                        <input type="text" name="sekolah_asal" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="CONTOH: MTsN 1 SITUBONDO">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Jenis Sekolah *</label>
+                        <select name="jenis_sekolah" required class="w-full px-4 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            <option value="NEGERI">NEGERI</option>
+                            <option value="SWASTA">SWASTA</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">NPSN (Wajib 8 Digit) *</label>
+                        <input type="text" name="npsn" required inputmode="numeric" pattern="[0-9]{8}" minlength="8" maxlength="8" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="8 digit NPSN">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">NSM (Wajib 12 Digit - Isi 0 jika SMP)</label>
+                        <input type="text" name="nsm" inputmode="numeric" pattern="[0-9]{12}|0" minlength="1" maxlength="12" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="12 digit NSM">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Alamat Sekolah Asal *</label>
+                        <input type="text" name="alamat_sekolah" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="CONTOH: JL. RAYA BASUKI RAHMAT NO. 10">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Tanggal Ijazah *</label>
+                        <input type="date" name="tanggal_ijazah" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                </div>
+            </section>
+
+            <section class="space-y-5">
+                <h2 class="text-xl font-bold text-emerald-700 border-b-2 border-emerald-500 pb-2">3. Data Orang Tua</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="p-4 bg-slate-50 border rounded-xl space-y-3">
+                        <h3 class="font-bold text-slate-700 border-b pb-1">Data Ayah</h3>
+                        <input type="text" name="nama_ayah" placeholder="NAMA AYAH (SESUAI IJAZAH) *" required class="w-full p-2 border rounded bg-white">
+                        <input type="text" name="no_kk" placeholder="NO. KK (WAJIB 16 DIGIT) *" required inputmode="numeric" pattern="[0-9]{16}" minlength="16" maxlength="16" class="w-full p-2 border rounded bg-white">
+                        <input type="text" name="nik_ayah" placeholder="NIK AYAH (WAJIB 16 DIGIT) *" required inputmode="numeric" pattern="[0-9]{16}" minlength="16" maxlength="16" class="w-full p-2 border rounded bg-white">
+                        <input type="text" name="tempat_ayah" placeholder="TEMPAT LAHIR AYAH *" required class="w-full p-2 border rounded bg-white">
+                        <input type="date" name="tanggal_ayah" required class="w-full p-2 border rounded bg-white">
+                        <input type="text" name="agama_ayah" value="ISLAM" readonly class="w-full p-2 border rounded bg-slate-100 cursor-not-allowed">
+                        
+                        <select name="pendidikan_ayah" required class="w-full p-2 border rounded bg-white text-slate-600">
+                            <option value="">-- Pilih Pendidikan Ayah * --</option>
+                            <option value="Tidak/Belum Sekolah">Tidak/Belum Sekolah</option>
+                            <option value="SD/Sederajat">SD/Sederajat</option>
+                            <option value="SMP/Sederajat">SMP/Sederajat</option>
+                            <option value="SMA/Sederajat">SMA/Sederajat</option>
+                            <option value="D1/Diploma 1">D1/Diploma 1</option>
+                            <option value="D2/Diploma 2">D2/Diploma 2</option>
+                            <option value="D3/Diploma 3">D3/Diploma 3</option>
+                            <option value="D4/S1">D4/S1</option>
+                            <option value="S2/S3">S2/S3</option>
+                        </select>
+
+                        <select name="pekerjaan_ayah" required class="w-full p-2 border rounded bg-white text-slate-600">
+                            <option value="">-- Pilih Pekerjaan Ayah * --</option>
+                            <option value="TIDAK BEKERJA">TIDAK BEKERJA</option>
+                            <option value="PEGAWAI SWASTA">PEGAWAI SWASTA</option>
+                            <option value="PNS/TNI/POLRI">PNS / TNI / POLRI</option>
+                            <option value="WIRASWASTA/PEDAGANG">WIRASWASTA / PEDAGANG</option>
+                            <option value="PETANI/PETERNAK">PETANI / PETERNAK</option>
+                            <option value="BURUH/TUKANG">BURUH / TUKANG</option>
+                            <option value="DOKTER/BIDAN/PERAWAT">DOKTER / BIDAN / PERAWAT</option>
+                            <option value="LAINNYA">LAINNYA</option>
+                        </select>
+
+                        <input type="text" name="telp_ayah" placeholder="NO TELP/WA AYAH (10-13 DIGIT) *" required inputmode="numeric" pattern="[0-9]{10,13}" minlength="10" maxlength="13" class="w-full p-2 border rounded bg-white">
+                    </div>
+                    
+                    <div class="p-4 bg-slate-50 border rounded-xl space-y-3">
+                        <h3 class="font-bold text-slate-700 border-b pb-1">Data Ibu</h3>
+                        <input type="text" name="nama_ibu" placeholder="NAMA IBU (SESUAI KK) *" required class="w-full p-2 border rounded bg-white">
+                        <input type="text" name="nik_ibu" placeholder="NIK IBU (WAJIB 16 DIGIT) *" required inputmode="numeric" pattern="[0-9]{16}" minlength="16" maxlength="16" class="w-full p-2 border rounded bg-white">
+                        <input type="text" name="tempat_ibu" placeholder="TEMPAT LAHIR IBU *" required class="w-full p-2 border rounded bg-white">
+                        <input type="date" name="tanggal_ibu" required class="w-full p-2 border rounded bg-white">
+                        <input type="text" name="agama_ibu" value="ISLAM" readonly class="w-full p-2 border rounded bg-slate-100 cursor-not-allowed">
+                        
+                        <select name="pendidikan_ibu" required class="w-full p-2 border rounded bg-white text-slate-600">
+                            <option value="">-- Pilih Pendidikan Ibu * --</option>
+                            <option value="Tidak/Belum Sekolah">Tidak/Belum Sekolah</option>
+                            <option value="SD/Sederajat">SD/Sederajat</option>
+                            <option value="SMP/Sederajat">SMP/Sederajat</option>
+                            <option value="SMA/Sederajat">SMA/Sederajat</option>
+                            <option value="D1/Diploma 1">D1/Diploma 1</option>
+                            <option value="D2/Diploma 2">D2/Diploma 2</option>
+                            <option value="D3/Diploma 3">D3/Diploma 3</option>
+                            <option value="D4/S1">D4/S1</option>
+                            <option value="S2/S3">S2/S3</option>
+                        </select>
+
+                        <select name="pekerjaan_ibu" required class="w-full p-2 border rounded bg-white text-slate-600">
+                            <option value="">-- Pilih Pekerjaan Ibu * --</option>
+                            <option value="IBU RUMAH TANGGA">IBU RUMAH TANGGA</option>
+                            <option value="PEGAWAI SWASTA">PEGAWAI SWASTA</option>
+                            <option value="PNS/TNI/POLRI">PNS / TNI / POLRI</option>
+                            <option value="WIRASWASTA/PEDAGANG">WIRASWASTA / PEDAGANG</option>
+                            <option value="PETANI/PETERNAK">PETANI / PETERNAK</option>
+                            <option value="BURUH/TUKANG">BURUH / TUKANG</option>
+                            <option value="DOKTER/BIDAN/PERAWAT">DOKTER / BIDAN / PERAWAT</option>
+                            <option value="LAINNYA">LAINNYA</option>
+                        </select>
+
+                        <input type="text" name="telp_ibu" placeholder="NO TELP/WA IBU (10-13 DIGIT) *" required inputmode="numeric" pattern="[0-9]{10,13}" minlength="10" maxlength="13" class="w-full p-2 border rounded bg-white">
+                    </div>
+                </div>
+            </section>
+
+            <section class="space-y-5">
+                <h2 class="text-xl font-bold text-emerald-700 border-b-2 border-emerald-500 pb-2">4. Alamat Orang Tua</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <input type="text" name="dusun" placeholder="DUSUN / JALAN *" required class="w-full p-2 border rounded">
+                    <input type="text" name="rtrw" placeholder="RT/RW (CONTOH: 002/001) *" required class="w-full p-2 border rounded">
+                    <input type="text" name="desa" placeholder="DESA / KELURAHAN *" required class="w-full p-2 border rounded">
+                    <input type="text" name="kecamatan" placeholder="KECAMATAN *" required class="w-full p-2 border rounded">
+                    <input type="text" name="kabupaten" placeholder="KABUPATEN *" required class="w-full p-2 border rounded">
+                    <input type="text" name="provinsi" placeholder="PROVINSI *" required class="w-full p-2 border rounded">
+                    <input type="text" name="kodepos" placeholder="KODE POS (5 DIGIT) *" required inputmode="numeric" pattern="[0-9]{5}" minlength="5" maxlength="5" class="w-full p-2 border rounded">
+                </div>
+            </section>
+
+            <section class="space-y-5">
+                <h2 class="text-xl font-bold text-emerald-700 border-b-2 border-emerald-500 pb-2">5. Upload Berkas Digital</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Upload Kartu Keluarga (KK) *</label>
+                        <input type="file" id="inputKK" accept="image/*,application/pdf" required class="w-full p-2 border border-dashed rounded-lg bg-slate-50">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Upload SKL / Ijazah *</label>
+                        <input type="file" id="inputSKL" accept="image/*,application/pdf" required class="w-full p-2 border border-dashed rounded-lg bg-slate-50">
+                    </div>
+                </div>
+                <input type="hidden" name="berkas_centang" value="Sudah Upload">
+                <input type="hidden" name="status_siswa" value="SISWA BARU">
+            </section>
+
+            <div class="pt-6">
+                <button type="submit" id="btnSubmit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-md text-center cursor-pointer text-lg transition">
+                    Kirim Data & Berkas Pendaftaran
+                </button>
+            </div>
+        </form>
+    </main>
+
+    <script>
+        const form = document.getElementById('ppdbForm');
+        const btnSubmit = document.getElementById('btnSubmit');
+
+        // --- VALIDASI INTERAKTIF SAAT KOLOM DITINGGALKAN (BLUR) ---
+        const inputsKustom = [
+            { name: 'nisn', label: 'NISN', digit: 10 },
+            { name: 'nik', label: 'NIK Siswa', digit: 16 },
+            { name: 'no_kk', label: 'Nomor KK', digit: 16 },
+            { name: 'nik_ayah', label: 'NIK Ayah', digit: 16 },
+            { name: 'nik_ibu', label: 'NIK Ibu', digit: 16 },
+            { name: 'npsn', label: 'NPSN', digit: 8 },
+            { name: 'kodepos', label: 'Kode Pos', digit: 5 }
+        ];
+
+        inputsKustom.forEach(item => {
+            const inputEl = document.querySelector(`input[name="${item.name}"]`);
+            if (inputEl) {
+                // Memicu validasi setiap kali user selesai mengetik dan pindah kolom (blur)
+                inputEl.addEventListener('blur', function() {
+                    // Jika kolom kosong, biarkan validasi 'required' bawaan yang berjalan
+                    if (this.value.trim() === '') {
+                        this.setCustomValidity('');
+                        return;
+                    }
+                    
+                    if (this.value.length < item.digit) {
+                        this.setCustomValidity(`${item.label} KURANG dari seharusnya! Harus tepat ${item.digit} digit angka.`);
+                        this.reportValidity(); // Memaksa browser langsung memunculkan balon teks merah
+                    } else if (this.value.length > item.digit) {
+                        this.setCustomValidity(`${item.label} KELEBIHAN! Harus tepat ${item.digit} digit angka.`);
+                        this.reportValidity();
+                    } else {
+                        this.setCustomValidity(''); // Valid
+                    }
+                });
+
+                // Bersihkan error saat user mulai mengetik ulang agar tidak mengunci
+                inputEl.addEventListener('input', function() {
+                    this.setCustomValidity('');
+                });
+            }
+        });
+
+        // Validasi interaktif untuk No HP/Telp Ayah & Ibu (Rentang 10 - 13 digit)
+        ['telp_ayah', 'telp_ibu'].forEach(name => {
+            const inputTelp = document.querySelector(`input[name="${name}"]`);
+            if (inputTelp) {
+                inputTelp.addEventListener('blur', function() {
+                    if (this.value.trim() === '') return;
+                    const label = name === 'telp_ayah' ? 'No Telp Ayah' : 'No Telp Ibu';
+                    
+                    if (this.value.length < 10 || this.value.length > 13) {
+                        this.setCustomValidity(`${label} TIDAK VALID! Masukkan antara 10 sampai 13 digit angka.`);
+                        this.reportValidity();
+                    } else {
+                        this.setCustomValidity('');
+                    }
+                });
+                
+                inputTelp.addEventListener('input', function() {
+                    this.setCustomValidity('');
+                });
+            }
+        });
+
+        // Validasi interaktif khusus NSM (Bisa angka 0 atau wajib 12 digit)
+        const inputNsm = document.querySelector('input[name="nsm"]');
+        if (inputNsm) {
+            inputNsm.addEventListener('blur', function() {
+                if (this.value.trim() === '') return;
+                if (this.value !== '0' && this.value.length < 12) {
+                    this.setCustomValidity('NSM HARUS tepat 12 digit angka (atau ketik angka 0 jika lulusan SMP).');
+                    this.reportValidity();
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+            inputNsm.addEventListener('input', function() {
+                this.setCustomValidity('');
+            });
+        }
+
+
+        // --- PROSES PENGIRIMAN DATA (BASE64 UPLOAD) ---
+        const toBase64 = file => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = error => reject(error);
+        });
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            btnSubmit.disabled = true;
+            btnSubmit.innerText = "Memeriksa data & mengunggah...";
+            btnSubmit.classList.add('bg-slate-400', 'cursor-not-allowed');
+
+            try {
+                const formData = new FormData(form);
+                const plainData = Object.fromEntries(formData.entries());
+
+                // Otomatis ubah semua teks menjadi Uppercase sebelum dikirim
+                for (let key in plainData) {
+                    if (typeof plainData[key] === 'string') {
+                        plainData[key] = plainData[key].toUpperCase();
+                    }
+                }
+
+                const fileKK = document.getElementById('inputKK').files[0];
+                const fileSKL = document.getElementById('inputSKL').files[0];
+
+                if (fileKK) {
+                    plainData.fileKKData = await toBase64(fileKK);
+                    plainData.fileKKName = fileKK.name;
+                    plainData.fileKKMime = fileKK.type;
+                }
+                if (fileSKL) {
+                    plainData.fileSKLData = await toBase64(fileSKL);
+                    plainData.fileSKLName = fileSKL.name;
+                    plainData.fileSKLMime = fileSKL.type;
+                }
+
+                const searchParams = new URLSearchParams(plainData);
+
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: searchParams,
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                });
+
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    Swal.fire({
+                        title: 'Pendaftaran Sukses!',
+                        text: 'Data pendaftaran kapital dan berkas Anda berhasil disimpan.',
+                        icon: 'success',
+                        confirmButtonColor: '#047857'
+                    });
+                    form.reset();
+                } else {
+                    throw new Error(result.message);
+                }
+
+            } catch (error) {
+                Swal.fire({
+                    title: 'Gagal Mengirim!',
+                    text: 'Pastikan format isian benar atau periksa koneksi Anda.',
+                    icon: 'error'
+                });
+                console.error(error);
+            } finally {
+                btnSubmit.disabled = false;
+                btnSubmit.innerText = "Kirim Data & Berkas Pendaftaran";
+                btnSubmit.classList.remove('bg-slate-400', 'cursor-not-allowed');
+            }
+        });
+    </script>
