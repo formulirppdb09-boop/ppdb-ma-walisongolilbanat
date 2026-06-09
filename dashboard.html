@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Administrasi - MA Wali Songo Lilbanat</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-100 flex h-screen overflow-hidden">
+
+    <aside class="w-64 bg-emerald-900 text-white flex-shrink-0 flex flex-col shadow-xl">
+        <div class="p-6 border-b border-emerald-800 text-center">
+            <h2 class="text-xl font-bold tracking-widest text-amber-400">MA WALISONGO</h2>
+            <p class="text-xs text-emerald-300 uppercase mt-1">Sistem Administrasi</p>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-4">
+            <a href="#" class="flex items-center px-6 py-3 text-emerald-100 hover:bg-emerald-800 hover:text-white transition-colors border-l-4 border-amber-500">
+                <i class="fa-solid fa-gauge w-6"></i>
+                <span class="ml-3">Dashboard</span>
+            </a>
+
+            <div class="group">
+                <button onclick="toggleMenu('menuSiswa')" class="w-full flex items-center px-6 py-3 text-emerald-100 hover:bg-emerald-800 transition-colors">
+                    <i class="fa-solid fa-users w-6"></i>
+                    <span class="ml-3 flex-1 text-left">Menu Siswa</span>
+                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                </button>
+                <div id="menuSiswa" class="hidden bg-emerald-950/50 py-2 text-sm pl-12">
+                    <a href="#" class="block py-2 hover:text-amber-400">- Data Siswa (PPDB/Daful)</a>
+                    <a href="#" class="block py-2 hover:text-amber-400">- Rombel Siswa</a>
+                    <a href="#" class="block py-2 hover:text-amber-400">- Mutasi Masuk</a>
+                    <a href="#" class="block py-2 hover:text-amber-400">- Mutasi Keluar</a>
+                    <a href="#" class="block py-2 hover:text-amber-400">- Data Buku Induk</a>
+                </div>
+            </div>
+
+            <div class="group">
+                <button onclick="toggleMenu('menuGuru')" class="w-full flex items-center px-6 py-3 text-emerald-100 hover:bg-emerald-800 transition-colors">
+                    <i class="fa-solid fa-chalkboard-user w-6"></i>
+                    <span class="ml-3 flex-1 text-left">Guru & Tendik</span>
+                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                </button>
+                <div id="menuGuru" class="hidden bg-emerald-950/50 py-2 text-sm pl-12">
+                    <a href="#" class="block py-2 hover:text-amber-400">- Daftar Guru</a>
+                    <a href="#" class="block py-2 hover:text-amber-400">- Daftar Tendik</a>
+                </div>
+            </div>
+
+            <div class="group">
+                <button onclick="toggleMenu('menuProgram')" class="w-full flex items-center px-6 py-3 text-emerald-100 hover:bg-emerald-800 transition-colors">
+                    <i class="fa-solid fa-clipboard-list w-6"></i>
+                    <span class="ml-3 flex-1 text-left">Program</span>
+                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                </button>
+                <div id="menuProgram" class="hidden bg-emerald-950/50 py-2 text-sm pl-12">
+                    <a href="#" class="block py-2 hover:text-amber-400">- Program Tendik</a>
+                    <a href="#" class="block py-2 hover:text-amber-400">- Program Kesiswaan</a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="p-4 bg-emerald-950 text-center text-[10px] text-emerald-500 uppercase tracking-tighter">
+            &copy; 2026 MA Wali Songo Lilbanat
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col">
+        <header class="bg-white h-16 shadow-sm flex items-center justify-between px-8">
+            <h3 class="text-slate-600 font-semibold" id="currentMenuTitle">Halaman Utama</h3>
+            <div class="flex items-center space-x-4">
+                <span class="text-sm text-slate-500 font-medium">Halo, Admin</span>
+                <div class="h-8 w-8 bg-amber-500 rounded-full flex items-center justify-center text-white font-bold">A</div>
+            </div>
+        </header>
+
+        <div class="p-8 overflow-y-auto" id="contentArea">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500">
+                    <p class="text-xs font-bold text-slate-500 uppercase">Total Siswa Aktif</p>
+                    <h4 class="text-2xl font-black text-slate-800">120</h4>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-emerald-500">
+                    <p class="text-xs font-bold text-slate-500 uppercase">Siswa Baru (PPDB)</p>
+                    <h4 class="text-2xl font-black text-slate-800">45</h4>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-amber-500">
+                    <p class="text-xs font-bold text-slate-500 uppercase">Guru & Tendik</p>
+                    <h4 class="text-2xl font-black text-slate-800">18</h4>
+                </div>
+            </div>
+            
+            <div class="bg-white p-6 rounded-xl shadow-sm h-64 flex items-center justify-center border-2 border-dashed border-slate-200">
+                <p class="text-slate-400 italic">Pilih menu di samping untuk melihat data...</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function toggleMenu(id) {
+            const menu = document.getElementById(id);
+            menu.classList.toggle('hidden');
+        }
+    </script>
+</body>
+</html>
