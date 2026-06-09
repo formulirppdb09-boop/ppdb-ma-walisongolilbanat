@@ -16,47 +16,47 @@
         </div>
 
         <nav class="flex-1 overflow-y-auto py-4">
-            <a href="#" onclick="window.location.reload(); return false;" class="flex items-center px-6 py-3 text-emerald-100 hover:bg-emerald-800 hover:text-white transition-colors border-l-4 border-amber-500">
+            <button onclick="window.location.reload();" class="w-full flex items-center px-6 py-3 text-emerald-100 hover:bg-emerald-800 hover:text-white transition-colors border-l-4 border-amber-500 text-left cursor-pointer">
                 <i class="fa-solid fa-gauge w-6"></i>
                 <span class="ml-3">Dashboard</span>
-            </a>
+            </button>
 
             <div id="menuSiswaGroup" class="group">
-                <button onclick="toggleMenu('menuSiswa')" class="w-full flex items-center px-6 py-3 text-emerald-100 hover:bg-emerald-800 transition-colors cursor-pointer">
+                <button onclick="toggleMenu('menuSiswa')" class="w-full flex items-center px-6 py-3 text-emerald-100 hover:bg-emerald-800 transition-colors cursor-pointer text-left">
                     <i class="fa-solid fa-users w-6"></i>
-                    <span class="ml-3 flex-1 text-left">Menu Siswa</span>
+                    <span class="ml-3 flex-1">Menu Siswa</span>
                     <i class="fa-solid fa-chevron-down text-xs"></i>
                 </button>
-                <div id="menuSiswa" class="hidden bg-emerald-950/50 py-2 text-sm pl-12">
-                    <a href="#" onclick="bukaDataSiswaPPDB(); return false;" class="block py-2 hover:text-amber-400">- Data Siswa (PPDB/Daful)</a>
-                    <a href="#" class="block py-2 hover:text-amber-400">- Rombel Siswa</a>
-                    <a href="#" class="block py-2 hover:text-amber-400">- Mutasi Masuk</a>
-                    <a href="#" class="block py-2 hover:text-amber-400">- Mutasi Keluar</a>
-                    <a href="#" class="block py-2 hover:text-amber-400">- Data Buku Induk</a>
+                <div id="menuSiswa" class="hidden bg-emerald-950/50 py-2 text-sm pl-8">
+                    <button onclick="bukaDataSiswaPPDB();" class="w-full text-left block py-2 px-4 hover:text-amber-400 cursor-pointer text-emerald-100 bg-transparent border-0 font-medium">- Data Siswa (PPDB/Daful)</button>
+                    <button class="w-full text-left block py-2 px-4 hover:text-amber-400 cursor-not-allowed text-slate-500 bg-transparent border-0 font-medium" disabled>- Rombel Siswa</button>
+                    <button class="w-full text-left block py-2 px-4 hover:text-amber-400 cursor-not-allowed text-slate-500 bg-transparent border-0 font-medium" disabled>- Mutasi Masuk</button>
+                    <button class="w-full text-left block py-2 px-4 hover:text-amber-400 cursor-not-allowed text-slate-500 bg-transparent border-0 font-medium" disabled>- Mutasi Keluar</button>
+                    <button class="w-full text-left block py-2 px-4 hover:text-amber-400 cursor-not-allowed text-slate-500 bg-transparent border-0 font-medium" disabled>- Data Buku Induk</button>
                 </div>
             </div>
 
             <div id="menuGuruGroup" class="group">
-                <button onclick="toggleMenu('menuGuru')" class="w-full flex items-center px-6 py-3 text-emerald-100 hover:bg-emerald-800 transition-colors cursor-pointer">
+                <button onclick="toggleMenu('menuGuru')" class="w-full flex items-center px-6 py-3 text-emerald-100 hover:bg-emerald-800 transition-colors cursor-pointer text-left">
                     <i class="fa-solid fa-chalkboard-user w-6"></i>
-                    <span class="ml-3 flex-1 text-left">Guru & Tendik</span>
+                    <span class="ml-3 flex-1">Guru & Tendik</span>
                     <i class="fa-solid fa-chevron-down text-xs"></i>
                 </button>
-                <div id="menuGuru" class="hidden bg-emerald-950/50 py-2 text-sm pl-12">
-                    <a href="#" class="block py-2 hover:text-amber-400">- Daftar Guru</a>
-                    <a href="#" class="block py-2 hover:text-amber-400">- Daftar Tendik</a>
+                <div id="menuGuru" class="hidden bg-emerald-950/50 py-2 text-sm pl-8">
+                    <button class="w-full text-left block py-2 px-4 hover:text-amber-400 cursor-not-allowed text-slate-500 bg-transparent border-0 font-medium" disabled>- Daftar Guru</button>
+                    <button class="w-full text-left block py-2 px-4 hover:text-amber-400 cursor-not-allowed text-slate-500 bg-transparent border-0 font-medium" disabled>- Daftar Tendik</button>
                 </div>
             </div>
 
             <div id="menuProgramGroup" class="group">
-                <button onclick="toggleMenu('menuProgram')" class="w-full flex items-center px-6 py-3 text-emerald-100 hover:bg-emerald-800 transition-colors cursor-pointer">
+                <button onclick="toggleMenu('menuProgram')" class="w-full flex items-center px-6 py-3 text-emerald-100 hover:bg-emerald-800 transition-colors cursor-pointer text-left">
                     <i class="fa-solid fa-clipboard-list w-6"></i>
-                    <span class="ml-3 flex-1 text-left">Program</span>
+                    <span class="ml-3 flex-1">Program</span>
                     <i class="fa-solid fa-chevron-down text-xs"></i>
                 </button>
-                <div id="menuProgram" class="hidden bg-emerald-950/50 py-2 text-sm pl-12">
-                    <a href="#" onclick="bukaFormLaporan('Tendik'); return false;" class="block py-2 hover:text-amber-400">- Program Tendik</a>
-                    <a href="#" onclick="bukaFormLaporan('Kesiswaan'); return false;" class="block py-2 hover:text-amber-400">- Program Kesiswaan</a>
+                <div id="menuProgram" class="hidden bg-emerald-950/50 py-2 text-sm pl-8">
+                    <button onclick="bukaFormLaporan('Tendik')" class="w-full text-left block py-2 px-4 hover:text-amber-400 cursor-pointer text-emerald-100 bg-transparent border-0 font-medium">- Program Tendik</button>
+                    <button onclick="bukaFormLaporan('Kesiswaan')" class="w-full text-left block py-2 px-4 hover:text-amber-400 cursor-pointer text-emerald-100 bg-transparent border-0 font-medium">- Program Kesiswaan</button>
                 </div>
             </div>
 
@@ -108,7 +108,7 @@
         // =====================================================================
         const API_URL = "https://script.google.com/macros/s/AKfycbwNf6X1QPHHfFRc1mZoG1Tmzss39N026ldLGJDMLYg-Fxfi2moq2-xIuK7GpWmvp9tv/exec";
 
-        // --- 1. PROTEKSI LOGIN & VALIDASI DATA SESI ---
+        // --- 1. PROTEKSI LOGIN ---
         const userData = JSON.parse(localStorage.getItem('user_sim'));
         
         if (!userData) {
@@ -118,7 +118,7 @@
             document.getElementById('userNama').innerText = "Halo, " + userData.nama;
             document.getElementById('userInisial').innerText = userData.nama.charAt(0).toUpperCase();
 
-            // Kontrol Tampilan Samping Berdasarkan Hak Akses
+            // Sembunyikan Menu jika Perannya TENDIK
             if (userData.role === "TENDIK") {
                 document.getElementById('menuSiswaGroup').style.display = 'none';
                 document.getElementById('menuGuruGroup').style.display = 'none';
@@ -186,10 +186,9 @@
                 const bulan = document.getElementById('bulanLaporan').value;
                 const isi = document.getElementById('isiLaporan').value;
 
-                // Perbaikan deteksi username agar tidak 'tidak_diketahui' lagi
                 const params = new URLSearchParams({
                     action: "simpanLaporan",
-                    username: userData.username || user_sim, 
+                    username: userData.username || "user_sim", 
                     nama: userData.nama,
                     jabatan: userData.jabatan,
                     bulan: bulan + " (" + jenisProgram + ")",
