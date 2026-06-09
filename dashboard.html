@@ -6,6 +6,25 @@
     <title>Dashboard Administrasi - MA Wali Songo Lilbanat</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Gaya CSS Tambahan untuk Memastikan Kotak Pencarian Selalu Terbaca Alami */
+        .kotak-cari {
+            width: 100% !important;
+            max-width: 320px !important;
+            padding: 8px 12px 8px 36px !important;
+            border: 2px solid #cbd5e1 !important;
+            background-color: #f8fafc !important;
+            border-radius: 8px !important;
+            font-size: 14px !important;
+            outline: none !important;
+            transition: all 0.2s ease-in-out !important;
+        }
+        .kotak-cari:focus {
+            border-color: #059669 !important;
+            background-color: #ffffff !important;
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.2) !important;
+        }
+    </style>
 </head>
 <body class="bg-slate-100 flex h-screen overflow-hidden">
 
@@ -103,7 +122,6 @@
     </main>
 
     <script>
-        // WEB APP API URL INTEGRATION
         const API_URL = "https://script.google.com/macros/s/AKfycbwNf6X1QPHHfFRc1mZoG1Tmzss39N026ldLGJDMLYg-Fxfi2moq2-xIuK7GpWmvp9tv/exec";
 
         // --- 1. PROTEKSI LOGIN ---
@@ -240,20 +258,19 @@
                     
                     const htmlMaster = `
                         <div class="space-y-6">
-                            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col md:flex-row gap-4 justify-between items-center">
+                            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col md:flex-row gap-4 justify-between items-center" style="display: flex !important;">
                                 <div class="flex flex-wrap gap-2 w-full md:w-auto">
-                                    <button onclick="setFilterKelas('SEMUA')" id="btnFilter-SEMUA" class="px-4 py-2 text-xs font-bold rounded-lg bg-emerald-700 text-white shadow transition cursor-pointer">
-                                        All (${result.data.length})
-                                    </button>
+                                    <button onclick="setFilterKelas('SEMUA')" id="btnFilter-SEMUA" class="px-4 py-2 text-xs font-bold rounded-lg bg-emerald-700 text-white shadow transition cursor-pointer">All (${result.data.length})</button>
                                     <button onclick="setFilterKelas('10')" id="btnFilter-10" class="px-4 py-2 text-xs font-bold rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 transition cursor-pointer">Kelas 10</button>
                                     <button onclick="setFilterKelas('11')" id="btnFilter-11" class="px-4 py-2 text-xs font-bold rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 transition cursor-pointer">Kelas 11</button>
                                     <button onclick="setFilterKelas('12')" id="btnFilter-12" class="px-4 py-2 text-xs font-bold rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 transition cursor-pointer">Kelas 12</button>
                                 </div>
-                                <div class="relative w-full md:w-80">
-                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-                                        <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                                
+                                <div style="position: relative !important; width: 100% !important; max-width: 320px !important;">
+                                    <span style="position: absolute !important; left: 12px !important; top: 10px !important; color: #94a3b8 !important;">
+                                        <i class="fa-solid fa-magnifying-glass"></i>
                                     </span>
-                                    <input type="text" id="searchBukuInduk" oninput="jalankanLiveSearchBukuInduk()" placeholder="Cari Nama atau NISN siswa..." class="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50 focus:bg-white transition">
+                                    <input type="text" id="searchBukuInduk" oninput="jalankanLiveSearchBukuInduk()" placeholder="Ketik nama / nisn..." class="kotak-cari">
                                 </div>
                             </div>
 
@@ -342,7 +359,7 @@
             tbody.innerHTML = rowsHtml || `<tr><td colspan="9" class="text-center py-12 text-slate-400 italic">Data siswa tidak ditemukan...</td></tr>`;
         }
 
-        // --- 4. CALON SISWA PPDB + LIVE SEARCH + ANTI DUPLIKAT LOCKER ---
+        // --- 4. CALON SISWA PPDB + LIVE SEARCH + BUTTON LOCKER ---
         async function bukaDataSiswaPPDB() {
             document.getElementById('currentMenuTitle').innerText = "Menu Siswa - Data Calon Siswa (PPDB / Daftar Ulang)";
             
@@ -366,12 +383,12 @@
 
                     document.getElementById('contentArea').innerHTML = `
                         <div class="space-y-4">
-                            <div class="flex justify-end bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
-                                <div class="relative w-full md:w-80">
-                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-                                        <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                            <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex justify-end" style="display: flex !important;">
+                                <div style="position: relative !important; width: 100% !important; max-width: 320px !important;">
+                                    <span style="position: absolute !important; left: 12px !important; top: 10px !important; color: #94a3b8 !important;">
+                                        <i class="fa-solid fa-magnifying-glass"></i>
                                     </span>
-                                    <input type="text" id="searchPPDB" oninput="jalankanLiveSearchPPDB()" placeholder="Cari nama calon siswa..." class="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50 focus:bg-white transition">
+                                    <input type="text" id="searchPPDB" oninput="jalankanLiveSearchPPDB()" placeholder="Cari nama calon siswa..." class="kotak-cari">
                                 </div>
                             </div>
 
@@ -644,11 +661,12 @@
                                     <h4 class="text-xs font-bold text-blue-800 uppercase flex items-center gap-1"><i class="fa-solid fa-user-plus"></i> + Tambah Siswa Baru</h4>
                                     <p class="text-[10px] text-blue-600 italic mt-0.5">Siswa jenjang ${tingkat} yang belum terbagi kelas</p>
                                 </div>
-                                <div class="relative">
-                                    <span class="absolute inset-y-0 left-0 flex items-center pl-2.5 text-slate-400">
-                                        <i class="fa-solid fa-magnifying-glass text-[10px]"></i>
+                                
+                                <div style="position: relative !important; width: 100% !important;">
+                                    <span style="position: absolute !important; left: 10px !important; top: 8px !important; color: #94a3b8 !important; font-size: 12px !important;">
+                                        <i class="fa-solid fa-magnifying-glass"></i>
                                     </span>
-                                    <input type="text" id="searchAntreanRombel" oninput="jalankanSearchAntreanRombel('${namaRombel}', '${tingkat}')" placeholder="Ketik nama anak di sini..." class="w-full pl-7 pr-3 py-1.5 border border-blue-200 rounded-md text-xs outline-none bg-white focus:ring-2 focus:ring-blue-500">
+                                    <input type="text" id="searchAntreanRombel" oninput="jalankanSearchAntreanRombel('${namaRombel}', '${tingkat}')" placeholder="Ketik nama anak di sini..." class="kotak-cari">
                                 </div>
                             </div>
                             <div class="p-2 max-h-[350px] overflow-y-auto space-y-2" id="boxSiswaKosong">
