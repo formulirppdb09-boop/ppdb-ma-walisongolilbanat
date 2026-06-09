@@ -55,9 +55,9 @@
                     <i class="fa-solid fa-chevron-down text-xs"></i>
                 </button>
                 <div id="menuProgram" class="hidden bg-emerald-950/50 py-2 text-sm pl-12">
-                    <a href="#" class="block py-2 hover:text-amber-400">- Program Tendik</a>
-                    <a href="#" class="block py-2 hover:text-amber-400">- Program Kesiswaan</a>
-                </div>
+    <a href="#" onclick="bukaFormLaporan('Tendik')" class="block py-2 hover:text-amber-400">- Program Tendik</a>
+    <a href="#" onclick="bukaFormLaporan('Kesiswaan')" class="block py-2 hover:text-amber-400">- Program Kesiswaan</a>
+</div>
             </div>
 
             <button onclick="logout()" class="w-full flex items-center px-6 py-3 mt-8 text-rose-300 hover:bg-rose-950 transition-colors text-left font-bold">
@@ -130,6 +130,97 @@
         function logout() {
             localStorage.removeItem('user_sim');
             window.location.href = "login.html";
+        }
+        // URL Apps Script Gabungan Anda
+        const API_URL = "https://script.google.com/macros/s/AKfycbwNf6X1QPHHfFRc1mZoG1Tmzss39N026ldLGJDMLYg-Fxfi2moq2-xIuK7GpWmvp9tv/exec";
+
+        // --- FUNGSI MEMBUKA FORM LAPORAN BULANANsec ---
+        function bukaFormLaporan(jenisProgram) {
+            // Ubah judul halaman utama atas
+            document.getElementById('currentMenuTitle').innerText = "Program " + jenisProgram + " - Laporan Bulanan";
+            
+            // Susun HTML Formulir secara dinamis ke area tengah
+            const htmlForm = `
+                <div class="bg-white p-6 rounded-xl shadow-sm max-w-2xl border-t-4 border-emerald-600">
+                    <h4 class="text-lg font-bold text-slate-700 mb-4">Form Pelaporan Bulanan (${jenisProgram.toUpperCase()})</h4>
+                    
+                    <form id="formLaporanBulanan" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Bulan Pelaporan</label>
+                            <select id="bulanLaporan" required class="w-full px-4 py-2 border border-slate-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 outline-none">
+                                <option value="">-- Pilih Bulan --</option>
+                                <option value="Januari">Januari</option>
+                                <option value="Februari">Februari</option>
+                                <option value="Maret">Maret</option>
+                                <option value="April">April</option>
+                                <option value="Mei">Mei</option>
+                                <option value="Juni">Juni</option>
+                                <option value="Juli">Juli</option>
+                                <option value="Agustus">Agustus</option>
+                                <option value="September">September</option>
+                                <option value="Oktober">Oktober</option>
+                                <option value="November">November</option>
+                                <option value="Desember">Desember</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Rincian Laporan Kegiatan</label>
+                            <textarea id="isiLaporan" rows="6" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="Ketikkan laporan bulanan secara detail di sini..."></textarea>
+                        </div>
+                        
+                        <button type="submit" id="btnKirimLaporan" class="bg-emerald-600 text-white font-bold px-6 py-2 rounded-lg hover:bg-emerald-700 transition shadow">
+                            Kirim Laporan
+                        </button>
+                    </form>
+                </div>
+            `;
+            
+            // Tembakkan form ke area konten utama
+            document.getElementById('contentArea').innerHTML = htmlForm;
+
+            // Daftarkan event kirim data ke form yang baru dibuat
+            document.getElementById('formLaporanBulanan').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('btnKirimLaporan');
+                btn.innerText = "Mengirim...";
+                btn.disabled = true;
+
+                const bulan = document.getElementById('bulanLaporan').value;
+                const isi = document.getElementById('isiLaporan').value;
+
+                // Siapkan parameter data kiriman mengambil dari session login browser
+                const params = new URLSearchParams({
+                    action: "simpanLaporan",
+                    username: userData.username || "tidak_diketahui",
+                    nama: userData.nama,
+                    jabatan: userData.jabatan,
+                    bulan: bulan + " (" + jenisProgram + ")",
+                    isi_laporan: isi
+                });
+
+                try {
+                    const response = await fetch(API_URL, {
+                        method: 'POST',
+                        body: params,
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                    });
+                    const result = await response.json();
+
+                    if (result.status === "success") {
+                        alert("Alhamdulillah, Laporan Bulan " + bulan + " Berhasil Tersimpan!");
+                        bukaFormLaporan(jenisProgram); // Reset ulang form
+                    } else {
+                        alert("Gagal: " + result.message);
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert("Terjadi kesalahan jaringan.");
+                } finally {
+                    btn.innerText = "Kirim Laporan";
+                    btn.disabled = false;
+                }
+            });
         }
     </script>
 </body>
