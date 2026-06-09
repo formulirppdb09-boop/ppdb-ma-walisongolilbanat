@@ -465,122 +465,264 @@
             tbody.innerHTML = rowsHtml || `<tr><td colspan="9" class="text-center py-12 text-slate-400 italic">Tidak ada data siswa aktif di Kelas ${targetKelas}.</td></tr>`;
         }
 
-        // --- 8. FUNGSI MANAJEMEN ROMBEL SISWA INTERAKTIF ---
+// --- 8. FUNGSI UTAMA: MANAJEMEN ROMBEL DINAMIS (KREASI ABANG) ---
         async function bukaMenuRombel() {
-            document.getElementById('currentMenuTitle').innerText = "Menu Siswa - Pembagian Rombongan Belajar (Rombel)";
+            document.getElementById('currentMenuTitle').innerText = "Menu Siswa - Manajemen Rombongan Belajar (Rombel)";
             
+            // Tampilkan struktur halaman utama Rombel dengan form pembuatan kelas
             document.getElementById('contentArea').innerHTML = `
-                <div class="flex flex-col items-center justify-center py-12">
-                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-700 mb-3"></div>
-                    <p class="text-slate-500 italic text-sm">Memuat daftar penataan rombel...</p>
+                <div class="space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h4 class="text-sm font-bold text-slate-700 uppercase tracking-wider mb-4"><i class="fa-solid fa-square-plus mr-1 text-emerald-600"></i> Buat Rombel Baru</h4>
+                        <form id="formBuatRombel" class="flex flex-wrap items-end gap-4">
+                            <div class="w-full sm:w-48">
+                                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Tingkat Jenjang</label>
+                                <select id="rombelTingkat" required class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+                                    <option value="10">Kelas 10</option>
+                                    <option value="11">Kelas 11</option>
+                                    <option value="12">Kelas 12</option>
+                                </select>
+                            </div>
+                            <div class="flex-1 min-w-[200px]">
+                                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nama Rombel / Kelas</label>
+                                <input type="text" id="rombelNama" placeholder="Contoh: 10-1A atau 10-B" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+                            </div>
+                            <button type="submit" id="btnBuatRombel" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2 rounded-lg text-sm transition shadow cursor-pointer">
+                                <i class="fa-solid fa-plus mr-1"></i> Create Rombel
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="border-t border-slate-200 pt-4">
+                        <h4 class="text-sm font-bold text-slate-700 uppercase tracking-wider mb-4"><i class="fa-solid fa-folder-tree mr-1 text-blue-600"></i> Daftar Rombel aktif</h4>
+                        <div id="loadingRombelCard" class="flex items-center py-6 text-slate-400 italic text-sm">
+                            <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-slate-500 mr-2"></div> Memuat daftar kelas...
+                        </div>
+                        <div id="containerRombelCard" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+                    </div>
                 </div>
             `;
 
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    body: new URLSearchParams({ action: "ambilDataSiswaAktif" }),
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-                });
-                const result = await response.json();
+            // Daftarkan aksi submit form pembuatan Rombel Baru
+            document.getElementById('formBuatRombel').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('btnBuatRombel');
+                const tingkat = document.getElementById('rombelTingkat').value;
+                const nama = document.getElementById('rombelNama').value.trim();
 
-                if (result.status === "success") {
-                    let rowsHtml = "";
+                btn.innerText = "Memproses...";
+                btn.disabled = true;
+
+                try {
+                    const response = await fetch(API_URL, {
+                        method: 'POST',
+                        body: new URLSearchParams({ action: "buatRombelBaru", tingkat: tingkat, namaRombel: nama }),
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                    });
+                    const result = await response.json();
+
+                    if (result.status === "success") {
+                        alert(`Alhamdulillah, Rombel "${nama}" berhasil diciptakan!`);
+                        loadDaftarKartuRombel(); // Muat ulang kartu kelas
+                        document.getElementById('rombelNama').value = "";
+                    } else {
+                        alert("Gagal: " + result.message);
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert("Masalah koneksi saat membuat rombel.");
+                } finally {
+                    btn.innerHTML = `<i class="fa-solid fa-plus mr-1"></i> Create Rombel`;
+                    btn.disabled = false;
+                }
+            });
+
+            // Jalankan penarikan kartu kelas pertama kali
+            loadDaftarKartuRombel();
+        }
+
+        // --- 9. FUNGSI PENARIK & PENYUSUN KARTU KELAS (DARI TAB MASTER_ROMBEL) ---
+        async function loadDaftarKartuRombel() {
+            const container = document.getElementById('containerRombelCard');
+            const loader = document.getElementById('loadingRombelCard');
+            if (!container) return;
+
+            try {
+                // Ambil master rombel dan master data siswa untuk menghitung jumlah siswa per kelas
+                const resRombel = await fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: "ambilMasterRombel" }), headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
+                const dataRombel = await resRombel.json();
+
+                const resSiswa = await fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: "ambilDataSiswaAktif" }), headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
+                const dataSiswa = await resSiswa.json();
+
+                if (dataRombel.status === "success" && dataSiswa.status === "success") {
+                    let cardsHtml = "";
                     
-                    result.data.forEach((siswa, index) => {
-                        rowsHtml += `
-                            <tr class="border-b border-slate-200 hover:bg-slate-50 transition-colors text-sm">
-                                <td class="px-4 py-3 text-center text-slate-500">${index + 1}</td>
-                                <td class="px-4 py-3 font-semibold text-slate-800">${siswa.nama}</td>
-                                <td class="px-4 py-3 text-slate-600 font-mono text-xs">${siswa.id}</td>
-                                <td class="px-4 py-3 text-slate-600 text-xs font-bold">
-                                    <span class="bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded">
-                                        Kelas Saat Ini: ${siswa.kelas}
-                                    </span>
-                                </td>
-                                <td class="px-4 py-3">
-                                    <select id="selectRombel-${siswa.rowNumber}" class="px-2 py-1 border border-slate-300 rounded bg-white text-xs outline-none focus:ring-2 focus:ring-emerald-500">
-                                        <option value="">-- Pilih Rombel Baru --</option>
-                                        <option value="10-A">10-A</option>
-                                        <option value="10-B">10-B</option>
-                                        <option value="11-A">11-A</option>
-                                        <option value="11-B">11-B</option>
-                                        <option value="12-A">12-A</option>
-                                        <option value="12-B">12-B</option>
-                                    </select>
-                                </td>
-                                <td class="px-4 py-3 text-center">
-                                    <button onclick="simpanPerubahanRombel(${siswa.rowNumber}, '${siswa.nama.replace(/'/g, "\\'")}')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1 rounded shadow transition cursor-pointer">
-                                        <i class="fa-solid fa-floppy-disk mr-1"></i> Simpan
-                                    </button>
-                                </td>
-                            </tr>
+                    dataRombel.data.forEach(rombel => {
+                        // Hitung jumlah siswa yang memiliki string kelas COCOK dengan nama rombel ini
+                        const jumlahSiswa = dataSiswa.data.filter(s => String(s.kelas).trim() === String(rombel.nama).trim()).length;
+
+                        cardsHtml += `
+                            <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition flex flex-col justify-between">
+                                <div>
+                                    <span class="bg-blue-50 text-blue-700 border border-blue-200 text-[10px] font-bold px-2 py-0.5 rounded uppercase">Jenjang ${rombel.tingkat}</span>
+                                    <h5 class="text-xl font-black text-slate-800 mt-2 tracking-tight">${rombel.nama}</h5>
+                                    <p class="text-xs text-slate-500 mt-1"><i class="fa-solid fa-graduation-cap mr-1"></i> ${jumlahSiswa} Siswa Terdaftar</p>
+                                </div>
+                                <button onclick="bukaIsiRombel('${rombel.nama}', '${rombel.tingkat}')" class="w-full bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 font-bold text-xs py-2 rounded-lg transition mt-4 border border-slate-200 hover:border-emerald-300 cursor-pointer text-center">
+                                    <i class="fa-solid fa-folder-open mr-1"></i> Buka Rombel
+                                </button>
+                            </div>
                         `;
                     });
 
-                    document.getElementById('contentArea').innerHTML = `
-                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                            <div class="p-4 bg-slate-50 border-b border-slate-200">
-                                <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wider">Pengaturan Rombongan Belajar (Rombel) Siswa</h3>
-                            </div>
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-left border-collapse whitespace-nowrap">
-                                    <thead>
-                                        <tr class="bg-slate-100 text-slate-700 text-xs font-bold uppercase tracking-wider border-b border-slate-200">
-                                            <th class="px-4 py-3 text-center w-12">No</th>
-                                            <th class="px-4 py-3">Nama Lengkap</th>
-                                            <th class="px-4 py-3">ID Sistem</th>
-                                            <th class="px-4 py-3">Status Rombel</th>
-                                            <th class="px-4 py-3 w-48">Pindahkan Ke Kelas</th>
-                                            <th class="px-4 py-3 text-center w-24">Aksi</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${rowsHtml || '<tr><td colspan="6" class="text-center py-12 text-slate-400 italic">Belum ada database siswa aktif.</td></tr>'}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    alert("Gagal memuat data rombel: " + result.message);
+                    if (loader) loader.style.display = 'none';
+                    container.innerHTML = cardsHtml || `<div class="col-span-full bg-slate-50 p-6 rounded-lg text-center border-2 border-dashed border-slate-200 text-slate-400 italic text-sm">Belum ada rombel yang dibuat. Silakan isi form di atas, Bang!</div>`;
                 }
             } catch (err) {
                 console.error(err);
-                alert("Gagal terhubung ke server manajemen Rombel.");
+                container.innerHTML = `<p class="text-rose-500 text-xs">Gagal memuat visualisasi kartu kelas.</p>`;
             }
         }
 
-        // --- 9. FUNGSI EKSEKUSI UPDATE ROMBEL KE SHEETS ---
-        async function simpanPerubahanRombel(rowNumber, namaSiswa) {
-            const kelasBaru = document.getElementById(`selectRombel-${rowNumber}`).value;
-            
-            if (!kelasBaru) {
-                alert("Silakan pilih rombel kelas yang baru terlebih dahulu, Bang!");
-                return;
-            }
+        // --- 10. FUNGSI MEMBUKA ISI ROMBEL & MENAMBAH SISWA BELUM PUNYA KELAS ---
+        async function bukaIsiRombel(namaRombel, tingkat) {
+            document.getElementById('currentMenuTitle').innerText = `Rombel ${namaRombel} - Detail Anggota Kelas`;
 
+            document.getElementById('contentArea').innerHTML = `
+                <div class="space-y-6">
+                    <button onclick="bukaMenuRombel();" class="text-xs font-bold text-emerald-800 bg-white border border-slate-200 px-3 py-1.5 rounded-lg shadow-sm hover:bg-slate-50 cursor-pointer mb-2">
+                        <i class="fa-solid fa-arrow-left mr-1"></i> Kembali ke Daftar Rombel
+                    </button>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                            <div class="p-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+                                <h4 class="text-xs font-bold text-slate-700 uppercase">Anggota Resmi Rombel (${namaRombel})</h4>
+                                <span id="countAnggota" class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2 py-0.5 rounded-full">Loading...</span>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse text-sm">
+                                    <thead>
+                                        <tr class="bg-slate-100 text-slate-600 text-xs font-bold uppercase border-b border-slate-200">
+                                            <th class="px-4 py-2 text-center w-12">No</th>
+                                            <th class="px-4 py-2">Nama Siswa</th>
+                                            <th class="px-4 py-2">NISN</th>
+                                            <th class="px-4 py-2 text-center w-24">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="bodyAnggotaRombel"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden h-fit">
+                            <div class="p-4 bg-blue-50 border-b border-blue-200">
+                                <h4 class="text-xs font-bold text-blue-800 uppercase flex items-center gap-1"><i class="fa-solid fa-user-plus"></i> + Tambah Siswa Baru</h4>
+                                <p class="text-[10px] text-blue-600 italic mt-0.5">Daftar siswa tingkat ${tingkat} yang belum masuk kelas pecahan</p>
+                            </div>
+                            <div class="p-2 max-h-[400px] overflow-y-auto space-y-2" id="boxSiswaKosong">
+                                <p class="text-xs text-slate-400 italic p-4 text-center">Sedang melacak data siswa...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Muat data anggota kelas dan daftar antrean siswa kosong
+            loadDetailSiswaRombel(namaRombel, tingkat);
+        }
+
+        // --- 11. LOGIKA RENDER DATA ANGGOTA KELAS & ANTREAN SISWA KOSONG ---
+        async function loadDetailSiswaRombel(namaRombel, tingkat) {
+            try {
+                // 1. Ambil seluruh database data_siswa
+                const response = await fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: "ambilDataSiswaAktif" }), headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    let htmlAnggota = "";
+                    let counter = 0;
+
+                    // Filter siswa yang kolom kelasnya SAMA DENGAN nama rombel ini
+                    result.data.forEach(siswa => {
+                        if (String(siswa.kelas).trim() === String(namaRombel).trim()) {
+                            counter++;
+                            htmlAnggota += `
+                                <tr class="border-b border-slate-200 hover:bg-slate-50 transition-colors">
+                                    <td class="px-4 py-2 text-center text-slate-500 text-xs">${counter}</td>
+                                    <td class="px-4 py-2 font-medium text-slate-800">${siswa.nama}</td>
+                                    <td class="px-4 py-2 font-mono text-slate-500 text-xs">${siswa.nisn}</td>
+                                    <td class="px-4 py-2 text-center">
+                                        <button onclick="pindahkanSiswaKeRombel(${siswa.rowNumber}, '${tingkat}', '${namaRombel}', '${siswa.nama.replace(/'/g, "\\'")}')" class="text-rose-600 hover:text-white border border-rose-300 hover:bg-rose-600 text-[10px] font-bold px-2 py-1 rounded transition cursor-pointer">
+                                            Keluarkan
+                                        </button>
+                                    </td>
+                                </tr>
+                            `;
+                        }
+                    });
+
+                    document.getElementById('countAnggota').innerText = `${counter} Anak`;
+                    document.getElementById('bodyAnggotaRombel').innerHTML = htmlAnggota || `<tr><td colspan="4" class="text-center py-8 text-slate-400 italic">Rombel ini masih kosong, silakan klik tombol tambah di bilah kanan, Bang!</td></tr>`;
+
+                    // 2. Ambil antrean pendaftar yang belum punya rombel pecahan (memanggil Jalur J Apps Script)
+                    const resKosong = await fetch(API_URL, {
+                        method: 'POST',
+                        body: new URLSearchParams({ action: "ambilSiswaTanpaRombel", tingkat: tingkat }),
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                    });
+                    const resultKosong = await resKosong.json();
+
+                    let htmlKosong = "";
+                    if (resultKosong.status === "success" && resultKosong.data.length > 0) {
+                        resultKosong.data.forEach(siswa => {
+                            htmlKosong += `
+                                <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 flex items-center justify-between gap-2 hover:border-blue-300 transition">
+                                    <div class="min-w-0 flex-1">
+                                        <p class="text-xs font-bold text-slate-800 truncate">${siswa.nama}</p>
+                                        <p class="text-[10px] text-slate-500 font-mono">NISN: ${siswa.nisn}</p>
+                                    </div>
+                                    <button onclick="pindahkanSiswaKeRombel(${siswa.rowNumber}, '${namaRombel}', '${namaRombel}', '${siswa.nama.replace(/'/g, "\\'")}')" class="bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold px-2 py-1.5 rounded transition shadow flex-shrink-0 cursor-pointer">
+                                        <i class="fa-solid fa-plus"></i> Masukkan
+                                    </button>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        htmlKosong = `<p class="text-xs text-slate-400 italic p-6 text-center">Alhamdulillah, seluruh siswa tingkat ${tingkat} sudah memiliki kelas masing-masing!</p>`;
+                    }
+
+                    document.getElementById('boxSiswaKosong').innerHTML = htmlKosong;
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // --- 12. FUNGSI JEMBATAN EKSEKUSI UPDATE BARIS KELAS DI GOOGLE SHEETS ---
+        async function pindahkanSiswaKeRombel(rowNumber, kelasTujuan, namaRombel, namaSiswa) {
             try {
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     body: new URLSearchParams({
                         action: "updateRombel",
                         rowNumber: rowNumber,
-                        kelasBaru: kelasBaru
+                        kelasBaru: kelasTujuan
                     }),
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
                 });
                 const result = await response.json();
 
                 if (result.status === "success") {
-                    alert(`Alhamdulillah! Rombel untuk "${namaSiswa}" telah berhasil diubah menjadi Kelas ${kelasBaru}.`);
-                    bukaMenuRombel(); // Refresh tampilan
+                    // Muat ulang isi komponen detail halaman rombel saat ini tanpa loading berat hancurkan halaman
+                    loadDetailSiswaRombel(namaRombel, kelasTujuan === namaRombel ? namaRombel : kelasTujuan);
                 } else {
-                    alert("Gagal memperbarui rombel: " + result.message);
+                    alert("Gagal memindahkan siswa: " + result.message);
                 }
             } catch (err) {
                 console.error(err);
-                alert("Terjadi masalah jaringan saat menyimpan rombel.");
+                alert("Gagal berkomunikasi dengan database Sheets.");
             }
         }
     </script>
