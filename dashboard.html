@@ -16,29 +16,28 @@
         </div>
 
         <nav class="flex-1 overflow-y-auto py-4">
-            <button onclick="window.location.reload();" class="w-full flex items-center px-6 py-3 text-emerald-100 hover:bg-emerald-800 hover:text-white transition-colors border-l-4 border-amber-500 text-left cursor-pointer">
+            <button onclick="window.location.reload();" class="w-full flex items-center px-6 py-3 text-emerald-100 hover:bg-emerald-800 hover:text-white transition-colors border-l-4 border-amber-500 text-left cursor-pointer font-medium">
                 <i class="fa-solid fa-gauge w-6"></i>
                 <span class="ml-3">Dashboard</span>
             </button>
 
             <div id="menuSiswaGroup" class="group">
-                <button onclick="toggleMenu('menuSiswa')" class="w-full flex items-center px-6 py-3 text-emerald-100 hover:bg-emerald-800 transition-colors cursor-pointer text-left">
+                <button onclick="toggleMenu('menuSiswa')" class="w-full flex items-center px-6 py-3 text-emerald-100 hover:bg-emerald-800 transition-colors cursor-pointer text-left font-medium">
                     <i class="fa-solid fa-users w-6"></i>
                     <span class="ml-3 flex-1">Menu Siswa</span>
                     <i class="fa-solid fa-chevron-down text-xs"></i>
-            </button>
-             <div id="menuSiswa" class="hidden bg-emerald-950/50 py-2 text-sm pl-8">
+                </button>
+                <div id="menuSiswa" class="hidden bg-emerald-950/50 py-2 text-sm pl-8">
                     <button onclick="bukaDataSiswaPPDB();" class="w-full text-left block py-2 px-4 hover:text-amber-400 cursor-pointer text-emerald-100 bg-transparent border-0 font-medium">- Data Siswa (PPDB/Daful)</button>
                     <button onclick="bukaMenuRombel();" class="w-full text-left block py-2 px-4 hover:text-amber-400 cursor-pointer text-emerald-100 bg-transparent border-0 font-medium">- Rombel Siswa</button>
                     <button class="w-full text-left block py-2 px-4 hover:text-amber-400 cursor-not-allowed text-slate-500 bg-transparent border-0 font-medium" disabled>- Mutasi Masuk</button>
                     <button class="w-full text-left block py-2 px-4 hover:text-amber-400 cursor-not-allowed text-slate-500 bg-transparent border-0 font-medium" disabled>- Mutasi Keluar</button>
-        
                     <button onclick="bukaMasterDataSiswa();" class="w-full text-left block py-2 px-4 hover:text-amber-400 cursor-pointer text-emerald-100 bg-transparent border-0 font-medium">- Data Buku Induk</button>
                 </div>
             </div>
 
             <div id="menuGuruGroup" class="group">
-                <button onclick="toggleMenu('menuGuru')" class="w-full flex items-center px-6 py-3 text-emerald-100 hover:bg-emerald-800 transition-colors cursor-pointer text-left">
+                <button onclick="toggleMenu('menuGuru')" class="w-full flex items-center px-6 py-3 text-emerald-100 hover:bg-emerald-800 transition-colors cursor-pointer text-left font-medium">
                     <i class="fa-solid fa-chalkboard-user w-6"></i>
                     <span class="ml-3 flex-1">Guru & Tendik</span>
                     <i class="fa-solid fa-chevron-down text-xs"></i>
@@ -50,7 +49,7 @@
             </div>
 
             <div id="menuProgramGroup" class="group">
-                <button onclick="toggleMenu('menuProgram')" class="w-full flex items-center px-6 py-3 text-emerald-100 hover:bg-emerald-800 transition-colors cursor-pointer text-left">
+                <button onclick="toggleMenu('menuProgram')" class="w-full flex items-center px-6 py-3 text-emerald-100 hover:bg-emerald-800 transition-colors cursor-pointer text-left font-medium">
                     <i class="fa-solid fa-clipboard-list w-6"></i>
                     <span class="ml-3 flex-1">Program</span>
                     <i class="fa-solid fa-chevron-down text-xs"></i>
@@ -104,9 +103,7 @@
     </main>
 
     <script>
-        // =====================================================================
-        // PENTING: TEMPEL URL WEB APP /EXEC GABUNGAN ABANG DI SINI
-        // =====================================================================
+        // WEB APP API URL INTEGRATION
         const API_URL = "https://script.google.com/macros/s/AKfycbwNf6X1QPHHfFRc1mZoG1Tmzss39N026ldLGJDMLYg-Fxfi2moq2-xIuK7GpWmvp9tv/exec";
 
         // --- 1. PROTEKSI LOGIN ---
@@ -119,7 +116,6 @@
             document.getElementById('userNama').innerText = "Halo, " + userData.nama;
             document.getElementById('userInisial').innerText = userData.nama.charAt(0).toUpperCase();
 
-            // Sembunyikan Menu jika Perannya TENDIK
             if (userData.role === "TENDIK") {
                 document.getElementById('menuSiswaGroup').style.display = 'none';
                 document.getElementById('menuGuruGroup').style.display = 'none';
@@ -136,14 +132,13 @@
             window.location.href = "login.html";
         }
 
-        // --- 2. FUNGSI PELAPORAN BULANAN TENDIK ---
+        // --- 2. FORM PELAPORAN BULANAN TENDIK ---
         function bukaFormLaporan(jenisProgram) {
             document.getElementById('currentMenuTitle').innerText = "Program " + jenisProgram + " - Laporan Bulanan";
             
             const htmlForm = `
                 <div class="bg-white p-6 rounded-xl shadow-sm max-w-2xl border-t-4 border-emerald-600">
                     <h4 class="text-lg font-bold text-slate-700 mb-4">Form Pelaporan Bulanan (${jenisProgram.toUpperCase()})</h4>
-                    
                     <form id="formLaporanBulanan" class="space-y-4">
                         <div>
                             <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Bulan Pelaporan</label>
@@ -163,12 +158,10 @@
                                 <option value="Desember">Desember</option>
                             </select>
                         </div>
-                        
                         <div>
                             <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Rincian Laporan Kegiatan</label>
                             <textarea id="isiLaporan" rows="6" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="Ketikkan laporan bulanan secara detail di sini..."></textarea>
                         </div>
-                        
                         <button type="submit" id="btnKirimLaporan" class="bg-emerald-600 text-white font-bold px-6 py-2 rounded-lg hover:bg-emerald-700 transition shadow cursor-pointer">
                             Kirim Laporan
                         </button>
@@ -181,6 +174,8 @@
             document.getElementById('formLaporanBulanan').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const btn = document.getElementById('btnKirimLaporan');
+                if (btn.disabled) return;
+
                 btn.innerText = "Mengirim...";
                 btn.disabled = true;
 
@@ -220,139 +215,7 @@
             });
         }
 
-// --- 6. FUNGSI MENAMPILKAN DATA SISWA PPDB + TOMBOL DAFUL OTOMATIS ---
-        async function bukaDataSiswaPPDB() {
-            document.getElementById('currentMenuTitle').innerText = "Menu Siswa - Data Calon Siswa (PPDB / Daftar Ulang)";
-            
-            document.getElementById('contentArea').innerHTML = `
-                <div class="flex flex-col items-center justify-center py-12">
-                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-700 mb-3"></div>
-                    <p class="text-slate-500 italic text-sm">Sedang memuat data pendaftar PPDB...</p>
-                </div>
-            `;
-
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    body: new URLSearchParams({ action: "ambilDataPPDB" }),
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-                });
-                const result = await response.json();
-
-                if (result.status === "success") {
-                    let rowsHtml = "";
-                    
-                    result.data.forEach((siswa) => {
-                        // Atur warna badge status daful
-                        let badgeClass = "bg-amber-100 text-amber-800 border-amber-200";
-                        let tombolDaful = `
-                            <button onclick="eksekusiDaftarUlang(${siswa.rowNumber}, '${siswa.nama.replace(/'/g, "\\'")}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow transition cursor-pointer flex items-center gap-1">
-                                <i class="fa-solid fa-user-check"></i> Daful
-                            </button>
-                        `;
-
-                        if (siswa.status_daful === "SUDAH DAFTAR ULANG") {
-                            badgeClass = "bg-emerald-100 text-emerald-800 border-emerald-200 font-extrabold";
-                            tombolDaful = `
-                                <button class="bg-slate-100 text-slate-400 text-xs font-medium px-3 py-1.5 rounded-lg border border-slate-200 cursor-not-allowed" disabled>
-                                    <i class="fa-solid fa-check"></i> Selesai
-                                </button>
-                            `;
-                        }
-
-                        rowsHtml += `
-                            <tr class="border-b border-slate-200 hover:bg-slate-50 transition-colors text-sm">
-                                <td class="px-4 py-3 text-center text-slate-500">${siswa.rowNumber - 1}</td>
-                                <td class="px-4 py-3 font-semibold text-slate-800">${siswa.nama}</td>
-                                <td class="px-4 py-3 text-slate-600 font-mono text-xs">${siswa.nisn || "-"}</td>
-                                <td class="px-4 py-3 text-center text-slate-600">${siswa.jk}</td>
-                                <td class="px-4 py-3 text-slate-600 text-xs">${siswa.asal_sekolah || "-"}</td>
-                                <td class="px-4 py-3 text-center">
-                                    <span class="border px-2.5 py-0.5 rounded-full text-xs font-medium ${badgeClass}">
-                                        ${siswa.status_daful}
-                                    </span>
-                                </td>
-                                <td class="px-4 py-3 text-center flex justify-center gap-1">
-                                    ${tombolDaful}
-                                </td>
-                            </tr>
-                        `;
-                    });
-
-                    document.getElementById('contentArea').innerHTML = `
-                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                            <div class="p-4 bg-slate-50 border-b border-slate-200">
-                                <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wider">Daftar Calon Siswa Baru (Formulir Online)</h3>
-                            </div>
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-left border-collapse whitespace-nowrap">
-                                    <thead>
-                                        <tr class="bg-slate-100 text-slate-700 text-xs font-bold uppercase tracking-wider border-b border-slate-200">
-                                            <th class="px-4 py-3 text-center w-12">No</th>
-                                            <th class="px-4 py-3">Nama Calon Siswa</th>
-                                            <th class="px-4 py-3">NISN</th>
-                                            <th class="px-4 py-3 text-center w-16">JK</th>
-                                            <th class="px-4 py-3">Asal Sekolah</th>
-                                            <th class="px-4 py-3 text-center w-36">Status PPDB</th>
-                                            <th class="px-4 py-3 text-center w-24">Aksi Admin</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${rowsHtml || '<tr><td colspan="7" class="text-center py-12 text-slate-400 italic">Belum ada data calon siswa yang masuk.</td></tr>'}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    alert("Gagal memuat data PPDB: " + result.message);
-                }
-            } catch (err) {
-                console.error(err);
-                alert("Gagal menghubungkan ke server PPDB.");
-            }
-        }
-
-        // --- 7. FUNGSI FUNGSI PROSES EKSEKUSI DAFTAR ULANG KELATAR BELAKANG ---
-        async function eksekusiDaftarUlang(rowNumber, namaSiswa) {
-            if (!confirm(`Apakah Anda yakin ingin memproses Daftar Ulang untuk siswa bernama "${namaSiswa}"?\nData akan otomatis disalin ke Buku Induk.`)) {
-                return;
-            }
-
-            // Tampilkan loading screen sementara
-            document.getElementById('contentArea').innerHTML = `
-                <div class="flex flex-col items-center justify-center py-12">
-                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-700 mb-3"></div>
-                    <p class="text-emerald-700 font-medium text-sm">Sedang mendaftarkan ${namaSiswa} ke database induk...</p>
-                    <p class="text-slate-400 text-xs italic mt-1">Mohon tunggu, jangan menutup halaman ini.</p>
-                </div>
-            `;
-
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    body: new URLSearchParams({
-                        action: "prosesDaful",
-                        rowNumber: rowNumber
-                    }),
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-                });
-                const result = await response.json();
-
-                if (result.status === "success") {
-                    alert(`Berhasil! ${namaSiswa} sekarang resmi menjadi siswa aktif Kelas 10.`);
-                    bukaDataSiswaPPDB(); // Refresh halaman PPDB
-                } else {
-                    alert("Gagal proses daftar ulang: " + result.message);
-                    bukaDataSiswaPPDB();
-                }
-            } catch (err) {
-                console.error(err);
-                alert("Terjadi kesalahan koneksi saat memproses Daftar Ulang.");
-                bukaDataSiswaPPDB();
-            }
-        }
-        // --- 4. FUNGSI MENAMPILKAN MASTER DATA SISWA (STRUKTUR BARU) ---
+        // --- 3. MASTER DATA SISWA (BUKU INDUK) + LIVE SEARCH ---
         async function bukaMasterDataSiswa() {
             document.getElementById('currentMenuTitle').innerText = "Menu Siswa - Data Buku Induk Madrasah";
             
@@ -373,22 +236,25 @@
 
                 if (result.status === "success") {
                     window.allSiswaData = result.data;
+                    window.currentFilterKelas = 'SEMUA';
                     
                     const htmlMaster = `
                         <div class="space-y-6">
-                            <div class="flex flex-wrap gap-2 bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-                                <button onclick="filterTabelKelas('SEMUA')" id="btnFilter-SEMUA" class="px-4 py-2 text-xs font-bold rounded-lg bg-emerald-700 text-white shadow transition cursor-pointer">
-                                    <i class="fa-solid fa-border-all mr-1"></i> Semua Siswa (${result.data.length})
-                                </button>
-                                <button onclick="filterTabelKelas('10')" id="btnFilter-10" class="px-4 py-2 text-xs font-bold rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 transition cursor-pointer">
-                                    Kelas 10
-                                </button>
-                                <button onclick="filterTabelKelas('11')" id="btnFilter-11" class="px-4 py-2 text-xs font-bold rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 transition cursor-pointer">
-                                    Kelas 11
-                                </button>
-                                <button onclick="filterTabelKelas('12')" id="btnFilter-12" class="px-4 py-2 text-xs font-bold rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 transition cursor-pointer">
-                                    Kelas 12
-                                </button>
+                            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col md:flex-row gap-4 justify-between items-center">
+                                <div class="flex flex-wrap gap-2 w-full md:w-auto">
+                                    <button onclick="setFilterKelas('SEMUA')" id="btnFilter-SEMUA" class="px-4 py-2 text-xs font-bold rounded-lg bg-emerald-700 text-white shadow transition cursor-pointer">
+                                        All (${result.data.length})
+                                    </button>
+                                    <button onclick="setFilterKelas('10')" id="btnFilter-10" class="px-4 py-2 text-xs font-bold rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 transition cursor-pointer">Kelas 10</button>
+                                    <button onclick="setFilterKelas('11')" id="btnFilter-11" class="px-4 py-2 text-xs font-bold rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 transition cursor-pointer">Kelas 11</button>
+                                    <button onclick="setFilterKelas('12')" id="btnFilter-12" class="px-4 py-2 text-xs font-bold rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 transition cursor-pointer">Kelas 12</button>
+                                </div>
+                                <div class="relative w-full md:w-80">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                                        <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                                    </span>
+                                    <input type="text" id="searchBukuInduk" oninput="jalankanLiveSearchBukuInduk()" placeholder="Cari Nama atau NISN siswa..." class="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50 focus:bg-white transition">
+                                </div>
                             </div>
 
                             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
@@ -407,8 +273,7 @@
                                                 <th class="px-4 py-3 text-center w-24">Status</th>
                                             </tr>
                                         </thead>
-                                        <tbody id="bodyTabelSiswa">
-                                            </tbody>
+                                        <tbody id="bodyTabelSiswa"></tbody>
                                     </table>
                                 </div>
                             </div>
@@ -416,8 +281,7 @@
                     `;
                     
                     document.getElementById('contentArea').innerHTML = htmlMaster;
-                    filterTabelKelas('SEMUA');
-
+                    renderTabelBukuInduk(result.data);
                 } else {
                     alert("Gagal memuat database: " + result.message);
                 }
@@ -427,26 +291,40 @@
             }
         }
 
-        // --- 5. FUNGSI LOGIKA PENYARINGAN KELAS BUKU INDUK ---
-        function filterTabelKelas(targetKelas) {
-            const tbody = document.getElementById('bodyTabelSiswa');
-            if (!tbody || !window.allSiswaData) return;
-
+        function setFilterKelas(target) {
+            window.currentFilterKelas = target;
             ['SEMUA', '10', '11', '12'].forEach(k => {
                 const btn = document.getElementById('btnFilter-' + k);
                 if (btn) btn.className = "px-4 py-2 text-xs font-bold rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 transition cursor-pointer";
             });
-
-            const btnAktif = document.getElementById('btnFilter-' + targetKelas);
+            const btnAktif = document.getElementById('btnFilter-' + target);
             if (btnAktif) btnAktif.className = "px-4 py-2 text-xs font-bold rounded-lg bg-emerald-700 text-white shadow transition cursor-pointer";
+            jalankanLiveSearchBukuInduk();
+        }
 
-            let dataTersaring = window.allSiswaData;
-            if (targetKelas !== 'SEMUA') {
-                dataTersaring = window.allSiswaData.filter(s => String(s.kelas).startsWith(targetKelas));
+        function jalankanLiveSearchBukuInduk() {
+            const keyword = document.getElementById('searchBukuInduk').value.toLowerCase().trim();
+            let dataHasil = window.allSiswaData;
+
+            if (window.currentFilterKelas !== 'SEMUA') {
+                dataHasil = dataHasil.filter(s => String(s.kelas).trim().startsWith(window.currentFilterKelas));
             }
 
+            if (keyword !== '') {
+                dataHasil = dataHasil.filter(s => 
+                    String(s.nama).toLowerCase().includes(keyword) || 
+                    String(s.nisn).toLowerCase().includes(keyword)
+                );
+            }
+            renderTabelBukuInduk(dataHasil);
+        }
+
+        function renderTabelBukuInduk(arrayData) {
+            const tbody = document.getElementById('bodyTabelSiswa');
+            if (!tbody) return;
+
             let rowsHtml = "";
-            dataTersaring.forEach((siswa, index) => {
+            arrayData.forEach((siswa, index) => {
                 rowsHtml += `
                     <tr class="border-b border-slate-200 hover:bg-slate-50 transition-colors text-sm">
                         <td class="px-4 py-3 text-center text-slate-500">${index + 1}</td>
@@ -461,15 +339,165 @@
                     </tr>
                 `;
             });
-
-            tbody.innerHTML = rowsHtml || `<tr><td colspan="9" class="text-center py-12 text-slate-400 italic">Tidak ada data siswa aktif di Kelas ${targetKelas}.</td></tr>`;
+            tbody.innerHTML = rowsHtml || `<tr><td colspan="9" class="text-center py-12 text-slate-400 italic">Data siswa tidak ditemukan...</td></tr>`;
         }
 
-// --- 8. FUNGSI UTAMA: MANAJEMEN ROMBEL DINAMIS (KREASI ABANG) ---
+        // --- 4. CALON SISWA PPDB + LIVE SEARCH + ANTI DUPLIKAT LOCKER ---
+        async function bukaDataSiswaPPDB() {
+            document.getElementById('currentMenuTitle').innerText = "Menu Siswa - Data Calon Siswa (PPDB / Daftar Ulang)";
+            
+            document.getElementById('contentArea').innerHTML = `
+                <div class="flex flex-col items-center justify-center py-12">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-700 mb-3"></div>
+                    <p class="text-slate-500 italic text-sm">Sedang memuat data pendaftar PPDB...</p>
+                </div>
+            `;
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: new URLSearchParams({ action: "ambilDataPPDB" }),
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                });
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    window.allPPDBData = result.data;
+
+                    document.getElementById('contentArea').innerHTML = `
+                        <div class="space-y-4">
+                            <div class="flex justify-end bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                                <div class="relative w-full md:w-80">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                                        <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                                    </span>
+                                    <input type="text" id="searchPPDB" oninput="jalankanLiveSearchPPDB()" placeholder="Cari nama calon siswa..." class="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50 focus:bg-white transition">
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                                <div class="p-4 bg-slate-50 border-b border-slate-200">
+                                    <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wider">Daftar Calon Siswa Baru (Formulir Online)</h3>
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left border-collapse whitespace-nowrap">
+                                        <thead>
+                                            <tr class="bg-slate-100 text-slate-700 text-xs font-bold uppercase tracking-wider border-b border-slate-200">
+                                                <th class="px-4 py-3 text-center w-12">No</th>
+                                                <th class="px-4 py-3">Nama Calon Siswa</th>
+                                                <th class="px-4 py-3">NISN</th>
+                                                <th class="px-4 py-3 text-center w-16">JK</th>
+                                                <th class="px-4 py-3">Asal Sekolah</th>
+                                                <th class="px-4 py-3 text-center w-36">Status PPDB</th>
+                                                <th class="px-4 py-3 text-center w-24">Aksi Admin</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="bodyTabelPPDB"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    renderTabelPPDB(result.data);
+                } else {
+                    alert("Gagal memuat data PPDB: " + result.message);
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Gagal menghubungkan ke server PPDB.");
+            }
+        }
+
+        function jalankanLiveSearchPPDB() {
+            const keyword = document.getElementById('searchPPDB').value.toLowerCase().trim();
+            let dataHasil = window.allPPDBData;
+
+            if (keyword !== '') {
+                dataHasil = dataHasil.filter(s => String(s.nama).toLowerCase().includes(keyword));
+            }
+            renderTabelPPDB(dataHasil);
+        }
+
+        function renderTabelPPDB(arrayData) {
+            const tbody = document.getElementById('bodyTabelPPDB');
+            if (!tbody) return;
+
+            let rowsHtml = "";
+            arrayData.forEach((siswa, index) => {
+                let badgeClass = "bg-amber-100 text-amber-800 border-amber-200";
+                let tombolDaful = `
+                    <button id="btnDaful-${siswa.rowNumber}" onclick="eksekusiDaftarUlang(${siswa.rowNumber}, '${siswa.nama.replace(/'/g, "\\'")}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow transition cursor-pointer flex items-center gap-1">
+                        <i class="fa-solid fa-user-check"></i> Daful
+                    </button>
+                `;
+
+                if (siswa.status_daful === "SUDAH DAFTAR ULANG") {
+                    badgeClass = "bg-emerald-100 text-emerald-800 border-emerald-200 font-extrabold";
+                    tombolDaful = `
+                        <button class="bg-slate-100 text-slate-400 text-xs font-medium px-3 py-1.5 rounded-lg border border-slate-200 cursor-not-allowed" disabled>
+                            <i class="fa-solid fa-check"></i> Selesai
+                        </button>
+                    `;
+                }
+
+                rowsHtml += `
+                    <tr class="border-b border-slate-200 hover:bg-slate-50 transition-colors text-sm">
+                        <td class="px-4 py-3 text-center text-slate-500">${index + 1}</td>
+                        <td class="px-4 py-3 font-semibold text-slate-800">${siswa.nama}</td>
+                        <td class="px-4 py-3 text-slate-600 font-mono text-xs">${siswa.nisn || "-"}</td>
+                        <td class="px-4 py-3 text-center text-slate-600">${siswa.jk}</td>
+                        <td class="px-4 py-3 text-slate-600 text-xs">${siswa.asal_sekolah || "-"}</td>
+                        <td class="px-4 py-3 text-center">
+                            <span class="border px-2.5 py-0.5 rounded-full text-xs font-medium ${badgeClass}">
+                                ${siswa.status_daful}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3 text-center flex justify-center gap-1">
+                            ${tombolDaful}
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = rowsHtml || `<tr><td colspan="7" class="text-center py-12 text-slate-400 italic">Data pendaftar tidak ditemukan...</td></tr>`;
+        }
+
+        async function eksekusiDaftarUlang(rowNumber, namaSiswa) {
+            if (!confirm(`Apakah Anda yakin ingin memproses Daftar Ulang untuk "${namaSiswa}"?`)) return;
+
+            const btnTarget = document.getElementById(`btnDaful-${rowNumber}`);
+            if (btnTarget) {
+                if (btnTarget.disabled) return;
+                btnTarget.innerText = "Locking...";
+                btnTarget.disabled = true;
+                btnTarget.className = "bg-slate-400 text-white text-xs font-bold px-3 py-1.5 rounded-lg cursor-not-allowed flex items-center gap-1";
+            }
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: new URLSearchParams({ action: "prosesDaful", rowNumber: rowNumber }),
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                });
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    alert(`Berhasil! ${namaSiswa} telah resmi masuk ke database induk Buku Induk.`);
+                    bukaDataSiswaPPDB();
+                } else {
+                    alert("Gagal: " + result.message);
+                    bukaDataSiswaPPDB();
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Kesalahan koneksi internet.");
+                bukaDataSiswaPPDB();
+            }
+        }
+
+        // --- 5. MANAJEMEN ROMBEL DINAMIS + FILTER ANTI DUPLIKAT ---
         async function bukaMenuRombel() {
             document.getElementById('currentMenuTitle').innerText = "Menu Siswa - Manajemen Rombongan Belajar (Rombel)";
             
-            // Tampilkan struktur halaman utama Rombel dengan form pembuatan kelas
             document.getElementById('contentArea').innerHTML = `
                 <div class="space-y-6">
                     <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
@@ -485,7 +513,7 @@
                             </div>
                             <div class="flex-1 min-w-[200px]">
                                 <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nama Rombel / Kelas</label>
-                                <input type="text" id="rombelNama" placeholder="Contoh: 10-1A atau 10-B" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+                                <input type="text" id="rombelNama" placeholder="Contoh: 10-1A atau 10-1B" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-emerald-500">
                             </div>
                             <button type="submit" id="btnBuatRombel" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2 rounded-lg text-sm transition shadow cursor-pointer">
                                 <i class="fa-solid fa-plus mr-1"></i> Create Rombel
@@ -503,15 +531,17 @@
                 </div>
             `;
 
-            // Daftarkan aksi submit form pembuatan Rombel Baru
             document.getElementById('formBuatRombel').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const btn = document.getElementById('btnBuatRombel');
+                if (btn.disabled || btn.innerText === "Memproses...") return;
+
                 const tingkat = document.getElementById('rombelTingkat').value;
                 const nama = document.getElementById('rombelNama').value.trim();
 
                 btn.innerText = "Memproses...";
                 btn.disabled = true;
+                btn.className = "bg-slate-400 text-white font-bold px-5 py-2 rounded-lg text-sm cursor-not-allowed";
 
                 try {
                     const response = await fetch(API_URL, {
@@ -523,32 +553,29 @@
 
                     if (result.status === "success") {
                         alert(`Alhamdulillah, Rombel "${nama}" berhasil diciptakan!`);
-                        loadDaftarKartuRombel(); // Muat ulang kartu kelas
+                        loadDaftarKartuRombel();
                         document.getElementById('rombelNama').value = "";
                     } else {
                         alert("Gagal: " + result.message);
                     }
                 } catch (err) {
                     console.error(err);
-                    alert("Masalah koneksi saat membuat rombel.");
                 } finally {
                     btn.innerHTML = `<i class="fa-solid fa-plus mr-1"></i> Create Rombel`;
                     btn.disabled = false;
+                    btn.className = "bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2 rounded-lg text-sm transition shadow cursor-pointer";
                 }
             });
 
-            // Jalankan penarikan kartu kelas pertama kali
             loadDaftarKartuRombel();
         }
 
-        // --- 9. FUNGSI PENARIK & PENYUSUN KARTU KELAS (DARI TAB MASTER_ROMBEL) ---
         async function loadDaftarKartuRombel() {
             const container = document.getElementById('containerRombelCard');
             const loader = document.getElementById('loadingRombelCard');
             if (!container) return;
 
             try {
-                // Ambil master rombel dan master data siswa untuk menghitung jumlah siswa per kelas
                 const resRombel = await fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: "ambilMasterRombel" }), headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
                 const dataRombel = await resRombel.json();
 
@@ -557,11 +584,8 @@
 
                 if (dataRombel.status === "success" && dataSiswa.status === "success") {
                     let cardsHtml = "";
-                    
                     dataRombel.data.forEach(rombel => {
-                        // Hitung jumlah siswa yang memiliki string kelas COCOK dengan nama rombel ini
                         const jumlahSiswa = dataSiswa.data.filter(s => String(s.kelas).trim() === String(rombel.nama).trim()).length;
-
                         cardsHtml += `
                             <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition flex flex-col justify-between">
                                 <div>
@@ -569,29 +593,27 @@
                                     <h5 class="text-xl font-black text-slate-800 mt-2 tracking-tight">${rombel.nama}</h5>
                                     <p class="text-xs text-slate-500 mt-1"><i class="fa-solid fa-graduation-cap mr-1"></i> ${jumlahSiswa} Siswa Terdaftar</p>
                                 </div>
-                                <button onclick="bukaIsiRombel('${rombel.nama}', '${rombel.tingkat}')" class="w-full bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 font-bold text-xs py-2 rounded-lg transition mt-4 border border-slate-200 hover:border-emerald-300 cursor-pointer text-center">
+                                <button onclick="bukaIsiRombel('${rombel.nama}', '${rombel.tingkat}')" class="w-full bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 font-bold text-xs py-2 rounded-lg transition mt-4 border border-slate-200 hover:border-emerald-300 cursor-pointer text-center font-medium">
                                     <i class="fa-solid fa-folder-open mr-1"></i> Buka Rombel
                                 </button>
                             </div>
                         `;
                     });
-
                     if (loader) loader.style.display = 'none';
-                    container.innerHTML = cardsHtml || `<div class="col-span-full bg-slate-50 p-6 rounded-lg text-center border-2 border-dashed border-slate-200 text-slate-400 italic text-sm">Belum ada rombel yang dibuat. Silakan isi form di atas, Bang!</div>`;
+                    container.innerHTML = cardsHtml || `<div class="col-span-full bg-slate-50 p-6 rounded-lg text-center border-2 border-dashed border-slate-200 text-slate-400 italic text-sm">Belum ada rombel yang dibuat.</div>`;
                 }
             } catch (err) {
                 console.error(err);
-                container.innerHTML = `<p class="text-rose-500 text-xs">Gagal memuat visualisasi kartu kelas.</p>`;
             }
         }
 
-        // --- 10. FUNGSI MEMBUKA ISI ROMBEL & MENAMBAH SISWA BELUM PUNYA KELAS ---
+        // --- 6. DETAIL ISI ROMBEL + LIVE SEARCH ANTREAN ---
         async function bukaIsiRombel(namaRombel, tingkat) {
             document.getElementById('currentMenuTitle').innerText = `Rombel ${namaRombel} - Detail Anggota Kelas`;
 
             document.getElementById('contentArea').innerHTML = `
                 <div class="space-y-6">
-                    <button onclick="bukaMenuRombel();" class="text-xs font-bold text-emerald-800 bg-white border border-slate-200 px-3 py-1.5 rounded-lg shadow-sm hover:bg-slate-50 cursor-pointer mb-2">
+                    <button onclick="bukaMenuRombel();" class="text-xs font-bold text-emerald-800 bg-white border border-slate-200 px-3 py-1.5 rounded-lg shadow-sm hover:bg-slate-50 cursor-pointer mb-2 font-medium">
                         <i class="fa-solid fa-arrow-left mr-1"></i> Kembali ke Daftar Rombel
                     </button>
 
@@ -617,26 +639,30 @@
                         </div>
 
                         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden h-fit">
-                            <div class="p-4 bg-blue-50 border-b border-blue-200">
-                                <h4 class="text-xs font-bold text-blue-800 uppercase flex items-center gap-1"><i class="fa-solid fa-user-plus"></i> + Tambah Siswa Baru</h4>
-                                <p class="text-[10px] text-blue-600 italic mt-0.5">Daftar siswa tingkat ${tingkat} yang belum masuk kelas pecahan</p>
+                            <div class="p-4 bg-blue-50 border-b border-blue-200 space-y-3">
+                                <div>
+                                    <h4 class="text-xs font-bold text-blue-800 uppercase flex items-center gap-1"><i class="fa-solid fa-user-plus"></i> + Tambah Siswa Baru</h4>
+                                    <p class="text-[10px] text-blue-600 italic mt-0.5">Siswa jenjang ${tingkat} yang belum terbagi kelas</p>
+                                </div>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-2.5 text-slate-400">
+                                        <i class="fa-solid fa-magnifying-glass text-[10px]"></i>
+                                    </span>
+                                    <input type="text" id="searchAntreanRombel" oninput="jalankanSearchAntreanRombel('${namaRombel}', '${tingkat}')" placeholder="Ketik nama anak di sini..." class="w-full pl-7 pr-3 py-1.5 border border-blue-200 rounded-md text-xs outline-none bg-white focus:ring-2 focus:ring-blue-500">
+                                </div>
                             </div>
-                            <div class="p-2 max-h-[400px] overflow-y-auto space-y-2" id="boxSiswaKosong">
+                            <div class="p-2 max-h-[350px] overflow-y-auto space-y-2" id="boxSiswaKosong">
                                 <p class="text-xs text-slate-400 italic p-4 text-center">Sedang melacak data siswa...</p>
                             </div>
                         </div>
                     </div>
                 </div>
             `;
-
-            // Muat data anggota kelas dan daftar antrean siswa kosong
             loadDetailSiswaRombel(namaRombel, tingkat);
         }
 
-        // --- 11. LOGIKA RENDER DATA ANGGOTA KELAS & ANTREAN SISWA KOSONG ---
         async function loadDetailSiswaRombel(namaRombel, tingkat) {
             try {
-                // 1. Ambil seluruh database data_siswa
                 const response = await fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: "ambilDataSiswaAktif" }), headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
                 const result = await response.json();
 
@@ -644,7 +670,6 @@
                     let htmlAnggota = "";
                     let counter = 0;
 
-                    // Filter siswa yang kolom kelasnya SAMA DENGAN nama rombel ini
                     result.data.forEach(siswa => {
                         if (String(siswa.kelas).trim() === String(namaRombel).trim()) {
                             counter++;
@@ -654,7 +679,7 @@
                                     <td class="px-4 py-2 font-medium text-slate-800">${siswa.nama}</td>
                                     <td class="px-4 py-2 font-mono text-slate-500 text-xs">${siswa.nisn}</td>
                                     <td class="px-4 py-2 text-center">
-                                        <button onclick="pindahkanSiswaKeRombel(${siswa.rowNumber}, '${tingkat}', '${namaRombel}', '${siswa.nama.replace(/'/g, "\\'")}')" class="text-rose-600 hover:text-white border border-rose-300 hover:bg-rose-600 text-[10px] font-bold px-2 py-1 rounded transition cursor-pointer">
+                                        <button id="btnKeluar-${siswa.rowNumber}" onclick="pindahkanSiswaKeRombel(${siswa.rowNumber}, '${tingkat}', '${namaRombel}', '${siswa.nama.replace(/'/g, "\\'")}', true)" class="text-rose-600 hover:text-white border border-rose-300 hover:bg-rose-600 text-[10px] font-bold px-2 py-1 rounded transition cursor-pointer">
                                             Keluarkan
                                         </button>
                                     </td>
@@ -664,58 +689,68 @@
                     });
 
                     document.getElementById('countAnggota').innerText = `${counter} Anak`;
-                    document.getElementById('bodyAnggotaRombel').innerHTML = htmlAnggota || `<tr><td colspan="4" class="text-center py-8 text-slate-400 italic">Rombel ini masih kosong, silakan klik tombol tambah di bilah kanan, Bang!</td></tr>`;
+                    document.getElementById('bodyAnggotaRombel').innerHTML = htmlAnggota || `<tr><td colspan="4" class="text-center py-8 text-slate-400 italic">Rombel ini masih kosong...</td></tr>`;
 
-                    // 2. Ambil antrean pendaftar yang belum punya rombel pecahan (memanggil Jalur J Apps Script)
-                    const resKosong = await fetch(API_URL, {
-                        method: 'POST',
-                        body: new URLSearchParams({ action: "ambilSiswaTanpaRombel", tingkat: tingkat }),
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-                    });
+                    const resKosong = await fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: "ambilSiswaTanpaRombel", tingkat: tingkat }), headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
                     const resultKosong = await resKosong.json();
 
-                    let htmlKosong = "";
-                    if (resultKosong.status === "success" && resultKosong.data.length > 0) {
-                        resultKosong.data.forEach(siswa => {
-                            htmlKosong += `
-                                <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 flex items-center justify-between gap-2 hover:border-blue-300 transition">
-                                    <div class="min-w-0 flex-1">
-                                        <p class="text-xs font-bold text-slate-800 truncate">${siswa.nama}</p>
-                                        <p class="text-[10px] text-slate-500 font-mono">NISN: ${siswa.nisn}</p>
-                                    </div>
-                                    <button onclick="pindahkanSiswaKeRombel(${siswa.rowNumber}, '${namaRombel}', '${namaRombel}', '${siswa.nama.replace(/'/g, "\\'")}')" class="bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold px-2 py-1.5 rounded transition shadow flex-shrink-0 cursor-pointer">
-                                        <i class="fa-solid fa-plus"></i> Masukkan
-                                    </button>
-                                </div>
-                            `;
-                        });
-                    } else {
-                        htmlKosong = `<p class="text-xs text-slate-400 italic p-6 text-center">Alhamdulillah, seluruh siswa tingkat ${tingkat} sudah memiliki kelas masing-masing!</p>`;
+                    if (resultKosong.status === "success") {
+                        window.allSiswaTanpaRombel = resultKosong.data;
+                        jalankanSearchAntreanRombel(namaRombel, tingkat);
                     }
-
-                    document.getElementById('boxSiswaKosong').innerHTML = htmlKosong;
                 }
             } catch (err) {
                 console.error(err);
             }
         }
 
-        // --- 12. FUNGSI JEMBATAN EKSEKUSI UPDATE BARIS KELAS DI GOOGLE SHEETS ---
-        async function pindahkanSiswaKeRombel(rowNumber, kelasTujuan, namaRombel, namaSiswa) {
+        function jalankanSearchAntreanRombel(namaRombel, tingkat) {
+            const box = document.getElementById('boxSiswaKosong');
+            const keyword = document.getElementById('searchAntreanRombel').value.toLowerCase().trim();
+            if (!box || !window.allSiswaTanpaRombel) return;
+
+            let dataTersaring = window.allSiswaTanpaRombel;
+            if (keyword !== '') {
+                dataTersaring = dataTersaring.filter(s => String(s.nama).toLowerCase().includes(keyword));
+            }
+
+            let htmlKosong = "";
+            dataTersaring.forEach(siswa => {
+                htmlKosong += `
+                    <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 flex items-center justify-between gap-2 hover:border-blue-300 transition">
+                        <div class="min-w-0 flex-1">
+                            <p class="text-xs font-bold text-slate-800 truncate">${siswa.nama}</p>
+                            <p class="text-[10px] text-slate-500 font-mono">NISN: ${siswa.nisn}</p>
+                        </div>
+                        <button id="btnMasuk-${siswa.rowNumber}" onclick="pindahkanSiswaKeRombel(${siswa.rowNumber}, '${namaRombel}', '${namaRombel}', '${siswa.nama.replace(/'/g, "\\'")}', false)" class="bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold px-2 py-1.5 rounded transition shadow flex-shrink-0 cursor-pointer">
+                            <i class="fa-solid fa-plus"></i> Masukkan
+                        </button>
+                    </div>
+                `;
+            });
+            box.innerHTML = htmlKosong || `<p class="text-xs text-slate-400 italic p-6 text-center">Siswa tidak ditemukan / sudah terbagi habis.</p>`;
+        }
+
+        async function pindahkanSiswaKeRombel(rowNumber, kelasTujuan, namaRombel, namaSiswa, isKeluarkan) {
+            const btnId = isKeluarkan ? `btnKeluar-${rowNumber}` : `btnMasuk-${rowNumber}`;
+            const btn = document.getElementById(btnId);
+            
+            if (btn) {
+                if (btn.disabled) return;
+                btn.innerText = "Locking...";
+                btn.disabled = true;
+                btn.className = "bg-slate-300 text-slate-500 text-[10px] font-bold px-2 py-1 rounded cursor-not-allowed";
+            }
+
             try {
                 const response = await fetch(API_URL, {
                     method: 'POST',
-                    body: new URLSearchParams({
-                        action: "updateRombel",
-                        rowNumber: rowNumber,
-                        kelasBaru: kelasTujuan
-                    }),
+                    body: new URLSearchParams({ action: "updateRombel", rowNumber: rowNumber, kelasBaru: kelasTujuan }),
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
                 });
                 const result = await response.json();
 
                 if (result.status === "success") {
-                    // Muat ulang isi komponen detail halaman rombel saat ini tanpa loading berat hancurkan halaman
                     loadDetailSiswaRombel(namaRombel, kelasTujuan === namaRombel ? namaRombel : kelasTujuan);
                 } else {
                     alert("Gagal memindahkan siswa: " + result.message);
