@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login SIM Madrasah - MA Wali Songo Lilbanat</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-gradient-to-br from-emerald-900 to-teal-800 flex items-center justify-center h-screen px-4">
+    <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm border-t-8 border-amber-500 text-center">
+        <h2 class="text-2xl font-bold text-emerald-800 tracking-wide">MASUK SISTEM</h2>
+        <p class="text-slate-500 text-sm mb-6">SIM MA Wali Songo Lilbanat</p>
+        
+        <form id="loginForm" class="space-y-4 text-left">
+            <div>
+                <label class="text-xs font-bold text-slate-600 uppercase block mb-1">Username</label>
+                <input type="text" id="username" placeholder="Masukkan username" required class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none transition">
+            </div>
+            <div>
+                <label class="text-xs font-bold text-slate-600 uppercase block mb-1">Password</label>
+                <input type="password" id="password" placeholder="Masukkan password" required class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none transition">
+            </div>
+            <button type="submit" id="btnLogin" class="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl hover:bg-emerald-700 shadow-md hover:shadow-lg transition mt-2">LOGIN</button>
+        </form>
+    </div>
+
+    <script>
+        // PENTING: TEMPEL URL WEB APP /EXEC ABANG DI BAWAH INI
+        const API_URL = "https://script.google.com/macros/s/AKfycbwNf6X1QPHHfFRc1mZoG1Tmzss39N026ldLGJDMLYg-Fxfi2moq2-xIuK7GpWmvp9tv/exec";
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnLogin');
+            btn.innerText = "Memeriksa Akun...";
+            btn.disabled = true;
+
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+
+            try {
+                // Mengirimkan data dengan action=login agar diarahkan ke Jalur A di Apps Script
+                const response = await fetch(`${API_URL}?action=login&username=${user}&password=${pass}`, { method: 'POST' });
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    // Menyimpan data sesi login sementara di browser pembuka
+                    localStorage.setItem('user_sim', JSON.stringify(result));
+                    
+                    Swal.fire({
+                        title: 'Login Berhasil!',
+                        text: `Selamat datang, ${result.nama}`,
+                        icon: 'success',
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.href = "dashboard.html"; // Lempar ke halaman dashboard
+                    });
+                } else {
+                    Swal.fire('Gagal Masuk!', 'Username atau Password salah, periksa tab USERS Anda.', 'error');
+                    btn.innerText = "LOGIN";
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                console.error(err);
+                Swal.fire('Error!', 'Gagal terhubung ke server Google Sheets.', 'error');
+                btn.innerText = "LOGIN";
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
