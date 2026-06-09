@@ -351,7 +351,7 @@
             renderTabelBukuInduk(dataHasil);
         }
 
-        function renderTabelBukuInduk(arrayData) {
+function renderTabelBukuInduk(arrayData) {
             const tbody = document.getElementById('bodyTabelSiswa');
             if (!tbody) return;
 
@@ -361,7 +361,7 @@
                     <tr class="border-b border-slate-200 hover:bg-slate-50 transition-colors text-sm">
                         <td class="px-4 py-3 text-center text-slate-500">${index + 1}</td>
                         <td class="px-4 py-3 font-semibold text-slate-800 flex items-center gap-2">
-                            <button onclick="bukaPopUpDetailSiswa('${siswa.nama.replace(/'/g, "\\'")}')" class="text-emerald-700 hover:text-amber-500 transition cursor-pointer" title="Klik untuk lihat berkas pendaftaran lengkap">
+                            <button onclick="bukaPopUpDetailSiswa('${siswa.id}')" class="text-emerald-700 hover:text-amber-500 transition cursor-pointer" title="Klik untuk lihat biodata lengkap">
                                 <i class="fa-solid fa-circle-user text-base"></i>
                             </button>
                             <span>${siswa.nama}</span>
@@ -378,84 +378,119 @@
             });
             tbody.innerHTML = rowsHtml || `<tr><td colspan="9" class="text-center py-12 text-slate-400 italic">Data siswa tidak ditemukan...</td></tr>`;
         }
-
-        // --- FUNGSI DINAMIS PEMBONGKAR DETAIL LINTAS TAB POP-UP ---
-        async function bukaPopUpDetailSiswa(namaSiswa) {
+        
+// --- FUNGSI POP-UP DETAIL MANDIRI LANGSUNG DARI DATA SISWA INDUK ---
+        function bukaPopUpDetailSiswa(idSiswa) {
             const modal = document.getElementById('modalDetailSiswa');
             const konten = document.getElementById('modalKontenDetail');
-            document.getElementById('modalHeaderNama').innerText = "Detail Pendaftaran: " + namaSiswa;
             
+            // Cari data objek siswa di dalam memori lokal website berdasarkan ID Sistem
+            const siswa = window.allSiswaData.find(s => String(s.id) === String(idSiswa));
+            
+            if (!siswa) {
+                alert("Data siswa tidak ditemukan di sistem.");
+                return;
+            }
+
+            document.getElementById('modalHeaderNama').innerText = "BIODATA BUKU INDUK SISWA: " + siswa.nama;
+            
+            // Susun tampilan resume biodata super lengkap ala Dapodik/Emis
             konten.innerHTML = `
-                <div class="flex flex-col items-center justify-center py-8">
-                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-700 mb-2"></div>
-                    <p class="text-xs text-slate-400 italic">Membuka arsip formulir online di tab PPDB...</p>
+                <div class="border-b border-slate-200 pb-3 mb-4">
+                    <h5 class="text-xs font-bold text-emerald-800 uppercase tracking-wider"><i class="fa-solid fa-user-graduate mr-1"></i> Identitas Pribadi Siswa</h5>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">ID Sistem / Rombel</p>
+                        <p class="font-bold text-slate-800 text-sm mt-0.5">${siswa.id} / <span class="text-blue-600">${siswa.kelas}</span></p>
+                    </div>
+                    <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">Nomor NISN</p>
+                        <p class="font-mono font-bold text-slate-700 text-sm mt-0.5">${siswa.nisn}</p>
+                    </div>
+                    <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">Nomor NISM</p>
+                        <p class="font-mono font-bold text-slate-700 text-sm mt-0.5">${siswa.nism}</p>
+                    </div>
+                    <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">Nomor NIK Siswa</p>
+                        <p class="font-mono text-slate-700 text-xs mt-0.5">${siswa.nik || "-"}</p>
+                    </div>
+                    <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">Tempat, Tanggal Lahir</p>
+                        <p class="font-medium text-slate-700 text-xs mt-0.5">${siswa.tempat_lahir}, ${siswa.tanggal_lahir}</p>
+                    </div>
+                    <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">Jenis Kelamin</p>
+                        <p class="font-medium text-slate-700 text-xs mt-0.5">${siswa.jk}</p>
+                    </div>
+                    <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 col-span-1 md:col-span-3">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">Sekolah Asal SMP/MTs</p>
+                        <p class="font-bold text-slate-700 text-xs mt-0.5">${siswa.sekolah_asal || "-"}</p>
+                    </div>
+                </div>
+
+                <div class="border-b border-slate-200 pb-3 pt-2 mb-4">
+                    <h5 class="text-xs font-bold text-emerald-800 uppercase tracking-wider"><i class="fa-solid fa-users-rectangle mr-1"></i> Data Hubungan Keluarga & Orang Tua</h5>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">Nama Ayah Kandung</p>
+                        <p class="font-bold text-slate-800 text-xs mt-0.5">${siswa.nama_ayah}</p>
+                    </div>
+                    <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">Nama Ibu Kandung</p>
+                        <p class="font-bold text-slate-800 text-xs mt-0.5">${siswa.nama_ibu}</p>
+                    </div>
+                    <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">No. Telp/WhatsApp Ayah</p>
+                        <p class="text-slate-700 text-xs font-mono mt-0.5">${siswa.telp_ayah || "-"}</p>
+                    </div>
+                    <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">No. Telp/WhatsApp Ibu</p>
+                        <p class="text-slate-700 text-xs font-mono mt-0.5">${siswa.telp_ibu || "-"}</p>
+                    </div>
+                    <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 col-span-1 md:col-span-2">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">Nomor Kartu Keluarga (KK)</p>
+                        <p class="font-mono text-slate-700 text-xs mt-0.5">${siswa.no_kk || "-"}</p>
+                    </div>
+                </div>
+
+                <div class="border-b border-slate-200 pb-3 pt-2 mb-4">
+                    <h5 class="text-xs font-bold text-emerald-800 uppercase tracking-wider"><i class="fa-solid fa-map-location-dot mr-1"></i> Detail Alamat Tempat Tinggal</h5>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">Dusun</p>
+                        <p class="text-slate-700 font-medium text-xs mt-0.5">${siswa.dusun || "-"}</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">RT / RW</p>
+                        <p class="text-slate-700 font-medium text-xs mt-0.5">${siswa.rtrw || "-"}</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">Desa</p>
+                        <p class="text-slate-700 font-bold text-xs mt-0.5">${siswa.desa || "-"}</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">Kecamatan</p>
+                        <p class="text-slate-700 font-bold text-xs mt-0.5">${siswa.kecamatan || "-"}</p>
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <h5 class="text-xs font-bold text-emerald-800 uppercase tracking-wider mb-2"><i class="fa-solid fa-folder-open mr-1"></i> Unduh Dokumen Berkas Digital</h5>
+                    <div class="flex flex-wrap gap-2">
+                        <a href="${siswa.linkKK}" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-2 rounded-lg transition shadow-sm flex items-center gap-1 ${siswa.linkKK === '#' || !siswa.linkKK ? 'pointer-events-none opacity-40' : ''}">
+                            <i class="fa-solid fa-file-image"></i> Buka Berkas KK
+                        </a>
+                        <a href="${siswa.linkSKL}" target="_blank" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-3 py-2 rounded-lg transition shadow-sm flex items-center gap-1 ${siswa.linkSKL === '#' || !siswa.linkSKL ? 'pointer-events-none opacity-40' : ''}">
+                            <i class="fa-solid fa-file-pdf"></i> Buka Berkas SKL
+                        </a>
+                    </div>
                 </div>
             `;
             modal.classList.remove('hidden');
-
-            try {
-                // Tembak API ke Google Drive/Sheets untuk melacak baris pendaftaran lengkap siswa ini
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    body: new URLSearchParams({ action: "ambilDataPPDB" }),
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-                });
-                const result = await response.json();
-
-                if (result.status === "success") {
-                    // Tarik data mentah di baris PPDB
-                    const dataPendaftar = result.data.find(s => String(s.nama).trim().toLowerCase() === String(namaSiswa).trim().toLowerCase());
-                    
-                    if (dataPendaftar) {
-                        // Tampilkan data ke pop-up modal secara rapi memakai sistem grid
-                        konten.innerHTML = `
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
-                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Nama Lengkap</p>
-                                    <p class="font-bold text-slate-800 text-sm mt-0.5">${namaSiswa}</p>
-                                </div>
-                                <div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
-                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Asal Sekolah</p>
-                                    <p class="font-medium text-slate-700 text-sm mt-0.5">${dataPendaftar.asal_sekolah || "-"}</p>
-                                </div>
-                                <div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
-                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Nomor NISN Pribadi</p>
-                                    <p class="font-mono text-slate-700 text-sm mt-0.5">${dataPendaftar.nisn || "-"}</p>
-                                </div>
-                                <div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
-                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Nomor NIK KTP/KK</p>
-                                    <p class="font-mono text-slate-700 text-sm mt-0.5">${dataPendaftar.nik || "-"}</p>
-                                </div>
-                                <div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
-                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Jenis Kelamin</p>
-                                    <p class="font-medium text-slate-700 text-sm mt-0.5">${dataPendaftar.jk === "L" ? "Laki-Laki" : "Perempuan"}</p>
-                                </div>
-                                <div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
-                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tanggal Input Berkas</p>
-                                    <p class="text-slate-600 text-xs mt-0.5">${dataPendaftar.timestamp || "-"}</p>
-                                </div>
-                                <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 col-span-1 md:col-span-2">
-                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Status Kelulusan PPDB</p>
-                                    <p class="text-emerald-700 font-extrabold text-sm mt-0.5"><i class="fa-solid fa-circle-check mr-1"></i> VERIFIED - ${dataPendaftar.status_daful}</p>
-                                </div>
-                            </div>
-                            
-                            <div class="mt-4 p-4 bg-amber-50 rounded-xl border border-amber-200">
-                                <h5 class="text-xs font-bold text-amber-800 uppercase tracking-wider mb-2"><i class="fa-solid fa-file-pdf mr-1"></i> Berkas Upload Lampiran KK & SKL</h5>
-                                <p class="text-xs text-slate-600 italic">Gunakan link eksternal di bawah ini untuk mengunduh dokumen fisik siswa dari Google Drive Panitia:</p>
-                                <div class="flex flex-wrap gap-2 mt-3">
-                                    <span class="text-slate-400 italic text-xs">Arsip berkas terintegrasi di Drive Cloud Madrasah.</span>
-                                </div>
-                            </div>
-                        `;
-                    } else {
-                        konten.innerHTML = `<p class="text-center text-rose-500 py-6 italic text-xs">Maaf Bang, data formulir pendaftaran awal anak ini tidak ditemukan di tab PPDB. Kemungkinan data siswa aktif ini dimasukkan manual langsung ke Sheets.</p>`;
-                    }
-                }
-            } catch (err) {
-                console.error(err);
-                konten.innerHTML = `<p class="text-center text-rose-500 py-6 text-xs">Gagal memuat arsip.</p>`;
-            }
         }
 
         function tutupModalDetail(e) {
