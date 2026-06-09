@@ -21,7 +21,7 @@
                 <span class="ml-3">Dashboard</span>
             </a>
 
-            <div class="group">
+            <div id="menuSiswaGroup" class="group">
                 <button onclick="toggleMenu('menuSiswa')" class="w-full flex items-center px-6 py-3 text-emerald-100 hover:bg-emerald-800 transition-colors">
                     <i class="fa-solid fa-users w-6"></i>
                     <span class="ml-3 flex-1 text-left">Menu Siswa</span>
@@ -36,7 +36,7 @@
                 </div>
             </div>
 
-            <div class="group">
+            <div id="menuGuruGroup" class="group">
                 <button onclick="toggleMenu('menuGuru')" class="w-full flex items-center px-6 py-3 text-emerald-100 hover:bg-emerald-800 transition-colors">
                     <i class="fa-solid fa-chalkboard-user w-6"></i>
                     <span class="ml-3 flex-1 text-left">Guru & Tendik</span>
@@ -48,7 +48,7 @@
                 </div>
             </div>
 
-            <div class="group">
+            <div id="menuProgramGroup" class="group">
                 <button onclick="toggleMenu('menuProgram')" class="w-full flex items-center px-6 py-3 text-emerald-100 hover:bg-emerald-800 transition-colors">
                     <i class="fa-solid fa-clipboard-list w-6"></i>
                     <span class="ml-3 flex-1 text-left">Program</span>
@@ -59,6 +59,11 @@
                     <a href="#" class="block py-2 hover:text-amber-400">- Program Kesiswaan</a>
                 </div>
             </div>
+
+            <button onclick="logout()" class="w-full flex items-center px-6 py-3 mt-8 text-rose-300 hover:bg-rose-950 transition-colors text-left font-bold">
+                <i class="fa-solid fa-right-from-bracket w-6"></i>
+                <span class="ml-3">Keluar Sistem</span>
+            </button>
         </nav>
 
         <div class="p-4 bg-emerald-950 text-center text-[10px] text-emerald-500 uppercase tracking-tighter">
@@ -70,8 +75,8 @@
         <header class="bg-white h-16 shadow-sm flex items-center justify-between px-8">
             <h3 class="text-slate-600 font-semibold" id="currentMenuTitle">Halaman Utama</h3>
             <div class="flex items-center space-x-4">
-                <span class="text-sm text-slate-500 font-medium">Halo, Admin</span>
-                <div class="h-8 w-8 bg-amber-500 rounded-full flex items-center justify-center text-white font-bold">A</div>
+                <span id="userNama" class="text-sm text-slate-500 font-medium">Halo, Pengguna</span>
+                <div id="userInisial" class="h-8 w-8 bg-amber-500 rounded-full flex items-center justify-center text-white font-bold">?</div>
             </div>
         </header>
 
@@ -92,15 +97,39 @@
             </div>
             
             <div class="bg-white p-6 rounded-xl shadow-sm h-64 flex items-center justify-center border-2 border-dashed border-slate-200">
-                <p class="text-slate-400 italic">Pilih menu di samping untuk melihat data...</p>
+                <p class="text-slate-400 italic">Pilih menu di samping untuk mengelola administrasi...</p>
             </div>
         </div>
     </main>
 
     <script>
+        // --- PROTEKSI & KONTROL AKSES LOGIN ---
+        const userData = JSON.parse(localStorage.getItem('user_sim'));
+        
+        // Jika dicoba masuk langsung tanpa login, tendang balik ke login.html
+        if (!userData) {
+            window.location.href = "login.html";
+        } else {
+            // Ubah teks nama & jabatan di dashboard secara dinamis
+            document.getElementById('currentMenuTitle').innerText = "Dashboard - " + userData.jabatan;
+            document.getElementById('userNama').innerText = "Halo, " + userData.nama;
+            document.getElementById('userInisial').innerText = userData.nama.charAt(0).toUpperCase();
+
+            // Kunci Menu jika Peran-nya adalah TENDIK
+            if (userData.role === "TENDIK") {
+                document.getElementById('menuSiswaGroup').style.display = 'none'; // Sembunyikan Menu Siswa
+                document.getElementById('menuGuruGroup').style.display = 'none';  // Sembunyikan Menu Guru
+            }
+        }
+
         function toggleMenu(id) {
             const menu = document.getElementById(id);
             menu.classList.toggle('hidden');
+        }
+
+        function logout() {
+            localStorage.removeItem('user_sim');
+            window.location.href = "login.html";
         }
     </script>
 </body>
