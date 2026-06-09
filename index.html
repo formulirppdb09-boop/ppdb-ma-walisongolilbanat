@@ -16,12 +16,44 @@
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased">
 
-    <header class="bg-emerald-700 text-white py-12 px-4 text-center shadow-md">
-        <h1 class="text-2xl md:text-4xl font-bold tracking-wide">FORMULIR PPDB</h1>
-        <p class="text-lg mt-2 text-emerald-100 font-medium">MA WALI SONGO LILBANAT</p>
-        <p class="text-sm mt-1 text-emerald-200/80">Tahun Pelajaran 2026/2027</p>
-    </header>
+    <header class="relative text-white py-14 md:py-20 px-4 text-center shadow-lg overflow-hidden border-b-4 border-amber-500">
+        
+        <div class="absolute inset-0 z-0">
+            <img src="foto-sekolah.png" alt="Lingkungan MA Wali Songo Lilbanat" class="w-full h-full object-cover object-center filter blur-[1px] brightness-[0.4] scale-110">
+        }
+        </div>
+        
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-white/10 to-transparent z-1 pointer-events-none"></div>
 
+        <div class="relative z-10 max-w-5xl mx-auto space-y-4">
+            
+            <div class="flex items-center justify-center space-x-6 md:space-x-10 mb-6">
+                <img src="logo-kemenag.png" alt="Logo Kemenag" class="h-14 md:h-16 w-auto drop-shadow-md">
+                
+                <img src="logo-madrasah.png" alt="Logo MA Wali Songo Lilbanat" class="h-16 md:h-20 w-auto drop-shadow-md">
+            </div>
+
+            <div class="space-y-1">
+                <span class="inline-block bg-emerald-950/70 text-emerald-300 text-xs md:text-sm font-bold tracking-widest uppercase px-4 py-1.5 rounded-full border border-emerald-500/30">
+                    Penerimaan Peserta Didik Baru
+                </span>
+                <h1 class="text-3xl md:text-5xl font-black tracking-wide text-amber-400 drop-shadow-lg pt-2">
+                    FORMULIR ONLINE PPDB MANDIRI
+                </h1>
+                <p class="text-xl md:text-3xl font-black text-white tracking-widest pt-1 drop-shadow-md">
+                    MA WALI SONGO LILBANAT
+                </p>
+            </div>
+
+            <div class="flex items-center justify-center space-x-3 pt-3">
+                <span class="h-[1px] w-12 bg-emerald-500"></span>
+                <p class="text-sm md:text-lg text-emerald-100 tracking-widest font-bold uppercase drop-shadow">
+                    Tahun Pelajaran <span class="text-amber-400 font-extrabold">2026/2027</span> &bull; Terakreditasi
+                </p>
+                <span class="h-[1px] w-12 bg-emerald-500"></span>
+            </div>
+        </div>
+    </header>
     <main class="max-w-4xl mx-auto my-10 p-4 md:p-8 bg-white rounded-2xl shadow-sm border border-slate-200/80">
         
         <form id="ppdbForm" action="https://script.google.com/macros/s/AKfycbwNf6X1QPHHfFRc1mZoG1Tmzss39N026ldLGJDMLYg-Fxfi2moq2-xIuK7GpWmvp9tv/exec" method="POST" class="space-y-8">
