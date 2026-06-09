@@ -7,7 +7,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Gaya CSS Tambahan untuk Memastikan Kotak Pencarian Selalu Terbaca Alami */
         .kotak-cari {
             width: 100% !important;
             max-width: 320px !important;
@@ -121,6 +120,23 @@
         </div>
     </main>
 
+    <div id="modalDetailSiswa" onclick="tutupModalDetail(event)" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[85vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
+            <div class="bg-emerald-800 text-white p-4 flex justify-between items-center flex-shrink-0">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-address-card text-amber-400 text-lg"></i>
+                    <h3 class="font-bold text-base tracking-wide" id="modalHeaderNama">Detail Lengkap Calon Siswa</h3>
+                </div>
+                <button onclick="document.getElementById('modalDetailSiswa').classList.add('hidden')" class="text-white/80 hover:text-white hover:bg-emerald-900 h-8 w-8 rounded-full transition flex items-center justify-center cursor-pointer font-black">✕</button>
+            </div>
+            <div class="p-6 overflow-y-auto space-y-6 text-sm text-slate-700" id="modalKontenDetail">
+                </div>
+            <div class="bg-slate-50 p-3 border-t border-slate-100 flex justify-end flex-shrink-0">
+                <button onclick="document.getElementById('modalDetailSiswa').classList.add('hidden')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-4 py-2 rounded-lg text-xs transition cursor-pointer">Tutup Detail</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbwNf6X1QPHHfFRc1mZoG1Tmzss39N026ldLGJDMLYg-Fxfi2moq2-xIuK7GpWmvp9tv/exec";
 
@@ -233,7 +249,7 @@
             });
         }
 
-        // --- 3. MASTER DATA SISWA (BUKU INDUK) + LIVE SEARCH ---
+        // --- 3. MASTER DATA SISWA (BUKU INDUK) + LIVE SEARCH + POPUP ICON ---
         async function bukaMasterDataSiswa() {
             document.getElementById('currentMenuTitle').innerText = "Menu Siswa - Data Buku Induk Madrasah";
             
@@ -265,7 +281,6 @@
                                     <button onclick="setFilterKelas('11')" id="btnFilter-11" class="px-4 py-2 text-xs font-bold rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 transition cursor-pointer">Kelas 11</button>
                                     <button onclick="setFilterKelas('12')" id="btnFilter-12" class="px-4 py-2 text-xs font-bold rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 transition cursor-pointer">Kelas 12</button>
                                 </div>
-                                
                                 <div style="position: relative !important; width: 100% !important; max-width: 320px !important;">
                                     <span style="position: absolute !important; left: 12px !important; top: 10px !important; color: #94a3b8 !important;">
                                         <i class="fa-solid fa-magnifying-glass"></i>
@@ -345,7 +360,12 @@
                 rowsHtml += `
                     <tr class="border-b border-slate-200 hover:bg-slate-50 transition-colors text-sm">
                         <td class="px-4 py-3 text-center text-slate-500">${index + 1}</td>
-                        <td class="px-4 py-3 font-semibold text-slate-800">${siswa.nama}</td>
+                        <td class="px-4 py-3 font-semibold text-slate-800 flex items-center gap-2">
+                            <button onclick="bukaPopUpDetailSiswa('${siswa.nama.replace(/'/g, "\\'")}')" class="text-emerald-700 hover:text-amber-500 transition cursor-pointer" title="Klik untuk lihat berkas pendaftaran lengkap">
+                                <i class="fa-solid fa-circle-user text-base"></i>
+                            </button>
+                            <span>${siswa.nama}</span>
+                        </td>
                         <td class="px-4 py-3 text-slate-600 font-mono text-xs">${siswa.nisn}</td>
                         <td class="px-4 py-3 text-slate-600 font-mono text-xs">${siswa.nism}</td>
                         <td class="px-4 py-3 text-slate-600 text-xs">${siswa.tempat_lahir}, ${siswa.tanggal_lahir}</td>
@@ -357,6 +377,90 @@
                 `;
             });
             tbody.innerHTML = rowsHtml || `<tr><td colspan="9" class="text-center py-12 text-slate-400 italic">Data siswa tidak ditemukan...</td></tr>`;
+        }
+
+        // --- FUNGSI DINAMIS PEMBONGKAR DETAIL LINTAS TAB POP-UP ---
+        async function bukaPopUpDetailSiswa(namaSiswa) {
+            const modal = document.getElementById('modalDetailSiswa');
+            const konten = document.getElementById('modalKontenDetail');
+            document.getElementById('modalHeaderNama').innerText = "Detail Pendaftaran: " + namaSiswa;
+            
+            konten.innerHTML = `
+                <div class="flex flex-col items-center justify-center py-8">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-700 mb-2"></div>
+                    <p class="text-xs text-slate-400 italic">Membuka arsip formulir online di tab PPDB...</p>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+
+            try {
+                // Tembak API ke Google Drive/Sheets untuk melacak baris pendaftaran lengkap siswa ini
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: new URLSearchParams({ action: "ambilDataPPDB" }),
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                });
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    // Tarik data mentah di baris PPDB
+                    const dataPendaftar = result.data.find(s => String(s.nama).trim().toLowerCase() === String(namaSiswa).trim().toLowerCase());
+                    
+                    if (dataPendaftar) {
+                        // Tampilkan data ke pop-up modal secara rapi memakai sistem grid
+                        konten.innerHTML = `
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Nama Lengkap</p>
+                                    <p class="font-bold text-slate-800 text-sm mt-0.5">${namaSiswa}</p>
+                                </div>
+                                <div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Asal Sekolah</p>
+                                    <p class="font-medium text-slate-700 text-sm mt-0.5">${dataPendaftar.asal_sekolah || "-"}</p>
+                                </div>
+                                <div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Nomor NISN Pribadi</p>
+                                    <p class="font-mono text-slate-700 text-sm mt-0.5">${dataPendaftar.nisn || "-"}</p>
+                                </div>
+                                <div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Nomor NIK KTP/KK</p>
+                                    <p class="font-mono text-slate-700 text-sm mt-0.5">${dataPendaftar.nik || "-"}</p>
+                                </div>
+                                <div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Jenis Kelamin</p>
+                                    <p class="font-medium text-slate-700 text-sm mt-0.5">${dataPendaftar.jk === "L" ? "Laki-Laki" : "Perempuan"}</p>
+                                </div>
+                                <div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tanggal Input Berkas</p>
+                                    <p class="text-slate-600 text-xs mt-0.5">${dataPendaftar.timestamp || "-"}</p>
+                                </div>
+                                <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 col-span-1 md:col-span-2">
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Status Kelulusan PPDB</p>
+                                    <p class="text-emerald-700 font-extrabold text-sm mt-0.5"><i class="fa-solid fa-circle-check mr-1"></i> VERIFIED - ${dataPendaftar.status_daful}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4 p-4 bg-amber-50 rounded-xl border border-amber-200">
+                                <h5 class="text-xs font-bold text-amber-800 uppercase tracking-wider mb-2"><i class="fa-solid fa-file-pdf mr-1"></i> Berkas Upload Lampiran KK & SKL</h5>
+                                <p class="text-xs text-slate-600 italic">Gunakan link eksternal di bawah ini untuk mengunduh dokumen fisik siswa dari Google Drive Panitia:</p>
+                                <div class="flex flex-wrap gap-2 mt-3">
+                                    <span class="text-slate-400 italic text-xs">Arsip berkas terintegrasi di Drive Cloud Madrasah.</span>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        konten.innerHTML = `<p class="text-center text-rose-500 py-6 italic text-xs">Maaf Bang, data formulir pendaftaran awal anak ini tidak ditemukan di tab PPDB. Kemungkinan data siswa aktif ini dimasukkan manual langsung ke Sheets.</p>`;
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+                konten.innerHTML = `<p class="text-center text-rose-500 py-6 text-xs">Gagal memuat arsip.</p>`;
+            }
+        }
+
+        function tutupModalDetail(e) {
+            // Menutup pop-up jika background gelap di luar kotak putih di klik
+            document.getElementById('modalDetailSiswa').classList.add('hidden');
         }
 
         // --- 4. CALON SISWA PPDB + LIVE SEARCH + BUTTON LOCKER ---
@@ -661,7 +765,6 @@
                                     <h4 class="text-xs font-bold text-blue-800 uppercase flex items-center gap-1"><i class="fa-solid fa-user-plus"></i> + Tambah Siswa Baru</h4>
                                     <p class="text-[10px] text-blue-600 italic mt-0.5">Siswa jenjang ${tingkat} yang belum terbagi kelas</p>
                                 </div>
-                                
                                 <div style="position: relative !important; width: 100% !important;">
                                     <span style="position: absolute !important; left: 10px !important; top: 8px !important; color: #94a3b8 !important; font-size: 12px !important;">
                                         <i class="fa-solid fa-magnifying-glass"></i>
