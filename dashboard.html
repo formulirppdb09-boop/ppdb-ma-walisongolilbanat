@@ -379,12 +379,11 @@ function renderTabelBukuInduk(arrayData) {
             tbody.innerHTML = rowsHtml || `<tr><td colspan="9" class="text-center py-12 text-slate-400 italic">Data siswa tidak ditemukan...</td></tr>`;
         }
         
-// --- FUNGSI POP-UP DETAIL MANDIRI LANGSUNG DARI DATA SISWA INDUK ---
+// --- FUNGSI POP-UP DETAIL MANDIRI DENGAN DATA ALAMAT LENGKAP & NIK ORANG TUA ---
         function bukaPopUpDetailSiswa(idSiswa) {
             const modal = document.getElementById('modalDetailSiswa');
             const konten = document.getElementById('modalKontenDetail');
             
-            // Cari data objek siswa di dalam memori lokal website berdasarkan ID Sistem
             const siswa = window.allSiswaData.find(s => String(s.id) === String(idSiswa));
             
             if (!siswa) {
@@ -394,7 +393,6 @@ function renderTabelBukuInduk(arrayData) {
 
             document.getElementById('modalHeaderNama').innerText = "BIODATA BUKU INDUK SISWA: " + siswa.nama;
             
-            // Susun tampilan resume biodata super lengkap ala Dapodik/Emis
             konten.innerHTML = `
                 <div class="border-b border-slate-200 pb-3 mb-4">
                     <h5 class="text-xs font-bold text-emerald-800 uppercase tracking-wider"><i class="fa-solid fa-user-graduate mr-1"></i> Identitas Pribadi Siswa</h5>
@@ -443,12 +441,12 @@ function renderTabelBukuInduk(arrayData) {
                         <p class="font-bold text-slate-800 text-xs mt-0.5">${siswa.nama_ibu}</p>
                     </div>
                     <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase">Nik Ayah</p>
-                        <p class="text-slate-700 text-xs font-mono mt-0.5">${siswa.nik_ayah || "-"}</p>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">NIK Ayah Kandung</p>
+                        <p class="text-slate-700 text-xs font-mono font-bold mt-0.5">${siswa.nik_ayah || "-"}</p>
                     </div>
                     <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase">Nik Ibu</p>
-                        <p class="text-slate-700 text-xs font-mono mt-0.5">${siswa.nik_ibu || "-"}</p>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">NIK Ibu Kandung</p>
+                        <p class="text-slate-700 text-xs font-mono font-bold mt-0.5">${siswa.nik_ibu || "-"}</p>
                     </div>
                     <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 col-span-1 md:col-span-2">
                         <p class="text-[10px] font-bold text-slate-400 uppercase">Nomor Kartu Keluarga (KK)</p>
@@ -457,7 +455,7 @@ function renderTabelBukuInduk(arrayData) {
                 </div>
 
                 <div class="border-b border-slate-200 pb-3 pt-2 mb-4">
-                    <h5 class="text-xs font-bold text-emerald-800 uppercase tracking-wider"><i class="fa-solid fa-map-location-dot mr-1"></i> Detail Alamat Tempat Tinggal</h5>
+                    <h5 class="text-xs font-bold text-emerald-800 uppercase tracking-wider"><i class="fa-solid fa-map-location-dot mr-1"></i> Detail Alamat Tempat Tinggal Lengkap</h5>
                 </div>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
                     <div>
@@ -469,22 +467,34 @@ function renderTabelBukuInduk(arrayData) {
                         <p class="text-slate-700 font-medium text-xs mt-0.5">${siswa.rtrw || "-"}</p>
                     </div>
                     <div>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase">Desa</p>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">Desa / Kelurahan</p>
                         <p class="text-slate-700 font-bold text-xs mt-0.5">${siswa.desa || "-"}</p>
                     </div>
                     <div>
                         <p class="text-[10px] font-bold text-slate-400 uppercase">Kecamatan</p>
                         <p class="text-slate-700 font-bold text-xs mt-0.5">${siswa.kecamatan || "-"}</p>
                     </div>
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">Kabupaten / Kota</p>
+                        <p class="text-slate-700 font-bold text-xs mt-0.5">${siswa.kabupaten || "-"}</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">Provinsi</p>
+                        <p class="text-slate-700 font-bold text-xs mt-0.5">${siswa.provinsi || "-"}</p>
+                    </div>
+                    <div class="col-span-2">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">Kode Pos</p>
+                        <p class="text-slate-700 font-mono font-bold text-xs mt-0.5">${siswa.kode_pos || "-"}</p>
+                    </div>
                 </div>
 
-                <div class="pt-2">
+                <div class="pt-4">
                     <h5 class="text-xs font-bold text-emerald-800 uppercase tracking-wider mb-2"><i class="fa-solid fa-folder-open mr-1"></i> Unduh Dokumen Berkas Digital</h5>
                     <div class="flex flex-wrap gap-2">
-                        <a href="${siswa.linkKK}" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-2 rounded-lg transition shadow-sm flex items-center gap-1 ${siswa.linkKK === '#' || !siswa.linkKK ? 'pointer-events-none opacity-40' : ''}">
+                        <a href="${siswa.linkKK}" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-2 rounded-lg transition shadow-sm flex items-center gap-1 ${siswa.linkKK === '#' || !siswa.linkKK || siswa.linkKK === '-' ? 'pointer-events-none opacity-40' : ''}">
                             <i class="fa-solid fa-file-image"></i> Buka Berkas KK
                         </a>
-                        <a href="${siswa.linkSKL}" target="_blank" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-3 py-2 rounded-lg transition shadow-sm flex items-center gap-1 ${siswa.linkSKL === '#' || !siswa.linkSKL ? 'pointer-events-none opacity-40' : ''}">
+                        <a href="${siswa.linkSKL}" target="_blank" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-3 py-2 rounded-lg transition shadow-sm flex items-center gap-1 ${siswa.linkSKL === '#' || !siswa.linkSKL || siswa.linkSKL === '-' ? 'pointer-events-none opacity-40' : ''}">
                             <i class="fa-solid fa-file-pdf"></i> Buka Berkas SKL
                         </a>
                     </div>
