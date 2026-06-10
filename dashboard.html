@@ -379,7 +379,7 @@ function renderTabelBukuInduk(arrayData) {
             tbody.innerHTML = rowsHtml || `<tr><td colspan="9" class="text-center py-12 text-slate-400 italic">Data siswa tidak ditemukan...</td></tr>`;
         }
         
-// --- FUNGSI POP-UP DETAIL MANDIRI DENGAN DATA ALAMAT LENGKAP & NIK ORANG TUA ---
+// --- FUNGSI POP-UP DETAIL + TOMBOL CETAK PROFIL SISWA ---
         function bukaPopUpDetailSiswa(idSiswa) {
             const modal = document.getElementById('modalDetailSiswa');
             const konten = document.getElementById('modalKontenDetail');
@@ -394,8 +394,11 @@ function renderTabelBukuInduk(arrayData) {
             document.getElementById('modalHeaderNama').innerText = "BIODATA BUKU INDUK SISWA: " + siswa.nama;
             
             konten.innerHTML = `
-                <div class="border-b border-slate-200 pb-3 mb-4">
+                <div class="border-b border-slate-200 pb-3 mb-4 flex justify-between items-center">
                     <h5 class="text-xs font-bold text-emerald-800 uppercase tracking-wider"><i class="fa-solid fa-user-graduate mr-1"></i> Identitas Pribadi Siswa</h5>
+                    <button onclick="cetakProfilSiswaAktif('${siswa.id}')" class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition shadow-sm flex items-center gap-1 cursor-pointer">
+                        <i class="fa-solid fa-print"></i> Cetak Profil Siswa
+                    </button>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200">
@@ -448,10 +451,6 @@ function renderTabelBukuInduk(arrayData) {
                         <p class="text-[10px] font-bold text-slate-400 uppercase">NIK Ibu Kandung</p>
                         <p class="text-slate-700 text-xs font-mono font-bold mt-0.5">${siswa.nik_ibu || "-"}</p>
                     </div>
-                    <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 col-span-1 md:col-span-2">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase">Nomor Kartu Keluarga (KK)</p>
-                        <p class="font-mono text-slate-700 text-xs mt-0.5">${siswa.no_kk || "-"}</p>
-                    </div>
                 </div>
 
                 <div class="border-b border-slate-200 pb-3 pt-2 mb-4">
@@ -489,7 +488,7 @@ function renderTabelBukuInduk(arrayData) {
                 </div>
 
                 <div class="pt-4">
-                    <h5 class="text-xs font-bold text-emerald-800 uppercase tracking-wider mb-2"><i class="fa-solid fa-folder-open mr-1"></i> Unduh Dokumen Berkas Digital</h5>
+                    <h5 class="text-xs font-bold text-emerald-800 uppercase tracking-wider mb-2"><i class="fa-solid fa-folder-open mr-1"></i> Unduh Dokumen Berkas Original</h5>
                     <div class="flex flex-wrap gap-2">
                         <a href="${siswa.linkKK}" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-2 rounded-lg transition shadow-sm flex items-center gap-1 ${siswa.linkKK === '#' || !siswa.linkKK || siswa.linkKK === '-' ? 'pointer-events-none opacity-40' : ''}">
                             <i class="fa-solid fa-file-image"></i> Buka Berkas KK
@@ -925,6 +924,206 @@ function renderTabelBukuInduk(arrayData) {
                 console.error(err);
                 alert("Gagal berkomunikasi dengan database Sheets.");
             }
+        }
+        // --- FUNGSI PRINT-ENGINE PROFIL SISWA FORMAL INDUK ---
+        function cetakProfilSiswaAktif(idSiswa) {
+            const siswa = window.allSiswaData.find(s => String(s.id) === String(idSiswa));
+            if (!siswa) {
+                alert("Data siswa gagal diproses untuk cetak.");
+                return;
+            }
+
+            // Gabungkan data alamat lengkap siswa & orang tua
+            const alamatLengkap = `Dsn. ${siswa.dusun || '-'}, RT/RW: ${siswa.rtrw || '-'}, Desa ${siswa.desa || '-'}, Kec. ${siswa.kecamatan || '-'}, Kab. ${siswa.kabupaten || '-'}, Prov. ${siswa.provinsi || '-'} - ${siswa.kode_pos || '-'}`;
+
+            // Ambil tanggal hari ini secara otomatis format lokal Indonesia
+            const hariIni = new Date();
+            const opsiTanggal = { year: 'numeric', month: 'long', day: 'numeric' };
+            const tanggalFormatted = hariIni.toLocaleDateString('id-ID', opsiTanggal);
+
+            // Membuat jendela cetak baru (Print Window)
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Cetak Profil - ${siswa.nama}</title>
+                    <style>
+                        @page { size: A4; margin: 20mm; }
+                        body { font-family: 'Arial', sans-serif; color: #111; line-height: 1.5; font-size: 13px; }
+                        .judul { text-align: center; font-weight: bold; font-size: 15px; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 0.5px; border-b: 2px solid #000; padding-bottom: 5px; }
+                        .section-title { font-weight: bold; margin-top: 15px; margin-bottom: 5px; font-size: 13px; }
+                        table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+                        td { padding: 4px 5px; vertical-align: top; }
+                        .nomor { width: 4%; }
+                        .label-kolom { width: 32%; }
+                        .titik-dua { width: 2%; text-align: center; }
+                        .isi-data { width: 62%; }
+                        .sub-nomor { padding-left: 15px; width: 4%; }
+                        
+                        /* Layout Tanda Tangan & Foto Bawah */
+                        .footer-container { width: 100%; margin-top: 50px; display: table; }
+                        .footer-row { display: table-row; }
+                        .box-foto-kiri { display: table-cell; width: 40%; vertical-align: middle; padding-left: 30px; }
+                        .box-ttd-kanan { display: table-cell; width: 60%; text-align: center; vertical-align: top; }
+                        
+                        .bingkai-foto { width: 3cm; height: 4cm; border: 1px dashed #444; text-align: center; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #666; font-weight: bold; background-color: #fafafa; }
+                        
+                        @media print {
+                            .no-print { display: none; }
+                            body { margin: 0; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="no-print" style="background: #f1f5f9; padding: 10px; text-align: center; margin-bottom: 20px; border-radius: 6px; border: 1px solid #cbd5e1;">
+                        <button onclick="window.print()" style="background: #10b981; color: white; border: none; padding: 8px 16px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 12px;">Klik Disini / Tekan Ctrl+P Untuk Cetak</button>
+                    </div>
+
+                    <div class="judul">
+                        DATA DIRI PESERTA DIDIK MA WALI SONGO LILBANAT<br>
+                        TAHUN PELAJARAN AKADEMIK
+                    </div>
+
+                    <div class="section-title">I. SISWA</div>
+                    <table>
+                        <tr>
+                            <td class="nomor">1.</td>
+                            <td class="label-kolom">Nama Lengkap</td>
+                            <td class="titik-dua">:</td>
+                            <td class="isi-data" style="font-weight: bold;">${siswa.nama.toUpperCase()}</td>
+                        </tr>
+                        <tr>
+                            <td class="nomor">2.</td>
+                            <td class="label-kolom">NISM</td>
+                            <td class="titik-dua">:</td>
+                            <td class="isi-data">${siswa.nism || '-'}</td>
+                        </tr>
+                        <tr>
+                            <td class="nomor">3.</td>
+                            <td class="label-kolom">NISN</td>
+                            <td class="titik-dua">:</td>
+                            <td class="isi-data">${siswa.nisn}</td>
+                        </tr>
+                        <tr>
+                            <td class="nomor">4.</td>
+                            <td class="label-kolom">Jenis Kelamin</td>
+                            <td class="titik-dua">:</td>
+                            <td class="isi-data">${siswa.jk}</td>
+                        </tr>
+                        <tr>
+                            <td class="nomor">5.</td>
+                            <td class="label-kolom">Tempat dan Tanggal Lahir</td>
+                            <td class="titik-dua">:</td>
+                            <td class="isi-data">${siswa.tempat_lahir}, ${siswa.tanggal_lahir}</td>
+                        </tr>
+                        <tr>
+                            <td class="nomor">6.</td>
+                            <td class="label-kolom">Agama</td>
+                            <td class="titik-dua">:</td>
+                            <td class="isi-data">Islam</td>
+                        </tr>
+                        <tr>
+                            <td class="nomor">7.</td>
+                            <td class="label-kolom">Anak Ke</td>
+                            <td class="titik-dua">:</td>
+                            <td class="isi-data">-</td>
+                        </tr>
+                        <tr>
+                            <td class="nomor">8.</td>
+                            <td class="label-kolom">Status Anak Dalam Keluarga</td>
+                            <td class="titik-dua">:</td>
+                            <td class="isi-data">Anak Kandung</td>
+                        </tr>
+                        <tr>
+                            <td class="nomor">9.</td>
+                            <td class="label-kolom">Alamat Siswa</td>
+                            <td class="titik-dua">:</td>
+                            <td class="isi-data">${alamatLengkap}</td>
+                        </tr>
+                    </table>
+
+                    <div class="section-title" style="margin-top: 20px;">II. ORANG TUA</div>
+                    <table>
+                        <tr>
+                            <td class="nomor">1.</td>
+                            <td class="label-kolom" colspan="3">Nama Orang Tua Kandung</td>
+                        </tr>
+                        <tr>
+                            <td class="sub-nomor"></td>
+                            <td class="label-kolom">a. Ayah Kandung</td>
+                            <td class="titik-dua">:</td>
+                            <td class="isi-data">${siswa.nama_ayah}</td>
+                        </tr>
+                        <tr>
+                            <td class="sub-nomor"></td>
+                            <td class="label-kolom">b. Ibu Kandung</td>
+                            <td class="titik-dua">:</td>
+                            <td class="isi-data">${siswa.nama_ibu}</td>
+                        </tr>
+                        <tr>
+                            <td class="nomor">2.</td>
+                            <td class="label-kolom">Alamat Orang Tua</td>
+                            <td class="titik-dua">:</td>
+                            <td class="isi-data">${alamatLengkap}</td>
+                        </tr>
+                        <tr>
+                            <td class="nomor">3.</td>
+                            <td class="label-kolom" colspan="3">Pekerjaan Orang Tua</td>
+                        </tr>
+                        <tr>
+                            <td class="sub-nomor"></td>
+                            <td class="label-kolom">a. Ayah</td>
+                            <td class="titik-dua">:</td>
+                            <td class="isi-data">-</td>
+                        </tr>
+                        <tr>
+                            <td class="sub-nomor"></td>
+                            <td class="label-kolom">b. Ibu</td>
+                            <td class="titik-dua">:</td>
+                            <td class="isi-data">-</td>
+                        </tr>
+                        <tr>
+                            <td class="nomor">4.</td>
+                            <td class="label-kolom" colspan="3">Diterima di Madrasah Ini</td>
+                        </tr>
+                        <tr>
+                            <td class="sub-nomor"></td>
+                            <td class="label-kolom">a. Di Kelas</td>
+                            <td class="titik-dua">:</td>
+                            <td class="isi-data">${siswa.kelas}</td>
+                        </tr>
+                        <tr>
+                            <td class="sub-nomor"></td>
+                            <td class="label-kolom">b. Pada Tanggal</td>
+                            <td class="titik-dua">:</td>
+                            <td class="isi-data">${tanggalFormatted}</td>
+                        </tr>
+                        <tr>
+                            <td class="nomor">5.</td>
+                            <td class="label-kolom">Sekolah Asal (SMP/MTs)</td>
+                            <td class="titik-dua">:</td>
+                            <td class="isi-data">${siswa.sekolah_asal || '-'}</td>
+                        </tr>
+                    </table>
+
+                    <div class="footer-container">
+                        <div class="footer-row">
+                            <div class="box-foto-kiri">
+                                <div class="bingkai-foto">
+                                    PAS FOTO<br>3 x 4
+                                </div>
+                            </div>
+                            <div class="box-ttd-kanan">
+                                Situbondo, ${tanggalFormatted}<br>
+                                Kepala Madrasah,<br><br><br><br><br>
+                                <span style="font-weight: bold; text-decoration: underline;">Andi Hariyanto, Gr.</span>
+                            </div>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
         }
     </script>
 </body>
