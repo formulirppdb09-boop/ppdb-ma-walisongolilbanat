@@ -766,74 +766,54 @@
             pW.print();
         }
 
-        // --- 9. PRINT SURAT MUTASI KELUAR (LOG LURUS DIREKTORI SEHINGGA KOP SURAT PASTI MUNCUL) ---
-        function cetakSuratKeteranganMutasi(idSiswa) {
-            const siswa = window.rawMutasiData.find(s => String(s.id) === String(idSiswa));
-            if (!siswa) return;
-            const nomorSuratFinal = localStorage.getItem(`no_surat_${idSiswa}`) || `...../PPWS/YPPWS/MA.WS.bn-E/M/...../2026`;
-            const tapel = document.getElementById('filterTapelMutasi').value;
-            const tglFormatted = new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+        // --- FUNGSI UPDATE BARU: DOWNLOAD PDF OTOMATIS DARI GOOGLE DOCS TEMPLATE ---
+async function cetakSuratKeteranganMutasi(idSiswa) {
+    const siswa = window.rawMutasiData.find(s => String(s.id) === String(idSiswa));
+    if (!siswa) return;
+    
+    const nomorSuratFinal = localStorage.getItem(`no_surat_${idSiswa}`) || `...../PPWS/YPPWS/MA.WS.bn-E/M/...../2026`;
+    const tapel = document.getElementById('filterTapelMutasi').value;
+    const tglFormatted = new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
 
-            // Mengunci alamat domain asli repository tempat file HTML & Gambar berada agar tidak terkena bug 'about:blank'
-            const currentRepoBase = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
-            const URL_KOP_SURAT = `${currentRepoBase}/assets/KOP%20SURAT%20%20LUAR%20NEW.jpg`;
+    alert("Sistem sedang memproses pembuatan file PDF resmi bersama Kop & Watermark Madrasah, mohon tunggu sebentar...");
 
-            const pW = window.open('', '_blank');
-            pW.document.write(`<html><head><title>Surat Keterangan Pindah</title><style>
-                @page { size: A4; margin: 15mm 20mm; } 
-                body { font-family: 'Times New Roman'; font-size: 14px; line-height:1.6; color: #000; position: relative; background-color: #fff !important; } 
-                
-                /* FIX CONTAINER KOP SURAT ASLI MENGGUNAKAN DYNAMIC RAW LINK INTERNET */
-                .kop-wrapper { width: 100%; text-align: center; margin-bottom: 25px; background: transparent !important; }
-                .kop-gambar-asli { width: 100%; height: auto; display: block; max-height: 160px; object-fit: contain; margin: 0 auto; }
-                
-                /* WATERMARK LOGO BESAR DI TENGAH KERTAS */
-                .watermark { position: fixed; top: 52%; left: 50%; transform: translate(-50%, -50%); width: 420px; height: auto; opacity: 0.06; z-index: -1000; pointer-events: none; mix-blend-mode: multiply; }
-                
-                table { width: 100%; margin: 12px 0; } td { padding: 4px 0; vertical-align: top; } 
-                .l { width: 32%; } .t { width: 4%; text-align: center; }
-                
-                @media print {
-                    body { background-color: #fff !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-                    .kop-wrapper { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-                    .watermark { opacity: 0.06 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-                }
-            </style></head><body>
-                
-                <img class="watermark" src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Logo_Kementerian_Agama.png" alt="Watermark">
-
-                <div class="kop-wrapper"> 
-                    <img class="kop-gambar-asli" src="${URL_KOP_SURAT}" alt="Kop Surat MA Wali Songo Lilbanat">
-                </div>
-
-                <div style="text-align:center;font-weight:bold;font-size:15px;text-decoration:underline;">SURAT KETERANGAN PINDAH MADRASAH</div>
-                <div style="text-align:center;font-weight:bold;margin-bottom:30px;">Nomor: ${nomorSuratFinal}</div>
-                <p>Yang bertanda tangan di bawah ini, Kepala Madrasah Aliyah Wali Songo Lilbanat Situbondo, menerangkan dengan sebenarnya bahwa:</p>
-                <table>
-                    <tr><td class="l">1. Nama Lengkap</td><td class="t">:</td><td><strong>${siswa.nama.toUpperCase()}</strong></td></tr>
-                    <tr><td class="l">2. NISN / NISM</td><td class="t">:</td><td>${siswa.nisn} / ${siswa.nism || '-'}</td></tr>
-                    <tr><td class="l">3. Jenis Kelamin</td><td class="t">:</td><td>${siswa.jk}</td></tr>
-                    <tr><td class="l">4. Tempat, Tanggal Lahir</td><td class="t">:</td><td>${siswa.tempat_lahir}, ${siswa.tanggal_lahir}</td></tr>
-                    <tr><td class="l">5. Agama</td><td class="t">:</td><td>${siswa.agama || 'Islam'}</td></tr>
-                    <tr><td class="l">6. Di Kelas Pindah</td><td class="t">:</td><td>Kelas ${siswa.kelas}</td></tr>
-                    <tr><td class="l">7. Orang Tua Kandung</td><td class="t">:</td><td>Ayah: ${siswa.nama_ayah} <br> Ibu: ${siswa.nama_ibu}</td></tr>
-                </table>
-                <p>Telah mengajukan permohonan mutasi pindah keluar dari Madrasah Aliyah Wali Songo Lilbanat Situbondo menuju ke:</p>
-                <table>
-                    <tr><td class="l">Sekolah Tujuan</td><td class="t">:</td><td><strong>${siswa.sekolah_tujuan.toUpperCase()}</strong></td></tr>
-                    <tr><td class="l">Tahun Pelajaran</td><td class="t">:</td><td>${tapel}</td></tr>
-                    <tr><td class="l">Tanggal Efektif Keluar</td><td class="t">:</td><td>${siswa.tgl_mutasi || '-'}</td></tr>
-                </table>
-                <p>Demikian surat keterangan ini dibuat untuk dipergunakan sebagaimana mestinya.</p>
-                <div style="margin-top:50px;width:100%;display:flex;justify-content:flex-end;">
-                    <div style="text-align:center;width:50%;">Situbondo, ${tglFormatted}<br>Kepala Madrasah,<br><br><br><br><br><strong><u>Andi Hariyanto, Gr.</u></strong></div>
-                </div>
-            </body></html>`);
-            pW.document.close();
-            pW.print();
+    try {
+        // Tembak data langsung ke Apps Script Google Drive
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            body: new URLSearchParams({
+                action: "cetakMutasiPDF", // pastikan action ini di-route ke fungsi code.gs baru kita
+                id_siswa: idSiswa,
+                no_surat: nomorSuratFinal,
+                sekolah_tujuan: siswa.sekolah_tujuan || "-",
+                tgl_mutasi: siswa.tgl_mutasi || tglFormatted,
+                tapel: tapel
+            }),
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        });
+        
+        const res = await response.json();
+        if (res.status === "success") {
+            // Trik jitu mendownload file PDF byte blob hasil cetak Google Drive langsung dari browser
+            const byteCharacters = atob(res.pdf_base64);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            const blob = new Blob([byteArray], {type: 'application/pdf'});
+            
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = res.nama_file;
+            link.click();
+        } else {
+            alert("Gagal memproses dokumen: " + res.message);
         }
-
-        function tutupModalDetail(e) { document.getElementById('modalDetailSiswa').classList.add('hidden'); }
+    } catch (err) {
+        alert("Eror koneksi saat membuat PDF: " + err.toString());
+    }
+}
     </script>
 </body>
 </html>
