@@ -297,7 +297,7 @@
 
         function jalankanLiveSearchBukuInduk() {
             const keyword = document.getElementById('searchBukuInduk').value.toLowerCase().trim();
-            let dataHasil = window.allShoverIndukMasterData || window.allSiswaIndukMasterData;
+            let dataHasil = window.allSiswaIndukMasterData;
             if (window.currentFilterKelas !== 'SEMUA') dataHasil = dataHasil.filter(s => String(s.kelas).startsWith(window.currentFilterKelas));
             if (keyword !== '') dataHasil = dataHasil.filter(s => String(s.nama).toLowerCase().includes(keyword) || String(s.nisn).includes(keyword));
             
@@ -325,7 +325,7 @@
             tbody.innerHTML = rowsHtml || `<tr><td colspan="7" class="text-center py-12 text-slate-400 italic">Data siswa tidak ditemukan...</td></tr>`;
         }
 
-        // --- 4. FUNGSI POP-UP DETAIL SISWA INDUK ---
+        // --- 4. FUNGSI POP-UP DETAIL SISWA INDUK (PENGEMBALIAN KOLOM LENGKAP) ---
         function bukaPopUpDetailSiswa(idSiswa) {
             const modal = document.getElementById('modalDetailSiswa');
             const konten = document.getElementById('modalKontenDetail');
@@ -355,8 +355,11 @@
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3 bg-slate-50 p-3 rounded-xl border text-xs">
                     <div><p class="text-[10px] font-bold text-slate-400 uppercase">Dusun</p><p class="text-slate-700 font-medium mt-0.5">${siswa.dusun || "-"}</p></div>
                     <div><p class="text-[10px] font-bold text-slate-400 uppercase">RT / RW</p><p class="text-slate-700 font-medium mt-0.5">${siswa.rtrw || "-"}</p></div>
-                    <div><p class="text-[10px] font-bold text-slate-400 uppercase">Desa</p><p class="text-slate-700 font-bold mt-0.5">${siswa.desa || "-"}</p></div>
+                    <div><p class="text-[10px] font-bold text-slate-400 uppercase">Desa / Kelurahan</p><p class="text-slate-700 font-bold mt-0.5">${siswa.desa || "-"}</p></div>
                     <div><p class="text-[10px] font-bold text-slate-400 uppercase">Kecamatan</p><p class="text-slate-700 font-bold mt-0.5">${siswa.kecamatan || "-"}</p></div>
+                    <div><p class="text-[10px] font-bold text-slate-400 uppercase">Kabupaten</p><p class="text-slate-700 font-bold mt-0.5">${siswa.kabupaten || "-"}</p></div>
+                    <div><p class="text-[10px] font-bold text-slate-400 uppercase">Provinsi</p><p class="text-slate-700 font-bold mt-0.5">${siswa.provinsi || "-"}</p></div>
+                    <div class="col-span-2"><p class="text-[10px] font-bold text-slate-400 uppercase">Kode Pos</p><p class="text-slate-700 font-bold mt-0.5">${siswa.kode_pos || "-"}</p></div>
                 </div>`;
             modal.classList.remove('hidden');
         }
@@ -746,16 +749,23 @@
             });
         }
 
-        // --- 8. PRINT PROFIL SISWA ---
+        // --- 8. PRINT PROFIL SISWA (INPUT TANGGAL MANUAL & BEBAS TULISAN CETAK DOKUMEN) ---
         function cetakProfilSiswaAktif(idSiswa) {
             const siswa = window.allSiswaIndukMasterData.find(s => String(s.id) === String(idSiswa));
             if (!siswa) return;
+
+            // Fitur input tanggal ttd manual sesuai permintaan Abang
+            const tanggalInputManual = prompt("Masukkan tanggal penandatanganan buku induk:\n(Contoh: 12 Juni 2026)", "");
+            if (tanggalInputManual === null) return; // Jika klik batal
+            const tglFix = tanggalInputManual.trim() !== "" ? tanggalInputManual : new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+
             const alamat = `Dsn. ${siswa.dusun || '-'}, RT/RW: ${siswa.rtrw || '-'}, Desa ${siswa.desa || '-'}, Kec. ${siswa.kecamatan || '-'}, Kab. ${siswa.kabupaten || '-'}, Prov. ${siswa.provinsi || '-'} - ${siswa.kode_pos || '-'}`;
-            const tglFormatted = new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
             
             const pW = window.open('', '_blank');
-            pW.document.write(`<html><head><title>Cetak Profil - ${siswa.nama}</title><style>@page { size: A4; margin: 20mm; } body { font-family: Arial; font-size: 13px; } .judul { text-align: center; font-weight: bold; font-size: 15px; margin-bottom: 25px; border-bottom: 2px solid #000; padding-bottom: 5px; } table { width: 100%; margin-bottom: 10px; } td { padding: 4px; vertical-align: top; } .nomor { width: 4%; } .label-kolom { width: 32%; } .titik-dua { width: 2%; text-align: center; }</style></head><body><div style="text-align:center;margin-bottom:15px;" class="no-print"><button onclick="window.print()" style="background:#10b981;color:white;border:none;padding:8px 16px;font-weight:bold;border-radius:4px;cursor:pointer;">Cetak Dokumen</button></div><div class="judul">DATA DIRI PESERTA DIDIK MA WALI SONGO LILBANAT</div><strong>I. SISWA</strong><table><tr><td class="nomor">1.</td><td class="label-kolom">Nama Lengkap</td><td class="titik-dua">:</td><td><strong>${siswa.nama.toUpperCase()}</strong></td></tr><tr><td class="nomor">2.</td><td class="label-kolom">NISM</td><td class="titik-dua">:</td><td>${siswa.nism || '-'}</td></tr><tr><td class="nomor">3.</td><td class="label-kolom">NISN</td><td class="titik-dua">:</td><td>${siswa.nisn}</td></tr><tr><td class="nomor">4.</td><td class="label-kolom">Jenis Kelamin</td><td class="titik-dua">:</td><td>${siswa.jk}</td></tr><tr><td class="nomor">5.</td><td class="label-kolom">Tempat, Tanggal Lahir</td><td class="titik-dua">:</td><td>${siswa.tempat_lahir}, ${siswa.tanggal_lahir}</td></tr><tr><td class="nomor">6.</td><td class="label-kolom">Agama</td><td class="titik-dua">:</td><td>${siswa.agama || 'Islam'}</td></tr><tr><td class="nomor">7.</td><td class="label-kolom">Anak Ke</td><td class="titik-dua">:</td><td>${siswa.anak_ke || '-'}</td></tr><tr><td class="nomor">8.</td><td class="label-kolom">Status Anak</td><td class="titik-dua">:</td><td>${siswa.status_anak || 'Anak Kandung'}</td></tr><tr><td class="nomor">9.</td><td class="label-kolom">Alamat Siswa</td><td class="titik-dua">:</td><td>${alamat}</td></tr></table><br><strong>II. ORANG TUA</strong><table><tr><td class="nomor">1.</td><td class="label-kolom">Nama Ayah / Ibu</td><td class="titik-dua">:</td><td>${siswa.nama_ayah} / ${siswa.nama_ibu}</td></tr><tr><td class="nomor">2.</td><td class="label-kolom">Alamat Orang Tua</td><td class="titik-dua">:</td><td>${alamat}</td></tr><tr><td class="nomor">3.</td><td class="label-kolom">Pekerjaan Ayah / Ibu</td><td class="titik-dua">:</td><td>${siswa.pekerjaan_ayah || '-'} / ${siswa.pekerjaan_ibu || '-'}</td></tr><tr><td class="nomor">4.</td><td class="label-kolom">Masuk Di Kelas / Tanggal</td><td class="titik-dua">:</td><td>Kelas ${siswa.kelas} / ${tglFormatted}</td></tr><tr><td class="nomor">5.</td><td class="label-kolom">Sekolah Asal</td><td class="titik-dua">:</td><td>${siswa.sekolah_asal || '-'}</td></tr></table><div style="margin-top:40px;width:100%;display:flex;justify-content:space-between;"><div style="width:3cm;height:4cm;border:1px dashed #000;display:flex;align-items:center;justify-content:center;font-size:10px;">FOTO 3X4</div><div style="text-align:center;">Situbondo, ${tglFormatted}<br>Kepala Madrasah,<br><br><br><br><br><strong><u>Andi Hariyanto, Gr.</u></strong></div></div></body></html>`);
+            pW.document.write(`<html><head><title>Cetak Profil - ${siswa.nama}</title><style>@page { size: A4; margin: 20mm; } body { font-family: Arial; font-size: 13px; color: #000; } .judul { text-align: center; font-weight: bold; font-size: 15px; margin-bottom: 25px; border-bottom: 2px solid #000; padding-bottom: 5px; } table { width: 100%; margin-bottom: 10px; } td { padding: 4px; vertical-align: top; } .nomor { width: 4%; } .label-kolom { width: 32%; } .titik-dua { width: 2%; text-align: center; }</style></head><body><div class="judul">DATA DIRI PESERTA DIDIK MA WALI SONGO LILBANAT</div><strong>I. SISWA</strong><table><tr><td class="nomor">1.</td><td class="label-kolom">Nama Lengkap</td><td class="titik-dua">:</td><td><strong>${siswa.nama.toUpperCase()}</strong></td></tr><tr><td class="nomor">2.</td><td class="label-kolom">NISM</td><td class="titik-dua">:</td><td>${siswa.nism || '-'}</td></tr><tr><td class="nomor">3.</td><td class="label-kolom">NISN</td><td class="titik-dua">:</td><td>${siswa.nisn}</td></tr><tr><td class="nomor">4.</td><td class="label-kolom">Jenis Kelamin</td><td class="titik-dua">:</td><td>${siswa.jk}</td></tr><tr><td class="nomor">5.</td><td class="label-kolom">Tempat, Tanggal Lahir</td><td class="titik-dua">:</td><td>${siswa.tempat_lahir}, ${siswa.tanggal_lahir}</td></tr><tr><td class="nomor">6.</td><td class="label-kolom">Agama</td><td class="titik-dua">:</td><td>${siswa.agama || 'Islam'}</td></tr><tr><td class="nomor">7.</td><td class="label-kolom">Anak Ke</td><td class="titik-dua">:</td><td>${siswa.anak_ke || '-'}</td></tr><tr><td class="nomor">8.</td><td class="label-kolom">Status Anak</td><td class="titik-dua">:</td><td>${siswa.status_anak || 'Anak Kandung'}</td></tr><tr><td class="nomor">9.</td><td class="label-kolom">Alamat Siswa</td><td class="titik-dua">:</td><td>${alamat}</td></tr></table><br><strong>II. ORANG TUA</strong><table><tr><td class="nomor">1.</td><td class="label-kolom">Nama Ayah / Ibu</td><td class="titik-dua">:</td><td>${siswa.nama_ayah} / ${siswa.nama_ibu}</td></tr><tr><td class="nomor">2.</td><td class="label-kolom">Alamat Orang Tua</td><td class="titik-dua">:</td><td>${alamat}</td></tr><tr><td class="nomor">3.</td><td class="label-kolom">Pekerjaan Ayah / Ibu</td><td class="titik-dua">:</td><td>${siswa.pekerjaan_ayah || '-'} / ${siswa.pekerjaan_ibu || '-'}</td></tr><tr><td class="nomor">4.</td><td class="label-kolom">Masuk Di Kelas / Tanggal</td><td class="titik-dua">:</td><td>Kelas ${siswa.kelas} / ${tglFix}</td></tr><tr><td class="nomor">5.</td><td class="label-kolom">Sekolah Asal</td><td class="titik-dua">:</td><td>${siswa.sekolah_asal || '-'}</td></tr></table><div style="margin-top:40px;width:100%;display:flex;justify-content:space-between;"><div style="width:3cm;height:4cm;border:1px dashed #000;display:flex;align-items:center;justify-content:center;font-size:10px;">FOTO 3X4</div><div style="text-align:center;">Situbondo, ${tglFix}<br>Kepala Madrasah,<br><br><br><br><br><strong><u>Andi Hariyanto, Gr.</u></strong></div></div></body></html>`);
             pW.document.close();
+            // Langsung memicu jendela cetak printer asli bawan browser
+            pW.print();
         }
 
         // --- 9. PRINT SURAT MUTASI KELUAR ---
