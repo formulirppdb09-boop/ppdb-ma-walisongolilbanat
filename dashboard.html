@@ -231,60 +231,58 @@
                 });
                 const result = await response.json();
                 if (result.status === "success") {
+                    window.allSiswaData = result.data;
                     window.allSiswaIndukMasterData = result.data;
-                    renderStrukturBukuInduk();
+                    
+                    window.currentFilterKelas = 'SEMUA';
+                    const htmlMaster = `
+                        <div class="space-y-6">
+                            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col md:flex-row gap-4 justify-between items-center" style="display: flex !important;">
+                                <div class="flex flex-wrap gap-2 w-full md:w-auto">
+                                    <button onclick="setFilterKelas('SEMUA')" id="btnFilter-SEMUA" class="px-4 py-2 text-xs font-bold rounded-lg bg-emerald-700 text-white shadow transition cursor-pointer">All</button>
+                                    <button onclick="setFilterKelas('10')" id="btnFilter-10" class="px-4 py-2 text-xs font-bold rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 transition cursor-pointer">Kelas 10</button>
+                                    <button onclick="setFilterKelas('11')" id="btnFilter-11" class="px-4 py-2 text-xs font-bold rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 transition cursor-pointer">Kelas 11</button>
+                                    <button onclick="setFilterKelas('12')" id="btnFilter-12" class="px-4 py-2 text-xs font-bold rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 transition cursor-pointer">Kelas 12</button>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <div class="flex items-center gap-2">
+                                        <label class="text-xs font-bold text-slate-600 uppercase">Tahun Pelajaran:</label>
+                                        <select id="bukuIndukTapel" onchange="jalankanLiveSearchBukuInduk()" class="px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-bold text-slate-700 outline-none bg-white">
+                                            <option value="2025/2026">2025/2026</option>
+                                            <option value="2026/2027" selected>2026/2027</option>
+                                            <option value="2027/2028">2027/2028</option>
+                                        </select>
+                                    </div>
+                                    <div style="position: relative !important; width: 100% !important; max-width: 260px !important;">
+                                        <span style="position: absolute !important; left: 12px !important; top: 10px !important; color: #94a3b8 !important;"><i class="fa-solid fa-magnifying-glass"></i></span>
+                                        <input type="text" id="searchBukuInduk" oninput="jalankanLiveSearchBukuInduk()" placeholder="Ketik nama / nisn..." class="kotak-cari">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left border-collapse whitespace-nowrap">
+                                        <thead>
+                                            <tr class="bg-slate-100 text-slate-700 text-xs font-bold uppercase tracking-wider border-b border-slate-200">
+                                                <th class="px-4 py-3 text-center w-12">No</th>
+                                                <th class="px-4 py-3">Nama Lengkap</th>
+                                                <th class="px-4 py-3">NISN / NISM</th>
+                                                <th class="px-4 py-3">TTL</th>
+                                                <th class="px-4 py-3">Orang Tua</th>
+                                                <th class="px-4 py-3 text-center w-20">Kelas</th>
+                                                <th class="px-4 py-3 text-center w-24">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="bodyTabelSiswa"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('contentArea').innerHTML = htmlMaster;
+                    jalankanLiveSearchBukuInduk();
                 }
             } catch(e) { alert("Koneksi bermasalah."); }
-        }
-
-        function renderStrukturBukuInduk() {
-            window.currentFilterKelas = 'SEMUA';
-            const htmlMaster = `
-                <div class="space-y-6">
-                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col md:flex-row gap-4 justify-between items-center" style="display: flex !important;">
-                        <div class="flex flex-wrap gap-2 w-full md:w-auto">
-                            <button onclick="setFilterKelas('SEMUA')" id="btnFilter-SEMUA" class="px-4 py-2 text-xs font-bold rounded-lg bg-emerald-700 text-white shadow transition cursor-pointer">All</button>
-                            <button onclick="setFilterKelas('10')" id="btnFilter-10" class="px-4 py-2 text-xs font-bold rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 transition cursor-pointer">Kelas 10</button>
-                            <button onclick="setFilterKelas('11')" id="btnFilter-11" class="px-4 py-2 text-xs font-bold rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 transition cursor-pointer">Kelas 11</button>
-                            <button onclick="setFilterKelas('12')" id="btnFilter-12" class="px-4 py-2 text-xs font-bold rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 transition cursor-pointer">Kelas 12</button>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <div class="flex items-center gap-2">
-                                <label class="text-xs font-bold text-slate-600 uppercase">Tahun Pelajaran:</label>
-                                <select id="bukuIndukTapel" onchange="jalankanLiveSearchBukuInduk()" class="px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-bold text-slate-700 outline-none bg-white">
-                                    <option value="2025/2026">2025/2026</option>
-                                    <option value="2026/2027" selected>2026/2027</option>
-                                    <option value="2027/2028">2027/2028</option>
-                                </select>
-                            </div>
-                            <div style="position: relative !important; width: 100% !important; max-width: 260px !important;">
-                                <span style="position: absolute !important; left: 12px !important; top: 10px !important; color: #94a3b8 !important;"><i class="fa-solid fa-magnifying-glass"></i></span>
-                                <input type="text" id="searchBukuInduk" oninput="jalankanLiveSearchBukuInduk()" placeholder="Ketik nama / nisn..." class="kotak-cari">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse whitespace-nowrap">
-                                <thead>
-                                    <tr class="bg-slate-100 text-slate-700 text-xs font-bold uppercase tracking-wider border-b border-slate-200">
-                                        <th class="px-4 py-3 text-center w-12">No</th>
-                                        <th class="px-4 py-3">Nama Lengkap</th>
-                                        <th class="px-4 py-3">NISN / NISM</th>
-                                        <th class="px-4 py-3">TTL</th>
-                                        <th class="px-4 py-3">Orang Tua</th>
-                                        <th class="px-4 py-3 text-center w-20">Kelas</th>
-                                        <th class="px-4 py-3 text-center w-24">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="bodyTabelSiswa"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            `;
-            document.getElementById('contentArea').innerHTML = htmlMaster;
-            jalankanLiveSearchBukuInduk();
         }
 
         function setFilterKelas(target) {
@@ -299,7 +297,7 @@
 
         function jalankanLiveSearchBukuInduk() {
             const keyword = document.getElementById('searchBukuInduk').value.toLowerCase().trim();
-            let dataHasil = window.allSiswaIndukMasterData;
+            let dataHasil = window.allShoverIndukMasterData || window.allSiswaIndukMasterData;
             if (window.currentFilterKelas !== 'SEMUA') dataHasil = dataHasil.filter(s => String(s.kelas).startsWith(window.currentFilterKelas));
             if (keyword !== '') dataHasil = dataHasil.filter(s => String(s.nama).toLowerCase().includes(keyword) || String(s.nisn).includes(keyword));
             
@@ -308,8 +306,8 @@
             let rowsHtml = "";
             dataHasil.forEach((siswa, index) => {
                 let badge = siswa.status === 'AKTIF' 
-                    ? `<span class="bg-emerald-100 text-emerald-800 text-xs font-extrabold px-2 py-0.5 rounded-full">AKTIF</span>`
-                    : `<span class="bg-rose-100 text-rose-800 text-xs font-extrabold px-2 py-0.5 rounded-full">MUTASI</span>`;
+                    ? `<span class="bg-emerald-100 text-emerald-800 text-xs font-extrabold px-2.5 py-0.5 rounded-full">AKTIF</span>`
+                    : `<span class="bg-rose-100 text-rose-800 text-xs font-extrabold px-2.5 py-0.5 rounded-full">MUTASI KELUAR</span>`;
                 rowsHtml += `
                     <tr class="border-b border-slate-200 hover:bg-slate-50 text-sm">
                         <td class="px-4 py-3 text-center text-slate-500">${index + 1}</td>
@@ -327,7 +325,43 @@
             tbody.innerHTML = rowsHtml || `<tr><td colspan="7" class="text-center py-12 text-slate-400 italic">Data siswa tidak ditemukan...</td></tr>`;
         }
 
-        // --- 4. DATA CALON SISWA PPDB ---
+        // --- 4. FUNGSI POP-UP DETAIL SISWA INDUK ---
+        function bukaPopUpDetailSiswa(idSiswa) {
+            const modal = document.getElementById('modalDetailSiswa');
+            const konten = document.getElementById('modalKontenDetail');
+            const siswa = window.allSiswaIndukMasterData.find(s => String(s.id) === String(idSiswa));
+            if (!siswa) { alert("Data siswa tidak ditemukan."); return; }
+
+            document.getElementById('modalHeaderNama').innerText = "BIODATA BUKU INDUK SISWA: " + siswa.nama;
+            konten.innerHTML = `
+                <div class="border-b border-slate-200 pb-3 mb-4 flex justify-between items-center">
+                    <h5 class="text-xs font-bold text-emerald-800 uppercase tracking-wider"><i class="fa-solid fa-user-graduate mr-1"></i> Identitas Pribadi Siswa</h5>
+                    <button onclick="cetakProfilSiswaAktif('${siswa.id}')" class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition shadow flex items-center gap-1 cursor-pointer"><i class="fa-solid fa-print"></i> Cetak Profil</button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                    <div class="bg-slate-50 p-2 border rounded-lg"><p class="text-[10px] font-bold text-slate-400 uppercase">ID Sistem / Kelas</p><p class="font-bold text-slate-800 mt-0.5">${siswa.id} / ${siswa.kelas}</p></div>
+                    <div class="bg-slate-50 p-2 border rounded-lg"><p class="text-[10px] font-bold text-slate-400 uppercase">Nomor NISN</p><p class="font-mono font-bold text-slate-700 mt-0.5">${siswa.nisn}</p></div>
+                    <div class="bg-slate-50 p-2 border rounded-lg"><p class="text-[10px] font-bold text-slate-400 uppercase">Nomor NISM</p><p class="font-mono font-bold text-slate-700 mt-0.5">${siswa.nism || '-'}</p></div>
+                    <div class="bg-slate-50 p-2 border rounded-lg"><p class="text-[10px] font-bold text-slate-400 uppercase">NIK Siswa</p><p class="font-mono text-slate-700 mt-0.5">${siswa.nik || "-"}</p></div>
+                    <div class="bg-slate-50 p-2 border rounded-lg"><p class="text-[10px] font-bold text-slate-400 uppercase">TTL</p><p class="font-medium text-slate-700 mt-0.5">${siswa.tempat_lahir}, ${siswa.tanggal_lahir}</p></div>
+                    <div class="bg-slate-50 p-2 border rounded-lg"><p class="text-[10px] font-bold text-slate-400 uppercase">Jenis Kelamin</p><p class="font-medium text-slate-700 mt-0.5">${siswa.jk}</p></div>
+                </div>
+                <div class="border-b border-slate-200 pb-3 pt-2 mb-4"><h5 class="text-xs font-bold text-emerald-800 uppercase tracking-wider"><i class="fa-solid fa-users mr-1"></i> Data Orang Tua & Hubungan Keluarga</h5></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                    <div class="bg-slate-50 p-2 border rounded-lg"><p class="text-[10px] font-bold text-slate-400 uppercase">Nama Ayah / NIK Ayah</p><p class="font-bold text-slate-800 mt-0.5">${siswa.nama_ayah} / <span class="font-mono text-slate-500">${siswa.nik_ayah || "-"}</span></p></div>
+                    <div class="bg-slate-50 p-2 border rounded-lg"><p class="text-[10px] font-bold text-slate-400 uppercase">Nama Ibu / NIK Ibu</p><p class="font-bold text-slate-800 mt-0.5">${siswa.nama_ibu} / <span class="font-mono text-slate-500">${siswa.nik_ibu || "-"}</span></p></div>
+                </div>
+                <div class="border-b border-slate-200 pb-3 pt-2 mb-4"><h5 class="text-xs font-bold text-emerald-800 uppercase tracking-wider"><i class="fa-solid fa-map-location-dot mr-1"></i> Detail Lokasi Tempat Tinggal</h5></div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 bg-slate-50 p-3 rounded-xl border text-xs">
+                    <div><p class="text-[10px] font-bold text-slate-400 uppercase">Dusun</p><p class="text-slate-700 font-medium mt-0.5">${siswa.dusun || "-"}</p></div>
+                    <div><p class="text-[10px] font-bold text-slate-400 uppercase">RT / RW</p><p class="text-slate-700 font-medium mt-0.5">${siswa.rtrw || "-"}</p></div>
+                    <div><p class="text-[10px] font-bold text-slate-400 uppercase">Desa</p><p class="text-slate-700 font-bold mt-0.5">${siswa.desa || "-"}</p></div>
+                    <div><p class="text-[10px] font-bold text-slate-400 uppercase">Kecamatan</p><p class="text-slate-700 font-bold mt-0.5">${siswa.kecamatan || "-"}</p></div>
+                </div>`;
+            modal.classList.remove('hidden');
+        }
+
+        // --- 5. DATA CALON SISWA PPDB ---
         async function bukaDataSiswaPPDB() {
             document.getElementById('currentMenuTitle').innerText = "Menu Siswa - Data Calon Siswa (PPDB / Daftar Ulang)";
             document.getElementById('contentArea').innerHTML = `
@@ -421,7 +455,7 @@
             } catch (err) { alert("Error internet."); }
         }
 
-        // --- 5. MANAJEMEN ROMBEL SISWA ---
+        // --- 6. MANAJEMEN ROMBEL SISWA ---
         async function bukaMenuRombel() {
             document.getElementById('currentMenuTitle').innerText = "Menu Siswa - Manajemen Rombongan Belajar (Rombel)";
             document.getElementById('contentArea').innerHTML = `
@@ -441,7 +475,7 @@
                                 <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nama Rombel / Kelas</label>
                                 <input type="text" id="rombelNama" placeholder="Contoh: 10-1A" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm outline-none">
                             </div>
-                            <button type="submit" id="btnBuatRombel" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2 rounded-lg text-sm transition shadow cursor-pointer"><i class="fa-solid fa-plus mr-1"></i> Create Rombel</button>
+                            <button type="submit" id="btnBuatRombel" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2 rounded-lg text-sm transition shadow"><i class="fa-solid fa-plus mr-1"></i> Create Rombel</button>
                         </form>
                     </div>
                     <div class="border-t border-slate-200 pt-4">
@@ -577,7 +611,7 @@
             } catch (err) {}
         }
 
-        // --- 6. MENU MUTASI KELUAR ---
+        // --- 7. MENU MUTASI KELUAR ---
         async function bukaMenuMutasiKeluar() {
             document.getElementById('currentMenuTitle').innerText = "Menu Siswa - Manajemen Mutasi Keluar Siswa";
             document.getElementById('contentArea').innerHTML = `
@@ -712,7 +746,7 @@
             });
         }
 
-        // --- 7. PRINT PROFIL SISWA ---
+        // --- 8. PRINT PROFIL SISWA ---
         function cetakProfilSiswaAktif(idSiswa) {
             const siswa = window.allSiswaIndukMasterData.find(s => String(s.id) === String(idSiswa));
             if (!siswa) return;
@@ -724,7 +758,7 @@
             pW.document.close();
         }
 
-        // --- 8. PRINT SURAT MUTASI KELUAR ---
+        // --- 9. PRINT SURAT MUTASI KELUAR ---
         function cetakSuratKeteranganMutasi(idSiswa) {
             const siswa = window.rawMutasiData.find(s => String(s.id) === String(idSiswa));
             if (!siswa) return;
