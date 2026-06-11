@@ -766,7 +766,7 @@
             pW.print();
         }
 
-        // --- 9. PRINT SURAT MUTASI KELUAR (DENGAN KOP HIJAU & WATERMARK DI TENGAH KERTAS) ---
+        // --- 9. PRINT SURAT MUTASI KELUAR (MENAMPILKAN FILE KOP ORIGINAL DARI FOLDER ASSETS & WATERMARK TENGAH KERTAS) ---
         function cetakSuratKeteranganMutasi(idSiswa) {
             const siswa = window.rawMutasiData.find(s => String(s.id) === String(idSiswa));
             if (!siswa) return;
@@ -779,14 +779,9 @@
                 @page { size: A4; margin: 15mm 20mm; } 
                 body { font-family: 'Times New Roman'; font-size: 14px; line-height:1.6; color: #000; position: relative; background-color: #fff !important; } 
                 
-                /* KOP SURAT HIJAU SOLID SESUAI SCREENSHOT 448 */
-                .kop-container { display: flex; align-items: center; background-color: #046A38 !important; color: #ffffff !important; padding: 12px 15px; border-radius: 2px; margin-bottom: 25px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-                .kop-logo { width: 70px; height: auto; margin-right: 15px; display: block; filter: drop-shadow(0px 0px 1px #fff); }
-                .kop-text { flex: 1; text-align: left; font-family: 'Times New Roman'; }
-                .kop-title-1 { font-size: 15px; font-weight: bold; letter-spacing: 0.5px; }
-                .kop-title-2 { font-size: 19px; font-weight: bold; margin: 2px 0; }
-                .kop-meta { font-size: 11px; font-weight: bold; opacity: 0.95; }
-                .kop-alamat { font-size: 10.5px; border-top: 1px solid rgba(255,255,255,0.4); padding-top: 3px; margin-top: 3px; font-style: italic; opacity: 0.9; }
+                /* CONTAINER KOP SURAT ASLI MADRASAH DARI GITHUB ASSETS */
+                .kop-wrapper { width: 100%; text-align: center; margin-bottom: 25px; background: transparent !important; }
+                .kop-gambar-asli { width: 100%; height: auto; display: block; max-height: 160px; object-fit: contain; }
                 
                 /* WATERMARK LOGO BESAR DI TENGAH KERTAS */
                 .watermark { position: fixed; top: 52%; left: 50%; transform: translate(-50%, -50%); width: 420px; height: auto; opacity: 0.06; z-index: -1000; pointer-events: none; mix-blend-mode: multiply; }
@@ -794,24 +789,17 @@
                 table { width: 100%; margin: 12px 0; } td { padding: 4px 0; vertical-align: top; } 
                 .l { width: 32%; } .t { width: 4%; text-align: center; }
                 
-                /* MEMASTIKAN WARNA KOP HIJAU TERAKOMODASI SAAT PRINT */
                 @media print {
                     body { background-color: #fff !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-                    .kop-container { background-color: #046A38 !important; color: #fff !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+                    .kop-wrapper { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
                     .watermark { opacity: 0.06 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
                 }
             </style></head><body>
                 
                 <img class="watermark" src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Logo_Kementerian_Agama.png" alt="Watermark">
 
-                <div class="kop-container"> 
-                    <img class="kop-logo" src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Logo_Kementerian_Agama.png" alt="Logo Kemenag"> 
-                    <div class="kop-text"> 
-                        <div class="kop-title-1">YAYASAN PENDIDIKAN WALI SONGO SITUBONDO</div> 
-                        <div class="kop-title-2">MADRASAH ALIYAH WALI SONGO LILBANAT</div> 
-                        <div class="kop-meta">NPSN: 69977833 | NSM: 131235120069 | STATUS: TERAKREDITASI B</div> 
-                        <div class="kop-alamat">Sekretariat : Jl. KH. Mimbaar No. 40, Telp. (0338) 674454 Mimbaan - Panji - Situbondo 68312 | Email: mawsbn99@gmail.com</div> 
-                    </div> 
+                <div class="kop-wrapper"> 
+                    <img class="kop-gambar-asli" src="assets/kopsuat.png" alt="Kop Surat MA Wali Songo Lilbanat">
                 </div>
 
                 <div style="text-align:center;font-weight:bold;font-size:15px;text-decoration:underline;">SURAT KETERANGAN PINDAH MADRASAH</div>
