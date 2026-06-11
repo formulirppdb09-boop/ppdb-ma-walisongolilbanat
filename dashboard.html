@@ -783,8 +783,9 @@ async function cetakSuratKeteranganMutasi(idSiswa) {
         const response = await fetch(API_URL, {
             method: 'POST',
             body: new URLSearchParams({
-                action: "cetakMutasiPDF", // pastikan action ini di-route ke fungsi code.gs baru kita
+                action: "cetakMutasiPDF",
                 id_siswa: idSiswa,
+                rowNumber: siswa.rowNumber,
                 no_surat: nomorSuratFinal,
                 sekolah_tujuan: siswa.sekolah_tujuan || "-",
                 tgl_mutasi: siswa.tgl_mutasi || tglFormatted,
@@ -792,29 +793,46 @@ async function cetakSuratKeteranganMutasi(idSiswa) {
             }),
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         });
+
+        const result = await response.json();
         
-        const res = await response.json();
-        if (res.status === "success") {
-            // Trik jitu mendownload file PDF byte blob hasil cetak Google Drive langsung dari browser
-            const byteCharacters = atob(res.pdf_base64);
-            const byteNumbers = new Array(byteCharacters.length);
-            for (let i = 0; i < byteCharacters.length; i++) {
-                byteNumbers[i] = byteCharacters.charCodeAt(i);
-            }
-            const byteArray = new Uint8Array(byteNumbers);
-            const blob = new Blob([byteArray], {type: 'application/pdf'});
-            
-            const link = document.createElement('a');
-            link.href = window.URL.createObjectURL(blob);
-            link.download = res.nama_file;
-            link.click();
+        if (result.status === "success") {
+            Swal.fire({
+                icon: 'success',
+                title: 'Sukses!',
+                text: 'Dokumen berhasil dibuat, mengunduh PDF...',
+                timer: 2000,
+                showConfirmButton: false
+            });
+
+            // --- JALUR AMAN: DOWNLOAD MENGGUNAKAN METODE BASE64 ANCHOR (ANTI-BLOB ERROR) ---
+            const downloadLink = document.createElement("a");
+            downloadLink.href = "data:application/pdf;base64," + result.pdf_base64;
+            downloadLink.download = result.nama_file;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink); // Bersihkan sisa elemen
+
         } else {
-            alert("Gagal memproses dokumen: " + res.message);
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal Cetak',
+                text: result.message || 'Terjadi kesalahan pada server.'
+            });
         }
-    } catch (err) {
-        alert("Eror koneksi saat membuat PDF: " + err.toString());
+
+    } catch (error) {
+        console.error(error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Eror Jaringan',
+            text: 'Gagal terhubung ke API script Google.'
+        });
+    } finally {
+        // Kembalikan tombol ke keadaan semula
+        btn.innerHTML = '<i class="fas fa-file-pdf"></i> Cetak Surat';
+        btn.disabled = false;
     }
-}
     </script>
 </body>
 </html>
