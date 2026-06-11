@@ -766,7 +766,7 @@
             pW.print();
         }
 
-        // --- 9. PRINT SURAT MUTASI KELUAR (DUKUNGAN LOGO PNG TRANSPARAN KEMENAG/YAYASAN) ---
+        // --- 9. PRINT SURAT MUTASI KELUAR (DENGAN KOP HIJAU & WATERMARK DI TENGAH KERTAS) ---
         function cetakSuratKeteranganMutasi(idSiswa) {
             const siswa = window.rawMutasiData.find(s => String(s.id) === String(idSiswa));
             if (!siswa) return;
@@ -775,7 +775,68 @@
             const tglFormatted = new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
 
             const pW = window.open('', '_blank');
-            pW.document.write(`<html><head><title>Surat Keterangan Pindah</title><style>@page { size: A4; margin: 15mm 20mm; } body { font-family: 'Times New Roman'; font-size: 14px; line-height:1.6; color: #000; background-color: transparent !important; } .kop { display: table; width: 100%; border-bottom: 4px double #000; padding-bottom: 8px; margin-bottom: 25px; background: transparent !important; } .kop-logo-container { display: table-cell; vertical-align: middle; width: 80px; text-align: left; background: transparent !important; } .kop-logo { width: 75px; height: auto; display: block; background: transparent !important; background-color: transparent !important; filter: none !important; mix-blend-mode: multiply; } .kop-teks-container { display: table-cell; vertical-align: middle; text-align: center; padding-right: 40px; background: transparent !important; } .kop-judul-1 { font-size: 16px; font-weight: bold; font-family: 'Times New Roman'; letter-spacing: 0.3px; } .kop-judul-2 { font-size: 21px; font-weight: bold; font-family: 'Times New Roman'; margin: 1px 0; } .kop-meta { font-size: 11.5px; font-weight: bold; } .kop-alamat { font-size: 11px; font-style: italic; font-weight: normal; } table { width: 100%; margin: 12px 0; } td { padding: 4px 0; vertical-align: top; } .l { width: 32%; } .t { width: 4%; text-align: center; } * { background-color: transparent !important; }</style></head><body><div class="kop"> <div class="kop-logo-container"> <img class="kop-logo" src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Logo_Kementerian_Agama.png" alt="Logo"> </div> <div class="kop-teks-container"> <div class="kop-judul-1">YAYASAN PENDIDIKAN WALI SONGO SITUBONDO</div> <div class="kop-judul-2">MADRASAH ALIYAH WALI SONGO LILBANAT</div> <div class="kop-meta">NPSN: 69977833 | NSM: 131235120069 | STATUS: TERAKREDITASI B</div> <div class="kop-alamat">Jl. KH. Mimbaar No. 40, Telp. (0338) 674454 Situbondo 68312<br>Email: mawsbn99@gmail.com</div> </div> </div><div style="text-align:center;font-weight:bold;font-size:15px;text-decoration:underline;">SURAT KETERANGAN PINDAH MADRASAH</div><div style="text-align:center;font-weight:bold;margin-bottom:30px;">Nomor: ${nomorSuratFinal}</div><p>Yang bertanda tangan di bawah ini, Kepala Madrasah Aliyah Wali Songo Lilbanat Situbondo, menerangkan dengan sebenarnya bahwa:</p><table><tr><td class="l">1. Nama Lengkap</td><td class="t">:</td><td><strong>${siswa.nama.toUpperCase()}</strong></td></tr><tr><td class="l">2. NISN / NISM</td><td class="t">:</td><td>${siswa.nisn} / ${siswa.nism || '-'}</td></tr><tr><td class="l">3. Jenis Kelamin</td><td class="t">:</td><td>${siswa.jk}</td></tr><tr><td class="l">4. Tempat, Tanggal Lahir</td><td class="t">:</td><td>${siswa.tempat_lahir}, ${siswa.tanggal_lahir}</td></tr><tr><td class="l">5. Agama</td><td class="t">:</td><td>${siswa.agama || 'Islam'}</td></tr><tr><td class="l">6. Di Kelas Pindah</td><td class="t">:</td><td>Kelas ${siswa.kelas}</td></tr><tr><td class="l">7. Orang Tua Kandung</td><td class="t">:</td><td>Ayah: ${siswa.nama_ayah} <br> Ibu: ${siswa.nama_ibu}</td></tr></table><p>Telah mengajukan permohonan mutasi pindah keluar dari Madrasah Aliyah Wali Songo Lilbanat Situbondo menuju ke:</p><table><tr><td class="l">Sekolah Tujuan</td><td class="t">:</td><td><strong>${siswa.sekolah_tujuan.toUpperCase()}</strong></td></tr><tr><td class="l">Tahun Pelajaran</td><td class="t">:</td><td>${tapel}</td></tr><tr><td class="l">Tanggal Efektif Keluar</td><td class="t">:</td><td>${siswa.tgl_mutasi || '-'}</td></tr></table><p>Demikian surat keterangan ini dibuat untuk dipergunakan sebagaimana mestinya.</p><div style="margin-top:50px;width:100%;display:flex;justify-content:flex-end;"><div style="text-align:center;width:50%;">Situbondo, ${tglFormatted}<br>Kepala Madrasah,<br><br><br><br><br><strong><u>Andi Hariyanto, Gr.</u></strong></div></div></body></html>`);
+            pW.document.write(`<html><head><title>Surat Keterangan Pindah</title><style>
+                @page { size: A4; margin: 15mm 20mm; } 
+                body { font-family: 'Times New Roman'; font-size: 14px; line-height:1.6; color: #000; position: relative; background-color: #fff !important; } 
+                
+                /* KOP SURAT HIJAU SOLID SESUAI SCREENSHOT 448 */
+                .kop-container { display: flex; align-items: center; background-color: #046A38 !important; color: #ffffff !important; padding: 12px 15px; border-radius: 2px; margin-bottom: 25px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                .kop-logo { width: 70px; height: auto; margin-right: 15px; display: block; filter: drop-shadow(0px 0px 1px #fff); }
+                .kop-text { flex: 1; text-align: left; font-family: 'Times New Roman'; }
+                .kop-title-1 { font-size: 15px; font-weight: bold; letter-spacing: 0.5px; }
+                .kop-title-2 { font-size: 19px; font-weight: bold; margin: 2px 0; }
+                .kop-meta { font-size: 11px; font-weight: bold; opacity: 0.95; }
+                .kop-alamat { font-size: 10.5px; border-top: 1px solid rgba(255,255,255,0.4); padding-top: 3px; margin-top: 3px; font-style: italic; opacity: 0.9; }
+                
+                /* WATERMARK LOGO BESAR DI TENGAH KERTAS */
+                .watermark { position: fixed; top: 52%; left: 50%; transform: translate(-50%, -50%); width: 420px; height: auto; opacity: 0.06; z-index: -1000; pointer-events: none; mix-blend-mode: multiply; }
+                
+                table { width: 100%; margin: 12px 0; } td { padding: 4px 0; vertical-align: top; } 
+                .l { width: 32%; } .t { width: 4%; text-align: center; }
+                
+                /* MEMASTIKAN WARNA KOP HIJAU TERAKOMODASI SAAT PRINT */
+                @media print {
+                    body { background-color: #fff !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+                    .kop-container { background-color: #046A38 !important; color: #fff !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+                    .watermark { opacity: 0.06 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+                }
+            </style></head><body>
+                
+                <img class="watermark" src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Logo_Kementerian_Agama.png" alt="Watermark">
+
+                <div class="kop-container"> 
+                    <img class="kop-logo" src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Logo_Kementerian_Agama.png" alt="Logo Kemenag"> 
+                    <div class="kop-text"> 
+                        <div class="kop-title-1">YAYASAN PENDIDIKAN WALI SONGO SITUBONDO</div> 
+                        <div class="kop-title-2">MADRASAH ALIYAH WALI SONGO LILBANAT</div> 
+                        <div class="kop-meta">NPSN: 69977833 | NSM: 131235120069 | STATUS: TERAKREDITASI B</div> 
+                        <div class="kop-alamat">Sekretariat : Jl. KH. Mimbaar No. 40, Telp. (0338) 674454 Mimbaan - Panji - Situbondo 68312 | Email: mawsbn99@gmail.com</div> 
+                    </div> 
+                </div>
+
+                <div style="text-align:center;font-weight:bold;font-size:15px;text-decoration:underline;">SURAT KETERANGAN PINDAH MADRASAH</div>
+                <div style="text-align:center;font-weight:bold;margin-bottom:30px;">Nomor: ${nomorSuratFinal}</div>
+                <p>Yang bertanda tangan di bawah ini, Kepala Madrasah Aliyah Wali Songo Lilbanat Situbondo, menerangkan dengan sebenarnya bahwa:</p>
+                <table>
+                    <tr><td class="l">1. Nama Lengkap</td><td class="t">:</td><td><strong>${siswa.nama.toUpperCase()}</strong></td></tr>
+                    <tr><td class="l">2. NISN / NISM</td><td class="t">:</td><td>${siswa.nisn} / ${siswa.nism || '-'}</td></tr>
+                    <tr><td class="l">3. Jenis Kelamin</td><td class="t">:</td><td>${siswa.jk}</td></tr>
+                    <tr><td class="l">4. Tempat, Tanggal Lahir</td><td class="t">:</td><td>${siswa.tempat_lahir}, ${siswa.tanggal_lahir}</td></tr>
+                    <tr><td class="l">5. Agama</td><td class="t">:</td><td>${siswa.agama || 'Islam'}</td></tr>
+                    <tr><td class="l">6. Di Kelas Pindah</td><td class="t">:</td><td>Kelas ${siswa.kelas}</td></tr>
+                    <tr><td class="l">7. Orang Tua Kandung</td><td class="t">:</td><td>Ayah: ${siswa.nama_ayah} <br> Ibu: ${siswa.nama_ibu}</td></tr>
+                </table>
+                <p>Telah mengajukan permohonan mutasi pindah keluar dari Madrasah Aliyah Wali Songo Lilbanat Situbondo menuju ke:</p>
+                <table>
+                    <tr><td class="l">Sekolah Tujuan</td><td class="t">:</td><td><strong>${siswa.sekolah_tujuan.toUpperCase()}</strong></td></tr>
+                    <tr><td class="l">Tahun Pelajaran</td><td class="t">:</td><td>${tapel}</td></tr>
+                    <tr><td class="l">Tanggal Efektif Keluar</td><td class="t">:</td><td>${siswa.tgl_mutasi || '-'}</td></tr>
+                </table>
+                <p>Demikian surat keterangan ini dibuat untuk dipergunakan sebagaimana mestinya.</p>
+                <div style="margin-top:50px;width:100%;display:flex;justify-content:flex-end;">
+                    <div style="text-align:center;width:50%;">Situbondo, ${tglFormatted}<br>Kepala Madrasah,<br><br><br><br><br><strong><u>Andi Hariyanto, Gr.</u></strong></div>
+                </div>
+            </body></html>`);
             pW.document.close();
             pW.print();
         }
