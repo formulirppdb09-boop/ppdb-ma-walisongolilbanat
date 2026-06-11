@@ -197,17 +197,18 @@
                 btn.innerText = "Mengirim..."; btn.disabled = true;
                 try {
                     const response = await fetch(API_URL, {
-                        method: 'POST',
-                        body: new URLSearchParams({
-                            action: "simpanLaporan",
-                            username: userData.username || "user_sim",
-                            nama: userData.nama,
-                            jabatan: userData.jabatan,
-                            bulan: document.getElementById('bulanLaporan').value + " (" + jenisProgram + ")",
-                            isi_laporan: document.getElementById('isiLaporan').value
-                        }),
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-                    });
+            method: 'POST',
+            body: new URLSearchParams({
+                action: "cetakMutasiPDF",
+                id_siswa: idSiswa,
+                rowNumber: siswa.rowNumber, // <<-- PASTIKAN BARIS INI ADA YA BANG!
+                no_surat: nomorSuratFinal,
+                sekolah_tujuan: siswa.sekolah_tujuan || "-",
+                tgl_mutasi: siswa.tgl_mutasi || tglFormatted,
+                tapel: tapel
+            }),
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        });
                     const res = await response.json();
                     if (res.status === "success") { alert("Laporan Berhasil Tersimpan!"); bukaFormLaporan(jenisProgram); }
                 } catch (err) { alert("Error koneksi."); } finally { btn.innerText = "Kirim Laporan"; btn.disabled = false; }
