@@ -766,7 +766,7 @@
             pW.print();
         }
 
-        // --- 9. PRINT SURAT MUTASI KELUAR (MENAMPILKAN FILE KOP ORIGINAL DARI FOLDER ASSETS & WATERMARK TENGAH KERTAS) ---
+        // --- 9. PRINT SURAT MUTASI KELUAR (LOG LURUS DIREKTORI SEHINGGA KOP SURAT PASTI MUNCUL) ---
         function cetakSuratKeteranganMutasi(idSiswa) {
             const siswa = window.rawMutasiData.find(s => String(s.id) === String(idSiswa));
             if (!siswa) return;
@@ -774,14 +774,18 @@
             const tapel = document.getElementById('filterTapelMutasi').value;
             const tglFormatted = new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
 
+            // Mengunci alamat domain asli repository tempat file HTML & Gambar berada agar tidak terkena bug 'about:blank'
+            const currentRepoBase = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
+            const URL_KOP_SURAT = `${currentRepoBase}/assets/KOP%20SURAT%20%20LUAR%20NEW.jpg`;
+
             const pW = window.open('', '_blank');
             pW.document.write(`<html><head><title>Surat Keterangan Pindah</title><style>
                 @page { size: A4; margin: 15mm 20mm; } 
                 body { font-family: 'Times New Roman'; font-size: 14px; line-height:1.6; color: #000; position: relative; background-color: #fff !important; } 
                 
-                /* CONTAINER KOP SURAT ASLI MADRASAH DARI GITHUB ASSETS */
+                /* FIX CONTAINER KOP SURAT ASLI MENGGUNAKAN DYNAMIC RAW LINK INTERNET */
                 .kop-wrapper { width: 100%; text-align: center; margin-bottom: 25px; background: transparent !important; }
-                .kop-gambar-asli { width: 100%; height: auto; display: block; max-height: 160px; object-fit: contain; }
+                .kop-gambar-asli { width: 100%; height: auto; display: block; max-height: 160px; object-fit: contain; margin: 0 auto; }
                 
                 /* WATERMARK LOGO BESAR DI TENGAH KERTAS */
                 .watermark { position: fixed; top: 52%; left: 50%; transform: translate(-50%, -50%); width: 420px; height: auto; opacity: 0.06; z-index: -1000; pointer-events: none; mix-blend-mode: multiply; }
@@ -799,7 +803,7 @@
                 <img class="watermark" src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Logo_Kementerian_Agama.png" alt="Watermark">
 
                 <div class="kop-wrapper"> 
-                    <img class="kop-gambar-asli" src="assets/KOP SURAT  LUAR NEW.jpg" alt="Kop Surat MA Wali Songo Lilbanat">
+                    <img class="kop-gambar-asli" src="${URL_KOP_SURAT}" alt="Kop Surat MA Wali Songo Lilbanat">
                 </div>
 
                 <div style="text-align:center;font-weight:bold;font-size:15px;text-decoration:underline;">SURAT KETERANGAN PINDAH MADRASAH</div>
