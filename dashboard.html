@@ -769,14 +769,24 @@
 
         // --- FUNGSI UPDATE BARU: DOWNLOAD PDF OTOMATIS DARI GOOGLE DOCS TEMPLATE ---
 async function cetakSuratKeteranganMutasi(idSiswa) {
-    const siswa = window.rawMutasiData.find(s => String(s.id) === String(idSiswa));
-    if (!siswa) return;
+    const siswa = window.rawMutasiData ? window.rawMutasiData.find(s => String(s.id) === String(idSiswa)) : null;
+    if (!siswa) {
+        Swal.fire({ icon: 'error', title: 'Data Tidak Ditemukan', text: 'Gagal membaca detail siswa dari tabel.' });
+        return;
+    }
     
     const nomorSuratFinal = localStorage.getItem(`no_surat_${idSiswa}`) || `...../PPWS/YPPWS/MA.WS.bn-E/M/...../2026`;
-    const tapel = document.getElementById('filterTapelMutasi').value;
+    const filterTapel = document.getElementById('filterTapelMutasi');
+    const tapel = filterTapel ? filterTapel.value : "2025/2026";
     const tglFormatted = new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
 
-    alert("Sistem sedang memproses pembuatan file PDF resmi bersama Kop & Watermark Madrasah, mohon tunggu sebentar...");
+    // Tampilkan loading ramah menggunakan SweetAlert2 agar user tahu proses sedang berjalan
+    Swal.fire({
+        title: 'Memproses PDF Resmi',
+        text: 'Sedang menyuntik data ke Template Kop & Watermark Madrasah...',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+    });
 
     try {
         // Tembak data langsung ke Apps Script Google Drive
@@ -785,7 +795,7 @@ async function cetakSuratKeteranganMutasi(idSiswa) {
             body: new URLSearchParams({
                 action: "cetakMutasiPDF",
                 id_siswa: idSiswa,
-                rowNumber: siswa.rowNumber,
+                rowNumber: siswa.rowNumber || "",
                 no_surat: nomorSuratFinal,
                 sekolah_tujuan: siswa.sekolah_tujuan || "-",
                 tgl_mutasi: siswa.tgl_mutasi || tglFormatted,
@@ -795,44 +805,43 @@ async function cetakSuratKeteranganMutasi(idSiswa) {
         });
 
         const result = await response.json();
+        Swal.close(); // Tutup loading setelah respon tiba
         
         if (result.status === "success") {
             Swal.fire({
                 icon: 'success',
-                title: 'Sukses!',
-                text: 'Dokumen berhasil dibuat, mengunduh PDF...',
+                title: 'Sukses Terbuat!',
+                text: 'File PDF otomatis terunduh ke komputer Anda.',
                 timer: 2000,
                 showConfirmButton: false
             });
 
-            // --- JALUR AMAN: DOWNLOAD MENGGUNAKAN METODE BASE64 ANCHOR (ANTI-BLOB ERROR) ---
+            // --- JALUR AMAN DATA-URI: DOWNLOAD LANGSUNG LEWAT STRING BASE64 (ANTI-BLOB ERROR) ---
             const downloadLink = document.createElement("a");
             downloadLink.href = "data:application/pdf;base64," + result.pdf_base64;
             downloadLink.download = result.nama_file;
             document.body.appendChild(downloadLink);
             downloadLink.click();
-            document.body.removeChild(downloadLink); // Bersihkan sisa elemen
+            document.body.removeChild(downloadLink); // Bersihkan sisa elemen di memori browser
 
         } else {
             Swal.fire({
                 icon: 'error',
                 title: 'Gagal Cetak',
-                text: result.message || 'Terjadi kesalahan pada server.'
+                text: result.message || 'Terjadi kesalahan pada skrip server Google.'
             });
         }
 
     } catch (error) {
+        Swal.close();
         console.error(error);
         Swal.fire({
             icon: 'error',
             title: 'Eror Jaringan',
-            text: 'Gagal terhubung ke API script Google.'
+            text: 'Gagal terhubung dengan Google Apps Script.'
         });
-    } finally {
-        // Kembalikan tombol ke keadaan semula
-        btn.innerHTML = '<i class="fas fa-file-pdf"></i> Cetak Surat';
-        btn.disabled = false;
     }
-    </script>
+}
+</script>
 </body>
 </html>
