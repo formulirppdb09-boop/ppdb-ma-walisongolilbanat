@@ -56,6 +56,8 @@
     <main class="max-w-4xl mx-auto my-10 p-4 md:p-8 bg-white rounded-2xl shadow-sm border border-slate-200/80">
         
         <form id="ppdbForm" action="https://script.google.com/macros/s/AKfycbwNf6X1QPHHfFRc1mZoG1Tmzss39N026ldLGJDMLYg-Fxfi2moq2-xIuK7GpWmvp9tv/exec" method="POST" class="space-y-8">
+        <!-- Input tersembunyi agar otomatis terbungkus oleh FormData saat kirim -->
+        <input type="hidden" id="hidden_umur" name="umur" value="">
             
             <section class="space-y-5">
                 <h2 class="text-xl font-bold text-emerald-700 border-b-2 border-emerald-500 pb-2">1. Data Identitas Siswa</h2>
@@ -326,40 +328,44 @@
         const btnSubmit = document.getElementById('btnSubmit');
 
         // --- FUNGSI UTAMA: HITUNG UMUR OTOMATIS DAN CEK REAL-TIME ---
-        function hitungUmurOtomatis() {
-            const inputTanggal = document.getElementById('tanggal_lahir').value;
-            const inputUmur = document.getElementById('umur_pendaftar');
-            
-            if (!inputTanggal) {
-                inputUmur.value = "";
-                return;
-            }
+function hitungUmurOtomatis() {
+    const inputTanggal = document.getElementById('tanggal_lahir').value;
+    const inputUmur = document.getElementById('umur_pendaftar');
+    const hiddenUmur = document.getElementById('hidden_umur'); // Ambil input hidden
+    
+    if (!inputTanggal) {
+        inputUmur.value = "";
+        hiddenUmur.value = "";
+        return;
+    }
 
-            const tglLahir = new Date(inputTanggal);
-            const tglSekarang = new Date();
+    const tglLahir = new Date(inputTanggal);
+    const tglSekarang = new Date();
 
-            let tahun = tglSekarang.getFullYear() - tglLahir.getFullYear();
-            let bulan = tglSekarang.getMonth() - tglLahir.getMonth();
-            let hari = tglSekarang.getDate() - tglLahir.getDate();
+    let tahun = tglSekarang.getFullYear() - tglLahir.getFullYear();
+    let bulan = tglSekarang.getMonth() - tglLahir.getMonth();
+    let hari = tglSekarang.getDate() - tglLahir.getDate();
 
-            if (hari < 0) {
-                bulan--;
-                const bulanLalu = new Date(tglSekarang.getFullYear(), tglSekarang.getMonth(), 0).getDate();
-                hari += bulanLalu;
-            }
+    if (hari < 0) {
+        bulan--;
+        const bulanLalu = new Date(tglSekarang.getFullYear(), tglSekarang.getMonth(), 0).getDate();
+        hari += bulanLalu;
+    }
 
-            if (bulan < 0) {
-                tahun--;
-                bulan += 12;
-            }
+    if (bulan < 0) {
+        tahun--;
+        bulan += 12;
+    }
 
-            if (tahun < 0) {
-                inputUmur.value = "TANGGAL LAHIR TIDAK VALID";
-            } else {
-                // Format langsung otomatis KAPITAL agar sinkron dengan data CSS Magis Abang
-                inputUmur.value = `${tahun} TAHUN ${bulan} BULAN`;
-            }
-        }
+    if (tahun < 0) {
+        inputUmur.value = "TANGGAL LAHIR TIDAK VALID";
+        hiddenUmur.value = "TANGGAL LAHIR TIDAK VALID";
+    } else {
+        const hasilUmur = `${tahun} TAHUN ${bulan} BULAN`;
+        inputUmur.value = hasilUmur;
+        hiddenUmur.value = hasilUmur; // Masukkan ke hidden input
+    }
+}
 
         // --- VALIDASI INTERAKTIF SAAT KOLOM DITINGGALKAN (BLUR) ---
         const inputsKustom = [
@@ -474,10 +480,6 @@
                     plainData.fileSKLName = fileSKL.name;
                     plainData.fileSKLMime = fileSKL.type;
                 }
-
-                // --- SUNTIKAN WAJIB AGAR DATA UMUR & PETUGAS IKUT TERKIRIM KE GOOGLE SCRIPT ---
-                plainData.umur = document.getElementById('umur_pendaftar').value;
-                plainData.petugas = document.querySelector('select[name="petugas"]').value;
                 
                 const searchParams = new URLSearchParams(plainData);
 
