@@ -475,6 +475,10 @@
                     plainData.fileSKLMime = fileSKL.type;
                 }
 
+                // --- SUNTIKAN WAJIB AGAR DATA UMUR & PETUGAS IKUT TERKIRIM KE GOOGLE SCRIPT ---
+                plainData.umur = document.getElementById('umur_pendaftar').value;
+                plainData.petugas = document.querySelector('select[name="petugas"]').value;
+                
                 const searchParams = new URLSearchParams(plainData);
 
                 const response = await fetch(form.action, {
