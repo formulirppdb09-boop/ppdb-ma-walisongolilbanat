@@ -169,6 +169,8 @@
             <section class="space-y-5">
                 <h2 class="text-xl font-bold text-emerald-700 border-b-2 border-emerald-500 pb-2">3. Data Orang Tua</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <!-- DATA AYAH -->
                     <div class="p-4 bg-slate-50 border rounded-xl space-y-3">
                         <h3 class="font-bold text-slate-700 border-b pb-1">Data Ayah</h3>
                         <input type="text" name="nama_ayah" placeholder="NAMA AYAH (SESUAI IJAZAH) *" required class="w-full p-2 border rounded bg-white">
@@ -178,6 +180,7 @@
                         <input type="date" name="tanggal_ayah" required class="w-full p-2 border rounded bg-white">
                         <input type="text" name="agama_ayah" value="ISLAM" readonly class="w-full p-2 border rounded bg-slate-100 cursor-not-allowed">
                         
+                        <!-- Pendidikan Ayah -->
                         <select name="pendidikan_ayah" required class="w-full p-2 border rounded bg-white text-slate-600">
                             <option value="">-- Pilih Pendidikan Ayah * --</option>
                             <option value="Tidak/Belum Sekolah">Tidak/Belum Sekolah</option>
@@ -191,6 +194,7 @@
                             <option value="S2/S3">S2/S3</option>
                         </select>
 
+                        <!-- Pekerjaan Ayah (Sudah Update Sesuai Request) -->
                         <select name="pekerjaan_ayah" required class="w-full p-2 border rounded bg-white text-slate-600">
                             <option value="">-- Pilih Pekerjaan Ayah * --</option>
                             <option value="TIDAK BEKERJA">Tidak Bekerja</option>
@@ -211,11 +215,12 @@
                             <option value="SOPIR/MASINIS/KONDEKTUR">Sopir/Masinis/Kondektur</option>
                             <option value="POLITIKUS">Politikus</option>
                             <option value="LAINNYA">Lainnya</option>
-                    </select>
+                        </select>
 
                         <input type="text" name="telp_ayah" placeholder="NO TELP/WA AYAH (10-13 DIGIT) *" required inputmode="numeric" pattern="[0-9]{10,13}" minlength="10" maxlength="13" class="w-full p-2 border rounded bg-white">
                     </div>
                     
+                    <!-- DATA IBU -->
                     <div class="p-4 bg-slate-50 border rounded-xl space-y-3">
                         <h3 class="font-bold text-slate-700 border-b pb-1">Data Ibu</h3>
                         <input type="text" name="nama_ibu" placeholder="NAMA IBU (SESUAI KK) *" required class="w-full p-2 border rounded bg-white">
@@ -224,6 +229,21 @@
                         <input type="date" name="tanggal_ibu" required class="w-full p-2 border rounded bg-white">
                         <input type="text" name="agama_ibu" value="ISLAM" readonly class="w-full p-2 border rounded bg-slate-100 cursor-not-allowed">
                         
+                        <!-- Pendidikan Ibu (Kembali Muncul Sesuai Tempatnya) -->
+                        <select name="pendidikan_ibu" required class="w-full p-2 border rounded bg-white text-slate-600">
+                            <option value="">-- Pilih Pendidikan Ibu * --</option>
+                            <option value="Tidak/Belum Sekolah">Tidak/Belum Sekolah</option>
+                            <option value="SD/Sederajat">SD/Sederajat</option>
+                            <option value="SMP/Sederajat">SMP/Sederajat</option>
+                            <option value="SMA/Sederajat">SMA/Sederajat</option>
+                            <option value="D1/Diploma 1">D1/Diploma 1</option>
+                            <option value="D2/Diploma 2">D2/Diploma 2</option>
+                            <option value="D3/Diploma 3">D3/Diploma 3</option>
+                            <option value="D4/S1">D4/S1</option>
+                            <option value="S2/S3">S2/S3</option>
+                        </select>
+
+                        <!-- Pekerjaan Ibu (Sudah Update Sesuai Request) -->
                         <select name="pekerjaan_ibu" required class="w-full p-2 border rounded bg-white text-slate-600">
                             <option value="">-- Pilih Pekerjaan Ibu * --</option>
                             <option value="IBU RUMAH TANGGA">Ibu Rumah Tangga</option>
@@ -246,6 +266,7 @@
                             <option value="POLITIKUS">Politikus</option>
                             <option value="LAINNYA">Lainnya</option>
                         </select>
+
                         <input type="text" name="telp_ibu" placeholder="NO TELP/WA IBU (10-13 DIGIT) *" required inputmode="numeric" pattern="[0-9]{10,13}" minlength="10" maxlength="13" class="w-full p-2 border rounded bg-white">
                     </div>
                 </div>
