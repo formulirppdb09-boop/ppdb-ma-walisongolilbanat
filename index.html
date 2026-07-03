@@ -1009,9 +1009,13 @@
             }
         }
 
-// --- JALUR CLIENT SIDE PAGINATION SISWA ---
+// =========================================================================
+        // [UTUH & AMAN] JALUR CLIENT SIDE DAFUL (PAGINASI, RENDER, SEARCH & SIMPAN)
+        // =========================================================================
+        
         let dafulCurrentPage = 1;
 
+        // --- FUNGSI RESET HALAMAN SAAT FILTER / UKURAN HALAMAN BERUBAH ---
         function resetDanRender() {
             dafulCurrentPage = 1;
             renderDafulStudents(localSiswaDb);
@@ -1068,8 +1072,8 @@
                         <select onchange="prosesKenaikanKelas(this, '${siswa.rowNumber}', '${siswa.nama}', 'akademik')" class="w-full text-xs px-2.5 py-1.5 border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 font-semibold text-emerald-800 mb-1">
                             <option value="">-- Pilih Kelas Umum --</option>
                             <optgroup label="STATUS KHUSUS">
-                                <option value="TETAP DIKELAS X">TETAP DIKELAS X</option>
-                                <option value="TETAP DIKELAS XI">TETAP DIKELAS XI</option>
+                                <option value="TIDAK NAIK KELAS">TIDAK NAIK KELAS</option>
+                                <option value="TETAP KELAS">TETAP DI KELAS SAAT INI</option>
                             </optgroup>
                             <optgroup label="PROMOSI KELAS XI">
                                 <option value="XI-1A">XI-1A</option>
@@ -1187,6 +1191,80 @@
                 renderDafulStudents(students);
             };
             container.appendChild(btnNext);
+        }
+
+        // --- PROSES ACTION PENYIMPANAN MANUAL KELAS MADIN ---
+        function simpanMadinManual(rowNumber, namaSiswa) {
+            const level = document.getElementById(`madin_level_${rowNumber}`).value;
+            const par = document.getElementById(`madin_par_${rowNumber}`).value.trim().toUpperCase();
+
+            if (!level) {
+                Swal.fire({ icon: 'warning', title: 'Pilih Tingkat Madin', text: 'Silakan pilih tingkatan madin terlebih dahulu.' });
+                return;
+            }
+
+            const kelasMadinLengkap = par ? `${level} ${par}` : level;
+
+            Swal.fire({
+                title: 'Simpan Kelas Madin?',
+                text: `Ubah kelas Madin ${namaSiswa} menjadi "${kelasMadinLengkap}"?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#d97706',
+                confirmButtonText: 'Ya, Simpan!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({ title: 'Menyimpan...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+                    
+                    const url = `${scriptUrl}?action=updateRombel&rowNumber=${rowNumber}&kelasBaru=${encodeURIComponent(kelasMadinLengkap)}&tipe=madin`;
+                    
+                    fetch(url, { method: 'POST' })
+                    .then(r => r.json())
+                    .then(res => {
+                        if (res.status === 'success') {
+                            Swal.fire({ icon: 'success', title: 'Berhasil!', text: `Kelas Madin ${namaSiswa} diperbarui.` });
+                            
+                            // Perbarui data di cache lokal
+                            if (typeof localSiswaDb !== 'undefined') {
+                                const siswaObj = localSiswaDb.find(s => String(s.rowNumber) === String(rowNumber));
+                                if (siswaObj) siswaObj.kelas_madin = kelasMadinLengkap;
+                                renderDafulStudents(localSiswaDb);
+                            }
+                        } else {
+                            Swal.fire({ icon: 'error', title: 'Gagal', text: res.message });
+                        }
+                    })
+                    .catch(err => {
+                        Swal.fire({ icon: 'error', title: 'Error Koneksi', text: err.toString() });
+                    });
+                }
+            });
+        }
+
+        // --- FILTER PENCARIAN SISWA DAFUL ---
+        function filterDafulStudents() {
+            const query = document.getElementById('dafulSearchInput').value.trim().toUpperCase();
+            
+            if (typeof localSiswaDb === 'undefined' || !localSiswaDb) return;
+
+            // Jika kolom pencarian kosong, reset dan gambar ulang
+            if (!query) {
+                dafulCurrentPage = 1;
+                renderDafulStudents(localSiswaDb);
+                return;
+            }
+
+            // Menyaring berdasarkan Nama, NISN, atau NIK (dengan perlindungan tipe data String)
+            const filtered = localSiswaDb.filter(siswa => {
+                const nama = siswa.nama ? String(siswa.nama).toUpperCase() : "";
+                const nisn = siswa.nisn ? String(siswa.nisn).toUpperCase() : "";
+                const nik = siswa.nik ? String(siswa.nik).toUpperCase() : "";
+                
+                return nama.includes(query) || nisn.includes(query) || nik.includes(query);
+            });
+
+            dafulCurrentPage = 1; // Pindahkan ke page 1 hasil saringan
+            renderDafulStudents(filtered);
         }
         
         // --- PROSES ACTION PENYIMPANAN MANUAL KELAS MADIN --
