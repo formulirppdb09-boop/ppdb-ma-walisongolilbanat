@@ -1009,12 +1009,20 @@
             }
         }
 
-        // --- RENDER DAFTAR SISWA PADA TABEL DAFUL ---
+// --- JALUR CLIENT SIDE PAGINATION SISWA ---
+        let dafulCurrentPage = 1;
+
+        function resetDanRender() {
+            dafulCurrentPage = 1;
+            renderDafulStudents(localSiswaDb);
+        }
+
+        // --- RENDER DAFTAR SISWA DAFUL DENGAN FITUR PAGINASI DAN DETEKSI ID ABANG ---
         function renderDafulStudents(students) {
             const tbody = document.getElementById('dafulStudentTableBody');
-            const summary = document.getElementById('dafulSummaryCount');
+            const pageSizeSelect = document.getElementById('dafulPageSize');
             
-            if (students.length === 0) {
+            if (!students || students.length === 0) {
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="6" class="p-8 text-center text-slate-400 italic">
@@ -1022,12 +1030,26 @@
                         </td>
                     </tr>
                 `;
-                summary.innerText = "Menampilkan 0 siswa";
+                document.getElementById('dafulSummaryCount').innerText = "Menampilkan 0 siswa";
+                document.getElementById('paginationControls').innerHTML = '';
                 return;
             }
 
+            // Atur jumlah baris per halaman
+            const valSize = pageSizeSelect ? pageSizeSelect.value : "50";
+            const pageSize = valSize === 'all' ? students.length : parseInt(valSize);
+            const totalPages = Math.ceil(students.length / pageSize);
+            
+            // Jaga halaman aktif agar tidak keluar batas
+            if (dafulCurrentPage > totalPages) dafulCurrentPage = totalPages;
+            if (dafulCurrentPage < 1) dafulCurrentPage = 1;
+
+            const startIndex = (dafulCurrentPage - 1) * pageSize;
+            const endIndex = Math.min(startIndex + pageSize, students.length);
+            const paginatedStudents = students.slice(startIndex, endIndex);
+
             tbody.innerHTML = '';
-            students.forEach(siswa => {
+            paginatedStudents.forEach(siswa => {
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition border-b";
                 
@@ -1035,12 +1057,20 @@
                     <td class="p-3 font-semibold text-slate-800">${siswa.nama}</td>
                     <td class="p-3 font-mono">${siswa.nisn}</td>
                     <td class="p-3 text-slate-500 font-mono">${siswa.nik}</td>
-                    <td class="p-3 text-center"><span class="px-2.5 py-1 bg-slate-100 text-slate-700 rounded-full font-bold text-[11px]">${siswa.kelas}</span></td>
-                    <td class="p-3 text-center"><span class="px-2.5 py-1 bg-amber-50 text-amber-800 rounded-full font-bold text-[11px]">${siswa.kelas_madin || '-'}</span></td>
+                    <td class="p-3 text-center">
+                        <span class="px-2.5 py-1 bg-slate-100 text-slate-700 rounded-full font-bold text-[11px]">${siswa.kelas}</span>
+                    </td>
+                    <td class="p-3 text-center">
+                        <span class="px-2.5 py-1 bg-amber-50 text-amber-800 rounded-full font-bold text-[11px]">${siswa.kelas_madin || '-'}</span>
+                    </td>
                     <td class="p-3 text-center space-y-1.5">
                         <!-- Dropdown Kelas Akademik -->
                         <select onchange="prosesKenaikanKelas(this, '${siswa.rowNumber}', '${siswa.nama}', 'akademik')" class="w-full text-xs px-2.5 py-1.5 border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 font-semibold text-emerald-800 mb-1">
                             <option value="">-- Pilih Kelas Umum --</option>
+                            <optgroup label="STATUS KHUSUS">
+                                <option value="TIDAK NAIK KELAS">TIDAK NAIK KELAS</option>
+                                <option value="TETAP KELAS">TETAP DI KELAS SAAT INI</option>
+                            </optgroup>
                             <optgroup label="PROMOSI KELAS XI">
                                 <option value="XI-1A">XI-1A</option>
                                 <option value="XI-1B">XI-1B</option>
@@ -1065,8 +1095,8 @@
                             </optgroup>
                         </select>
 
-                        <!-- PILIHAN KELAS MADIN BARU (DROPDOWN TINGKAT + KETIK HURUF PARALEL + TOMBOL DISK) -->
-                        <div class="flex items-center space-x-1 mt-1">
+                        <!-- PILIHAN KELAS MADIN BARU (GABUNGAN DROPDOWN DAN INPUT SEPERTI MILIK ABANG) -->
+                        <div class="flex items-center space-x-1 mt-1 justify-center">
                             <select id="madin_level_${siswa.rowNumber}" class="w-1/2 text-[10px] px-1 py-1.5 border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-amber-500 font-semibold text-amber-800">
                                 <option value="">-- Madin --</option>
                                 <option value="SHIFIR">SHIFIR</option>
@@ -1099,32 +1129,67 @@
                 tbody.appendChild(tr);
             });
 
-            summary.innerText = `Menampilkan ${students.length} siswa`;
+            // Update keterangan baris yang tampil
+            document.getElementById('dafulSummaryCount').innerText = `Menampilkan ${startIndex + 1} - ${endIndex} dari ${students.length} siswa`;
+
+            // Gambar tombol-tombol halaman (Paginasi)
+            buatTombolHalaman(totalPages, students);
         }
 
-        // --- FILTER PENCARIAN SISWA DAFUL ---
-        function filterDafulStudents() {
-            const query = document.getElementById('dafulSearchInput').value.trim().toUpperCase();
-            
-            // Jika kolom pencarian kosong, kembalikan ke seluruh daftar siswa
-            if (!query) {
-                renderDafulStudents(localSiswaDb);
-                return;
+        // --- FUNGSI MENGGAMBAR TOMBOL HALAMAN ---
+        function buatTombolHalaman(totalPages, students) {
+            const container = document.getElementById('paginationControls');
+            if (!container) return;
+            container.innerHTML = '';
+
+            if (totalPages <= 1) return; // Tidak perlu digambar kalau cuma 1 halaman
+
+            // Tombol Sebelum (Prev)
+            const btnPrev = document.createElement('button');
+            btnPrev.innerHTML = '<i class="fa-solid fa-angle-left"></i>';
+            btnPrev.disabled = dafulCurrentPage === 1;
+            btnPrev.className = `px-2.5 py-1.5 text-xs font-bold rounded-lg border transition ${dafulCurrentPage === 1 ? 'text-slate-300 bg-slate-50 cursor-not-allowed border-slate-200' : 'text-slate-700 bg-white hover:bg-slate-100 border-slate-300'}`;
+            btnPrev.onclick = () => {
+                dafulCurrentPage--;
+                renderDafulStudents(students);
+            };
+            container.appendChild(btnPrev);
+
+            // Tombol Angka
+            for (let i = 1; i <= totalPages; i++) {
+                if (totalPages > 5 && Math.abs(i - dafulCurrentPage) > 2 && i !== 1 && i !== totalPages) {
+                    if (i === 2 || i === totalPages - 1) {
+                        const dots = document.createElement('span');
+                        dots.innerText = '...';
+                        dots.className = 'px-2 py-1 text-slate-400 text-xs font-bold';
+                        container.appendChild(dots);
+                    }
+                    continue;
+                }
+
+                const btnPage = document.createElement('button');
+                btnPage.innerText = i;
+                btnPage.className = `px-3 py-1.5 text-xs font-bold rounded-lg border transition ${i === dafulCurrentPage ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm' : 'bg-white text-slate-700 hover:bg-slate-100 border-slate-300'}`;
+                btnPage.onclick = () => {
+                    dafulCurrentPage = i;
+                    renderDafulStudents(students);
+                };
+                container.appendChild(btnPage);
             }
 
-            // Menyaring berdasarkan Nama, NISN, atau NIK (semua dipaksa menjadi String)
-            const filtered = localSiswaDb.filter(siswa => {
-                const nama = siswa.nama ? String(siswa.nama).toUpperCase() : "";
-                const nisn = siswa.nisn ? String(siswa.nisn).toUpperCase() : "";
-                const nik = siswa.nik ? String(siswa.nik).toUpperCase() : "";
-                
-                return nama.includes(query) || nisn.includes(query) || nik.includes(query);
-            });
-
-            renderDafulStudents(filtered);
+            // Tombol Sesudah (Next)
+            const btnNext = document.createElement('button');
+            btnNext.innerHTML = '<i class="fa-solid fa-angle-right"></i>';
+            btnNext.disabled = dafulCurrentPage === totalPages;
+            btnNext.className = `px-2.5 py-1.5 text-xs font-bold rounded-lg border transition ${dafulCurrentPage === totalPages ? 'text-slate-300 bg-slate-50 cursor-not-allowed border-slate-200' : 'text-slate-700 bg-white hover:bg-slate-100 border-slate-300'}`;
+            btnNext.onclick = () => {
+                dafulCurrentPage++;
+                renderDafulStudents(students);
+            };
+            container.appendChild(btnNext);
         }
-
-        // --- PROSES ACTION PENYIMPANAN MANUAL KELAS MADIN ---
+        
+        // --- PROSES ACTION PENYIMPANAN MANUAL KELAS MADIN --
         async function simpanMadinManual(rowNumber, namaSiswa) {
             const levelSelect = document.getElementById(`madin_level_${rowNumber}`);
             const parInput = document.getElementById(`madin_par_${rowNumber}`);
