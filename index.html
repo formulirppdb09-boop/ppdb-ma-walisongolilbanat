@@ -136,7 +136,7 @@
                         <div class="relative max-w-[380px] md:max-w-[420px] rounded-3xl overflow-hidden border-4 border-emerald-800/50 shadow-2xl bg-emerald-900/30">
                             <img src="logo-madrasah.png" alt="Pendidik Islami" class="w-full h-full object-contain p-8 filter brightness-[1.05]" onerror="this.src='https://placehold.co/500x400/022c22/ffffff?text=MA+Wali+Songo+Lilbanat'">
                             <div class="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-emerald-950 to-transparent text-center">
-                                <span class="text-xs text-amber-300 font-semibold uppercase tracking-widest">Hilman • Iman • Ilmu</span>
+                                <span class="text-xs text-amber-300 font-semibold uppercase tracking-widest">Hilman • Ilman • Yaqinan • Islaman</span>
                             </div>
                         </div>
                     </div>
@@ -564,7 +564,7 @@
                                 <label class="block text-xs font-bold text-slate-600 mb-1">Petugas SPMB yang Melayani *</label>
                                 <select name="petugas" required class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-white text-slate-600">
                                     <option value="">-- Pilih Nama Petugas --</option>
-                                    <option value="NURUL TADQIRAH">NURUL TADQIRAH</option>
+                                    <option value="NURUL TADZQIRAH">NURUL TADZQIRAH</option>
                                     <option value="LAILATUL QOMARIYAH">LAILATUL QOMARIYAH</option>
                                     <option value="TRIYANTI MANDASARI">TRIYANTI MANDASARI</option>
                                     <option value="DESI SRI AGUSTIN">DESI SRI AGUSTIN</option>
@@ -1091,15 +1091,20 @@
         // --- FILTER PENCARIAN SISWA DAFUL ---
         function filterDafulStudents() {
             const query = document.getElementById('dafulSearchInput').value.trim().toUpperCase();
+            
+            // Jika kolom pencarian kosong, kembalikan ke seluruh daftar siswa
             if (!query) {
                 renderDafulStudents(localSiswaDb);
                 return;
             }
 
+            // Menyaring berdasarkan Nama, NISN, atau NIK (semua dipaksa menjadi String)
             const filtered = localSiswaDb.filter(siswa => {
-                return (siswa.nama && siswa.nama.includes(query)) || 
-                       (siswa.nisn && siswa.nisn.includes(query)) || 
-                       (siswa.nik && siswa.nik.includes(query));
+                const nama = siswa.nama ? String(siswa.nama).toUpperCase() : "";
+                const nisn = siswa.nisn ? String(siswa.nisn).toUpperCase() : "";
+                const nik = siswa.nik ? String(siswa.nik).toUpperCase() : "";
+                
+                return nama.includes(query) || nisn.includes(query) || nik.includes(query);
             });
 
             renderDafulStudents(filtered);
