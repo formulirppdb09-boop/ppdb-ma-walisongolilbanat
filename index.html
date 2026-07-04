@@ -660,7 +660,7 @@
                     </table>
                 </div>
 
-<!-- Paginasi & Indikator Total Data -->
+                <!-- Paginasi & Indikator Total Data -->
                 <div class="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 border-t bg-slate-50 mt-2 rounded-b-xl">
                     <div class="flex items-center space-x-2 text-xs">
                         <span class="text-slate-500">Tampilkan:</span>
@@ -699,7 +699,7 @@
                         </div>
                     </div>
                     <div class="bg-slate-50 p-5 rounded-xl border border-slate-100 flex flex-col justify-center">
-                        <p class="text-xs text-slate-500 italic">"Kami senantiasa berdedikasi tinggi memberikan kemudahan layanan berbasis teknologi mutakhir untuk mempercepat validitas administrasi madrasah."</p>
+                        <p class="text-xs text-slate-500 italic">"Kami senantiasi berdedikasi tinggi memberikan kemudahan layanan berbasis teknologi mutakhir untuk mempercepat validitas administrasi madrasah."</p>
                         <span class="block text-xs font-bold text-slate-700 mt-2">— TIM SIM Madrasah</span>
                     </div>
                 </div>
@@ -742,7 +742,7 @@
     <footer class="bg-emerald-950 text-slate-300 py-6 border-t-4 border-amber-500 text-center text-xs mt-12">
         <div class="max-w-7xl mx-auto px-4">
             <p class="font-semibold">&copy; 2026 MA WALI SONGO LILBANAT. All Rights Reserved.</p>
-            <p class="text-emerald-400/80 mt-1">Sistem Informasi Manajemen Madrasah Terpadu Terakreditasi • Situbondo, Jatim</p>
+            <p class="text-emerald-400/80 mt-1">Sistem Informasi Manajemen Madrasah Terakreditasi • Situbondo, Jatim</p>
         </div>
     </footer>
 
@@ -1009,8 +1009,8 @@
             }
         }
 
-// =========================================================================
-        // [UTUH & AMAN] JALUR CLIENT SIDE DAFUL (PAGINASI, RENDER, SEARCH & SIMPAN)
+        // =========================================================================
+        // [FIXED UTUH] JALUR CLIENT SIDE DAFUL (PAGINASI, RENDER, SEARCH & SIMPAN)
         // =========================================================================
         
         let dafulCurrentPage = 1;
@@ -1021,7 +1021,7 @@
             renderDafulStudents(localSiswaDb);
         }
 
-        // --- RENDER DAFTAR SISWA DAFUL DENGAN FITUR PAGINASI DAN DETEKSI ID ABANG ---
+        // --- RENDER DAFTAR SISWA DAFUL DENGAN FITUR PAGINASI ---
         function renderDafulStudents(students) {
             const tbody = document.getElementById('dafulStudentTableBody');
             const pageSizeSelect = document.getElementById('dafulPageSize');
@@ -1097,7 +1097,7 @@
                             </optgroup>
                         </select>
 
-                        <!-- PILIHAN KELAS MADIN BARU (GABUNGAN DROPDOWN DAN INPUT SEPERTI MILIK ABANG) -->
+                        <!-- PILIHAN KELAS MADIN BARU -->
                         <div class="flex items-center space-x-1 mt-1 justify-center">
                             <select id="madin_level_${siswa.rowNumber}" class="w-1/2 text-[10px] px-1 py-1.5 border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-amber-500 font-semibold text-amber-800">
                                 <option value="">-- Madin --</option>
@@ -1144,7 +1144,7 @@
             if (!container) return;
             container.innerHTML = '';
 
-            if (totalPages <= 1) return; // Tidak perlu digambar kalau cuma 1 halaman
+            if (totalPages <= 1) return;
 
             // Tombol Sebelum (Prev)
             const btnPrev = document.createElement('button');
@@ -1191,54 +1191,6 @@
             container.appendChild(btnNext);
         }
 
-        // --- PROSES ACTION PENYIMPANAN MANUAL KELAS MADIN ---
-        function simpanMadinManual(rowNumber, namaSiswa) {
-            const level = document.getElementById(`madin_level_${rowNumber}`).value;
-            const par = document.getElementById(`madin_par_${rowNumber}`).value.trim().toUpperCase();
-
-            if (!level) {
-                Swal.fire({ icon: 'warning', title: 'Pilih Tingkat Madin', text: 'Silakan pilih tingkatan madin terlebih dahulu.' });
-                return;
-            }
-
-            const kelasMadinLengkap = par ? `${level} ${par}` : level;
-
-            Swal.fire({
-                title: 'Simpan Kelas Madin?',
-                text: `Ubah kelas Madin ${namaSiswa} menjadi "${kelasMadinLengkap}"?`,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#d97706',
-                confirmButtonText: 'Ya, Simpan!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire({ title: 'Menyimpan...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
-                    
-                    const url = `${scriptUrl}?action=updateRombel&rowNumber=${rowNumber}&kelasBaru=${encodeURIComponent(kelasMadinLengkap)}&tipe=madin`;
-                    
-                    fetch(url, { method: 'POST' })
-                    .then(r => r.json())
-                    .then(res => {
-                        if (res.status === 'success') {
-                            Swal.fire({ icon: 'success', title: 'Berhasil!', text: `Kelas Madin ${namaSiswa} diperbarui.` });
-                            
-                            // Perbarui data di cache lokal
-                            if (typeof localSiswaDb !== 'undefined') {
-                                const siswaObj = localSiswaDb.find(s => String(s.rowNumber) === String(rowNumber));
-                                if (siswaObj) siswaObj.kelas_madin = kelasMadinLengkap;
-                                renderDafulStudents(localSiswaDb);
-                            }
-                        } else {
-                            Swal.fire({ icon: 'error', title: 'Gagal', text: res.message });
-                        }
-                    })
-                    .catch(err => {
-                        Swal.fire({ icon: 'error', title: 'Error Koneksi', text: err.toString() });
-                    });
-                }
-            });
-        }
-
         // --- FILTER PENCARIAN SISWA DAFUL ---
         function filterDafulStudents() {
             const query = document.getElementById('dafulSearchInput').value.trim().toUpperCase();
@@ -1252,7 +1204,7 @@
                 return;
             }
 
-            // Menyaring berdasarkan Nama, NISN, atau NIK (dengan perlindungan tipe data String)
+            // Menyaring berdasarkan Nama, NISN, atau NIK
             const filtered = localSiswaDb.filter(siswa => {
                 const nama = siswa.nama ? String(siswa.nama).toUpperCase() : "";
                 const nisn = siswa.nisn ? String(siswa.nisn).toUpperCase() : "";
@@ -1261,11 +1213,11 @@
                 return nama.includes(query) || nisn.includes(query) || nik.includes(query);
             });
 
-            dafulCurrentPage = 1; // Pindahkan ke page 1 hasil saringan
+            dafulCurrentPage = 1; 
             renderDafulStudents(filtered);
         }
         
-        // --- PROSES ACTION PENYIMPANAN MANUAL KELAS MADIN --
+        // --- PROSES ACTION PENYIMPANAN MANUAL KELAS MADIN ---
         async function simpanMadinManual(rowNumber, namaSiswa) {
             const levelSelect = document.getElementById(`madin_level_${rowNumber}`);
             const parInput = document.getElementById(`madin_par_${rowNumber}`);
@@ -1291,17 +1243,13 @@
                 cancelButtonText: 'Batal'
             });
 
-            if (!confirm.isConfirmed) {
-                return;
-            }
+            if (!confirm.isConfirmed) return;
 
             Swal.fire({
                 title: 'Mengirim Perubahan...',
                 text: `Menyimpan data kenaikan Kelas Madin ${kelasBaru} ke server Google Sheets Anda.`,
                 allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
+                didOpen: () => { Swal.showLoading(); }
             });
 
             const scriptUrl = document.getElementById('ppdbForm').action;
@@ -1332,7 +1280,7 @@
                     const index = localSiswaDb.findIndex(s => s.rowNumber == rowNumber);
                     if (index !== -1) {
                         localSiswaDb[index].kelas_madin = kelasBaru;
-                        filterDafulStudents(); 
+                        renderDafulStudents(localSiswaDb); 
                     }
                 } else {
                     throw new Error(result.message);
@@ -1352,7 +1300,7 @@
                         const index = localSiswaDb.findIndex(s => s.rowNumber == rowNumber);
                         if (index !== -1) {
                             localSiswaDb[index].kelas_madin = kelasBaru;
-                            filterDafulStudents();
+                            renderDafulStudents(localSiswaDb);
                         }
                     } else {
                         levelSelect.value = "";
@@ -1389,9 +1337,7 @@
                 title: 'Mengirim Perubahan...',
                 text: `Menyimpan data kenaikan ${labelTipe} ${kelasBaru} ke server Google Sheets Anda.`,
                 allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
+                didOpen: () => { Swal.showLoading(); }
             });
 
             const scriptUrl = document.getElementById('ppdbForm').action;
@@ -1426,7 +1372,7 @@
                         } else {
                             localSiswaDb[index].kelas = kelasBaru;
                         }
-                        filterDafulStudents(); 
+                        renderDafulStudents(localSiswaDb); 
                     }
                 } else {
                     throw new Error(result.message);
@@ -1450,7 +1396,7 @@
                             } else {
                                 localSiswaDb[index].kelas = kelasBaru;
                             }
-                            filterDafulStudents();
+                            renderDafulStudents(localSiswaDb);
                         }
                     } else {
                         selectElement.value = "";
@@ -1531,9 +1477,7 @@
                 title: 'Mengirim & Mengonversi...',
                 text: 'Proses upload dan penulisan tautan ke Google Drive sedang berlangsung.',
                 allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
+                didOpen: () => { Swal.showLoading(); }
             });
 
             const scriptUrl = document.getElementById('ppdbForm').action;
@@ -1579,13 +1523,10 @@
             btn.classList.add('bg-slate-400', 'cursor-not-allowed');
 
             try {
-                // Menggunakan e.target secara langsung agar lebih aman dari gangguan scope runtime browser
                 const formElement = e.target;
                 const formData = new FormData(formElement);
                 const plainData = Object.fromEntries(formData.entries());
 
-                // JAMINAN PASTI MASUK: Ambil nilai umur dan petugas secara manual langsung dari elemen DOM
-                // Ini mencegah isu browser tertentu yang melewatkan input 'readonly' atau 'select' saat membuat FormData otomatis
                 plainData.umur = document.getElementById('umur_pendaftar').value;
                 const selectPetugas = formElement.querySelector('select[name="petugas"]');
                 plainData.petugas = selectPetugas ? selectPetugas.value : "";
