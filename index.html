@@ -1021,7 +1021,7 @@
             renderDafulStudents(localSiswaDb);
         }
 
-        // --- RENDER DAFTAR SISWA DAFUL DENGAN FITUR PAGINASI ---
+       // --- RENDER DAFTAR SISWA DAFUL DENGAN FITUR PAGINASI ---
         function renderDafulStudents(students) {
             const tbody = document.getElementById('dafulStudentTableBody');
             const pageSizeSelect = document.getElementById('dafulPageSize');
@@ -1056,6 +1056,10 @@
             paginatedStudents.forEach(siswa => {
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition border-b";
+
+                // PERBAIKAN: Mengamankan nama dari tanda petik (') agar tombol tidak error
+                // Tanda petik pada nama (misal: NAFI'UL) akan diubah sementara menjadi (`) untuk parameter tombol
+                const namaAman = siswa.nama ? String(siswa.nama).replace(/'/g, "`") : "";
                 
                 tr.innerHTML = `
                     <td class="p-3 font-semibold text-slate-800">${siswa.nama}</td>
@@ -1069,7 +1073,7 @@
                     </td>
                     <td class="p-3 text-center space-y-1.5">
                         <!-- Dropdown Kelas Akademik -->
-                        <select onchange="prosesKenaikanKelas(this, '${siswa.rowNumber}', '${siswa.nama}', 'akademik')" class="w-full text-xs px-2.5 py-1.5 border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 font-semibold text-emerald-800 mb-1">
+                        <select onchange="prosesKenaikanKelas(this, '${siswa.rowNumber}', '${namaAman}', 'akademik')" class="w-full text-xs px-2.5 py-1.5 border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 font-semibold text-emerald-800 mb-1">
                             <option value="">-- Pilih Kelas Umum --</option>
                             <optgroup label="STATUS KHUSUS">
                                 <option value="TETAP DI KELAS X">TETAP DI KELAS X</option>
@@ -1116,13 +1120,13 @@
                                 <option value="3 ULYA">3 ULYA</option>
                             </select>
                             <input type="text" id="madin_par_${siswa.rowNumber}" maxlength="1" placeholder="A-P" oninput="this.value = this.value.toUpperCase()" class="w-1/4 text-[10px] px-1 py-1.5 border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-amber-500 font-bold text-center uppercase placeholder-slate-300">
-                            <button onclick="simpanMadinManual('${siswa.rowNumber}', '${siswa.nama}')" class="bg-amber-500 hover:bg-amber-600 text-white p-1.5 px-2 rounded-lg text-xs transition cursor-pointer flex items-center justify-center" title="Simpan Kelas Madin">
+                            <button onclick="simpanMadinManual('${siswa.rowNumber}', '${namaAman}')" class="bg-amber-500 hover:bg-amber-600 text-white p-1.5 px-2 rounded-lg text-xs transition cursor-pointer flex items-center justify-center" title="Simpan Kelas Madin">
                                 <i class="fa-solid fa-floppy-disk"></i>
                             </button>
                         </div>
 
                         <!-- Update Berkas Opsional -->
-                        <button onclick="bukaModalUploadBerkas('${siswa.rowNumber}', '${siswa.nama}')" class="w-full bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold py-1.5 px-2 rounded-lg border border-blue-200 text-[10px] flex items-center justify-center space-x-1 transition cursor-pointer mt-1">
+                        <button onclick="bukaModalUploadBerkas('${siswa.rowNumber}', '${namaAman}')" class="w-full bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold py-1.5 px-2 rounded-lg border border-blue-200 text-[10px] flex items-center justify-center space-x-1 transition cursor-pointer mt-1">
                             <i class="fa-solid fa-cloud-arrow-up"></i>
                             <span>Update Berkas (Optional)</span>
                         </button>
@@ -1137,7 +1141,6 @@
             // Gambar tombol-tombol halaman (Paginasi)
             buatTombolHalaman(totalPages, students);
         }
-
         // --- FUNGSI MENGGAMBAR TOMBOL HALAMAN ---
         function buatTombolHalaman(totalPages, students) {
             const container = document.getElementById('paginationControls');
