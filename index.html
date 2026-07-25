@@ -812,8 +812,30 @@
             });
         });
 
-        // --- SISTEM NAVIGASI TAB ---
+        // --- SISTEM NAVIGASI TAB DENGAN PROTEKSI AKSES LOGIN ---
         function switchTab(tabId) {
+            // Menu yang Wajib Login (SPMB & DAFUL)
+            const menuTerproteksi = ['spmb', 'daful'];
+
+            // Jika pengguna mencoba membuka SPMB atau DAFUL tapi BELUM LOGIN
+            if (menuTerproteksi.includes(tabId) && !currentUser) {
+                Swal.fire({
+                    title: 'Akses Terbatas!',
+                    text: `Menu ${tabId.toUpperCase()} hanya dapat diakses oleh Admin / PTK yang telah login.`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#047857',
+                    cancelButtonColor: '#64748b',
+                    confirmButtonText: '<i class="fa-solid fa-right-to-bracket mr-1"></i> Login Sekarang',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        openLoginModal('Admin'); // Buka modal login otomatis jika diklik
+                    }
+                });
+                return; // Batalkan perpindahan tab
+            }
+
             // Sembunyikan semua tab content
             document.querySelectorAll('.tab-content').forEach(el => {
                 el.classList.add('hidden');
