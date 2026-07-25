@@ -870,16 +870,128 @@
             document.getElementById('loginPassword').value = '';
         }
 
-        function handleLoginSubmit(e) {
+        // Variable global menyimpan sesi login
+        let currentUser = JSON.parse(localStorage.getItem('sim_user')) || null;
+
+        // Cek sesi login saat halaman pertama kali dibuka
+        window.addEventListener('DOMContentLoaded', () => {
+            perbaruiTampilanSesi();
+        });
+
+        // --- MANAJEMEN DROPDOWN LOGIN & MODAL ---
+        let selectedRole = 'Admin';
+
+        function openLoginModal(role) {
+            selectedRole = role;
+            document.getElementById('loginDropdown').classList.add('hidden');
+            document.getElementById('loginRoleLabel').innerText = `Otentikasi Login ${role}`;
+            document.getElementById('loginModal').classList.remove('hidden');
+        }
+
+        // --- FUNGSI EKSEKUSI LOGIN KE GOOGLE SHEETS ---
+        async function handleLoginSubmit(e) {
             e.preventDefault();
-            const user = document.getElementById('loginUsername').value;
+            
+            const usernameInput = document.getElementById('loginUsername').value.trim();
+            const passwordInput = document.getElementById('loginPassword').value.trim();
+            const scriptUrl = document.getElementById('ppdbForm').action;
+
+            if (!usernameInput || !passwordInput) {
+                Swal.fire('Peringatan', 'Harap isi Username dan Password!', 'warning');
+                return;
+            }
+
             Swal.fire({
-                title: 'Login Berhasil!',
-                text: `Selamat datang kembali, ${user.toUpperCase()}! Hak akses Anda kini aktif.`,
-                icon: 'success',
-                confirmButtonColor: '#047857'
+                title: 'Memeriksa Kredensial...',
+                text: 'Menghubungkan ke database otentikasi madrasah.',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
             });
-            closeLoginModal();
+
+            try {
+                const response = await fetch(scriptUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({
+                        action: 'login',
+                        username: usernameInput,
+                        password: passwordInput
+                    })
+                });
+
+                const result = await response.json();
+                Swal.close();
+
+                if (result.status === 'success') {
+                    currentUser = {
+                        username: result.username,
+                        nama: result.nama,
+                        jabatan: result.jabatan,
+                        role: result.role
+                    };
+
+                    // Simpan sesi login di browser (localStorage)
+                    localStorage.setItem('sim_user', JSON.stringify(currentUser));
+
+                    Swal.fire({
+                        title: 'Login Berhasil!',
+                        text: `Selamat datang kembali, ${currentUser.nama} (${currentUser.jabatan})!`,
+                        icon: 'success',
+                        confirmButtonColor: '#047857'
+                    });
+
+                    closeLoginModal();
+                    perbaruiTampilanSesi();
+                } else {
+                    Swal.fire('Akses Ditolak', result.message || 'Username atau Password salah!', 'error');
+                }
+            } catch (err) {
+                console.error(err);
+                Swal.fire('Gagal Login', 'Terjadi gangguan jaringan atau koneksi API dibatasi.', 'error');
+            }
+        }
+
+        // --- FUNGSI UPDATE TAMPILAN HEADER BERDASARKAN SESI LOGIN ---
+        function perbaruiTampilanSesi() {
+            // Cari kontainer tombol login di pojok kanan atas
+            const dropdownEl = document.getElementById('loginDropdown');
+            if (!dropdownEl) return;
+            const containerLogin = dropdownEl.parentElement;
+
+            if (currentUser && containerLogin) {
+                // Jika sudah login, tampilkan nama, jabatan, dan tombol Keluar
+                containerLogin.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <div class="text-right hidden sm:block">
+                            <span class="block text-xs font-bold text-slate-800">${currentUser.nama}</span>
+                            <span class="block text-[10px] text-emerald-700 font-semibold uppercase">${currentUser.jabatan || currentUser.role}</span>
+                        </div>
+                        <button onclick="prosesLogout()" class="bg-red-50 hover:bg-red-100 text-red-700 font-bold px-3 py-2 rounded-lg text-xs border border-red-200 shadow-sm transition flex items-center space-x-1" title="Keluar dari Sistem">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                            <span>Keluar</span>
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // --- FUNGSI LOGOUT ---
+        function prosesLogout() {
+            Swal.fire({
+                title: 'Konfirmasi Keluar',
+                text: 'Apakah Anda yakin ingin keluar dari sistem?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                confirmButtonText: 'Ya, Keluar',
+                cancelButtonText: 'Batal'
+            }).then((res) => {
+                if (res.isConfirmed) {
+                    localStorage.removeItem('sim_user');
+                    currentUser = null;
+                    location.reload(); // Refresh halaman agar kembali ke mode tampilan publik
+                }
+            });
         }
 
         // --- HITUNG UMUR OTOMATIS (FUNGSI PENDAFTARAN SPMB) ---
