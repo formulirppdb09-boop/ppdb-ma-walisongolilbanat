@@ -1381,6 +1381,29 @@
         let masterFilteredDb = [];
         let masterCurrentPage = 1;
 
+        // Fungsi pembantu hitung umur otomatis berdasarkan tanggal lahir
+        function hitungUmurDariTanggal(tglString) {
+            if (!tglString || tglString === "-" || tglString === "null") return "-";
+            const tglLahir = new Date(tglString);
+            if (isNaN(tglLahir.getTime())) return "-";
+
+            const tglSekarang = new Date();
+            let tahun = tglSekarang.getFullYear() - tglLahir.getFullYear();
+            let bulan = tglSekarang.getMonth() - tglLahir.getMonth();
+            let hari = tglSekarang.getDate() - tglLahir.getDate();
+
+            if (hari < 0) {
+                bulan--;
+            }
+            if (bulan < 0) {
+                tahun--;
+                bulan += 12;
+            }
+
+            if (tahun < 0) return "-";
+            return `${tahun} THN ${bulan} BLN`;
+        }
+
         // Reset halaman ke-1 saat filter / ukuran halaman berubah
         function resetDanRenderMaster() {
             masterCurrentPage = 1;
@@ -1649,28 +1672,6 @@
                 confirmButtonText: 'Tutup Biodata',
                 confirmButtonColor: '#047857'
             });
-        }
-        // Fungsi pembantu hitung umur otomatis berdasarkan tanggal lahir
-        function hitungUmurDariTanggal(tglString) {
-            if (!tglString || tglString === "-" || tglString === "null") return "-";
-            const tglLahir = new Date(tglString);
-            if (isNaN(tglLahir.getTime())) return "-";
-
-            const tglSekarang = new Date();
-            let tahun = tglSekarang.getFullYear() - tglLahir.getFullYear();
-            let bulan = tglSekarang.getMonth() - tglLahir.getMonth();
-            let hari = tglSekarang.getDate() - tglLahir.getDate();
-
-            if (hari < 0) {
-                bulan--;
-            }
-            if (bulan < 0) {
-                tahun--;
-                bulan += 12;
-            }
-
-            if (tahun < 0) return "-";
-            return `${tahun} THN ${bulan} BLN`;
         }
     </script>
 </body>
