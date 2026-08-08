@@ -786,7 +786,21 @@
             </table>
         </div>
 
-        <div class="flex items-center justify-between text-xs text-slate-500 pt-2">
+<!-- Paginasi & Indikator Master Data Siswa -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 border-t bg-slate-50 mt-2 rounded-b-xl">
+            <div class="flex items-center space-x-2 text-xs">
+                <span class="text-slate-500">Tampilkan:</span>
+                <select id="masterPageSize" onchange="resetDanRenderMaster()" class="border p-1.5 rounded bg-white text-slate-700 font-bold focus:ring-1 focus:ring-emerald-500">
+                    <option value="25">25 Baris</option>
+                    <option value="50">50 Baris</option>
+                    <option value="100">100 Baris</option>
+                    <option value="all">Semua Data</option>
+                </select>
+            </div>
+            <div id="masterPaginationControls" class="flex flex-wrap items-center justify-center gap-1"></div>
+        </div>
+
+        <div class="flex items-center justify-between text-xs text-slate-500 pt-2 px-1">
             <span id="masterSummaryCount">Menampilkan 0 siswa</span>
             <span class="italic text-slate-400">Database SIM MA Wali Songo Lilbanat</span>
         </div>
@@ -1362,8 +1376,16 @@
                 btn.disabled = false; btn.innerText = "Kirim Data & Berkas Pendaftaran";
             }
         });
-        // --- LOGIKA MASTER DAFTAR SISWA LENGKAP ---
+        // --- LOGIKA MASTER DAFTAR SISWA LENGKAP (WITH PAGINATION & BERKAS LINKS) ---
         let masterSiswaDb = [];
+        let masterFilteredDb = [];
+        let masterCurrentPage = 1;
+
+        // Reset halaman ke-1 saat filter / ukuran halaman berubah
+        function resetDanRenderMaster() {
+            masterCurrentPage = 1;
+            renderMasterSiswa(masterFilteredDb);
+        }
 
         // Sinkronkan data master dari Google Sheets
         async function fetchMasterSiswaFromSheets() {
@@ -1387,7 +1409,9 @@
 
                 if (result.status === "success" && result.data) {
                     masterSiswaDb = result.data;
-                    renderMasterSiswa(masterSiswaDb);
+                    masterFilteredDb = [...masterSiswaDb];
+                    masterCurrentPage = 1;
+                    renderMasterSiswa(masterFilteredDb);
                     Swal.fire('Sukses!', `Berhasil memuat ${masterSiswaDb.length} data siswa.`, 'success');
                 } else {
                     throw new Error(result.message || 'Gagal memuat data');
@@ -1398,29 +1422,42 @@
             }
         }
 
-        // Render tabel data master
+        // Render tabel data master dengan Paginasi
         function renderMasterSiswa(dataList) {
             const tbody = document.getElementById('masterStudentTableBody');
             const summary = document.getElementById('masterSummaryCount');
+            const pageSizeSelect = document.getElementById('masterPageSize');
 
             if (!dataList || dataList.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="9" class="p-8 text-center text-slate-400 italic">Data siswa tidak ditemukan.</td></tr>`;
                 summary.innerText = "Menampilkan 0 siswa";
+                document.getElementById('masterPaginationControls').innerHTML = '';
                 return;
             }
 
+            // Hitung Ukuran Halaman & Paginasi
+            const valSize = pageSizeSelect ? pageSizeSelect.value : "25";
+            const pageSize = valSize === 'all' ? dataList.length : parseInt(valSize);
+            const totalPages = Math.ceil(dataList.length / pageSize);
+
+            if (masterCurrentPage > totalPages) masterCurrentPage = totalPages;
+            if (masterCurrentPage < 1) masterCurrentPage = 1;
+
+            const startIndex = (masterCurrentPage - 1) * pageSize;
+            const endIndex = Math.min(startIndex + pageSize, dataList.length);
+            const paginatedData = dataList.slice(startIndex, endIndex);
+
             tbody.innerHTML = '';
-            dataList.forEach((siswa, index) => {
+            paginatedData.forEach((siswa, index) => {
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition border-b";
 
-                // Format tampilan status
                 const statusHtml = siswa.status_siswa && siswa.status_siswa.includes('MUTASI') 
                     ? `<span class="px-2 py-0.5 bg-red-100 text-red-700 font-bold rounded-full text-[10px]">${siswa.status_siswa}</span>`
                     : `<span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 font-bold rounded-full text-[10px]">${siswa.status_siswa || 'AKTIF'}</span>`;
 
                 tr.innerHTML = `
-                    <td class="p-3 text-center font-bold text-slate-400">${index + 1}</td>
+                    <td class="p-3 text-center font-bold text-slate-400">${startIndex + index + 1}</td>
                     <td class="p-3 font-semibold text-slate-800">${siswa.nama}</td>
                     <td class="p-3 font-mono">${siswa.nisn || '-'}</td>
                     <td class="p-3">${siswa.tempat_lahir || '-'}</td>
@@ -1429,7 +1466,7 @@
                     <td class="p-3 text-center text-[11px]">${siswa.umur || '-'}</td>
                     <td class="p-3 text-center">${statusHtml}</td>
                     <td class="p-3 text-center">
-                        <button onclick="lihatDetailSiswa(${index})" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold px-2.5 py-1 rounded-lg border border-emerald-200 text-[11px] transition flex items-center justify-center space-x-1 mx-auto">
+                        <button onclick="lihatDetailSiswaByRow('${siswa.rowNumber}')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold px-2.5 py-1 rounded-lg border border-emerald-200 text-[11px] transition flex items-center justify-center space-x-1 mx-auto">
                             <i class="fa-solid fa-eye"></i>
                             <span>Detail</span>
                         </button>
@@ -1438,7 +1475,52 @@
                 tbody.appendChild(tr);
             });
 
-            summary.innerText = `Menampilkan ${dataList.length} siswa`;
+            summary.innerText = `Menampilkan ${startIndex + 1} - ${endIndex} dari ${dataList.length} siswa`;
+            buatTombolHalamanMaster(totalPages);
+        }
+
+        // Fungsi menggambar tombol navigasi Paginasi
+        function buatTombolHalamanMaster(totalPages) {
+            const container = document.getElementById('masterPaginationControls');
+            if (!container) return;
+            container.innerHTML = '';
+
+            if (totalPages <= 1) return;
+
+            // Tombol Prev
+            const btnPrev = document.createElement('button');
+            btnPrev.innerHTML = '<i class="fa-solid fa-angle-left"></i>';
+            btnPrev.disabled = masterCurrentPage === 1;
+            btnPrev.className = `px-2.5 py-1.5 text-xs font-bold rounded-lg border transition ${masterCurrentPage === 1 ? 'text-slate-300 bg-slate-50 cursor-not-allowed border-slate-200' : 'text-slate-700 bg-white hover:bg-slate-100 border-slate-300'}`;
+            btnPrev.onclick = () => { masterCurrentPage--; renderMasterSiswa(masterFilteredDb); };
+            container.appendChild(btnPrev);
+
+            // Angka Halaman
+            for (let i = 1; i <= totalPages; i++) {
+                if (totalPages > 5 && Math.abs(i - masterCurrentPage) > 2 && i !== 1 && i !== totalPages) {
+                    if (i === 2 || i === totalPages - 1) {
+                        const dots = document.createElement('span');
+                        dots.innerText = '...';
+                        dots.className = 'px-2 py-1 text-slate-400 text-xs font-bold';
+                        container.appendChild(dots);
+                    }
+                    continue;
+                }
+
+                const btnPage = document.createElement('button');
+                btnPage.innerText = i;
+                btnPage.className = `px-3 py-1.5 text-xs font-bold rounded-lg border transition ${i === masterCurrentPage ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm' : 'bg-white text-slate-700 hover:bg-slate-100 border-slate-300'}`;
+                btnPage.onclick = () => { masterCurrentPage = i; renderMasterSiswa(masterFilteredDb); };
+                container.appendChild(btnPage);
+            }
+
+            // Tombol Next
+            const btnNext = document.createElement('button');
+            btnNext.innerHTML = '<i class="fa-solid fa-angle-right"></i>';
+            btnNext.disabled = masterCurrentPage === totalPages;
+            btnNext.className = `px-2.5 py-1.5 text-xs font-bold rounded-lg border transition ${masterCurrentPage === totalPages ? 'text-slate-300 bg-slate-50 cursor-not-allowed border-slate-200' : 'text-slate-700 bg-white hover:bg-slate-100 border-slate-300'}`;
+            btnNext.onclick = () => { masterCurrentPage++; renderMasterSiswa(masterFilteredDb); };
+            container.appendChild(btnNext);
         }
 
         // Filter berdasarkan tingkat & kata kunci pencarian
@@ -1448,39 +1530,47 @@
 
             if (!masterSiswaDb) return;
 
-            const filtered = masterSiswaDb.filter(siswa => {
+            masterFilteredDb = masterSiswaDb.filter(siswa => {
                 const nama = siswa.nama ? String(siswa.nama).toUpperCase() : "";
                 const nisn = siswa.nisn ? String(siswa.nisn).toUpperCase() : "";
                 const kelas = siswa.kelas ? String(siswa.kelas).toUpperCase() : "";
 
-                // Cek filter tingkat kelas (X, XI, XII)
                 let matchTingkat = true;
                 if (tingkat === '10') matchTingkat = kelas.startsWith('X-') || kelas.includes('10');
                 else if (tingkat === '11') matchTingkat = kelas.startsWith('XI-') || kelas.includes('11');
                 else if (tingkat === '12') matchTingkat = kelas.startsWith('XII-') || kelas.includes('12');
 
-                // Cek filter pencarian
                 const matchQuery = nama.includes(query) || nisn.includes(query);
 
                 return matchTingkat && matchQuery;
             });
 
-            renderMasterSiswa(filtered);
+            masterCurrentPage = 1;
+            renderMasterSiswa(masterFilteredDb);
         }
 
-        // Modal Pop-Up Rincian Biodata Lengkap Siswa
-        function lihatDetailSiswa(index) {
-            const s = masterSiswaDb[index];
+        // Modal Pop-Up Detail Biodata Lengkap + Tautan Lampiran Berkas
+        function lihatDetailSiswaByRow(rowNumber) {
+            const s = masterSiswaDb.find(item => item.rowNumber == rowNumber);
             if (!s) return;
+
+            // Menyiapkan tombol link KK dan Ijazah jika tersedia di Google Sheets
+            let linkKKHtml = s.url_kk || s.kk_url || s.link_kk 
+                ? `<a href="${s.url_kk || s.kk_url || s.link_kk}" target="_blank" class="inline-flex items-center space-x-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition shadow-sm"><i class="fa-solid fa-file-pdf"></i> <span>Lihat File KK</span></a>`
+                : `<span class="text-slate-400 italic text-[11px] bg-slate-100 px-2.5 py-1 rounded-md border border-slate-200">Berkas KK Belum Diunggah</span>`;
+
+            let linkIjazahHtml = s.url_ijazah || s.ijazah_url || s.link_ijazah || s.url_skl
+                ? `<a href="${s.url_ijazah || s.ijazah_url || s.link_ijazah || s.url_skl}" target="_blank" class="inline-flex items-center space-x-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition shadow-sm"><i class="fa-solid fa-graduation-cap"></i> <span>Lihat File Ijazah / SKL</span></a>`
+                : `<span class="text-slate-400 italic text-[11px] bg-slate-100 px-2.5 py-1 rounded-md border border-slate-200">Berkas Ijazah Belum Diunggah</span>`;
 
             Swal.fire({
                 title: `Biodata Lengkap Santriwati`,
-                width: '700px',
+                width: '720px',
                 html: `
                     <div class="text-left text-xs space-y-4 max-h-[70vh] overflow-y-auto p-2">
                         <!-- Identitas Utama -->
                         <div class="bg-emerald-50/60 p-3.5 rounded-xl border border-emerald-100 space-y-1">
-                            <h4 class="font-bold text-emerald-900 uppercase text-[11px] border-b border-emerald-200 pb-1 mb-2"><i class="fa-solid fa-id-card mr-1"></i> Identitas Siswa</h4>
+                            <h4 class="font-bold text-emerald-900 uppercase text-[11px] border-b border-emerald-200 pb-1 mb-2 flex items-center"><i class="fa-solid fa-id-card mr-1.5"></i> Identitas Siswa</h4>
                             <div class="grid grid-cols-2 gap-2">
                                 <p><strong>Nama Lengkap:</strong> ${s.nama || '-'}</p>
                                 <p><strong>NISN / NIK:</strong> ${s.nisn || '-'} / ${s.nik || '-'}</p>
@@ -1493,7 +1583,7 @@
 
                         <!-- Data Orang Tua & Alamat -->
                         <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1">
-                            <h4 class="font-bold text-slate-800 uppercase text-[11px] border-b border-slate-300 pb-1 mb-2"><i class="fa-solid fa-users mr-1"></i> Data Keluarga & Alamat</h4>
+                            <h4 class="font-bold text-slate-800 uppercase text-[11px] border-b border-slate-300 pb-1 mb-2 flex items-center"><i class="fa-solid fa-users mr-1.5"></i> Data Keluarga & Alamat</h4>
                             <div class="grid grid-cols-2 gap-2">
                                 <p><strong>Nama Ayah:</strong> ${s.nama_ayah || '-'}</p>
                                 <p><strong>No. WA Ayah:</strong> ${s.telp_ayah || '-'}</p>
@@ -1505,10 +1595,25 @@
 
                         <!-- Riwayat Sekolah Asal -->
                         <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1">
-                            <h4 class="font-bold text-slate-800 uppercase text-[11px] border-b border-slate-300 pb-1 mb-2"><i class="fa-solid fa-school mr-1"></i> Sekolah Asal</h4>
+                            <h4 class="font-bold text-slate-800 uppercase text-[11px] border-b border-slate-300 pb-1 mb-2 flex items-center"><i class="fa-solid fa-school mr-1.5"></i> Sekolah Asal</h4>
                             <div class="grid grid-cols-2 gap-2">
                                 <p><strong>Asal Sekolah:</strong> ${s.sekolah_asal || '-'}</p>
                                 <p><strong>NPSN / NSM:</strong> ${s.npsn || '-'} / ${s.nsm || '-'}</p>
+                            </div>
+                        </div>
+
+                        <!-- Lampiran Berkas Digital (KK & Ijazah) -->
+                        <div class="bg-amber-50/60 p-3.5 rounded-xl border border-amber-200/80 space-y-2">
+                            <h4 class="font-bold text-amber-900 uppercase text-[11px] border-b border-amber-200 pb-1 flex items-center"><i class="fa-solid fa-folder-open mr-1.5"></i> Lampiran Berkas Digital</h4>
+                            <div class="flex flex-wrap items-center gap-3 pt-1">
+                                <div>
+                                    <span class="block text-[10px] text-slate-500 font-semibold mb-1">Kartu Keluarga (KK):</span>
+                                    ${linkKKHtml}
+                                </div>
+                                <div>
+                                    <span class="block text-[10px] text-slate-500 font-semibold mb-1">Ijazah / SKL:</span>
+                                    ${linkIjazahHtml}
+                                </div>
                             </div>
                         </div>
                     </div>
