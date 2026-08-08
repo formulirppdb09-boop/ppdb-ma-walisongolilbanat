@@ -1466,7 +1466,90 @@
                     <td class="p-3 text-center text-[11px]">${siswa.umur || '-'}</td>
                     <td class="p-3 text-center">${statusHtml}</td>
                     <td class="p-3 text-center">
-                        // Modal Pop-Up Detail Biodata Lengkap + Tautan Lampiran Berkas (Multi-Check Key)
+                        <button onclick="lihatDetailSiswaByRow('${siswa.rowNumber}')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold px-2.5 py-1 rounded-lg border border-emerald-200 text-[11px] transition flex items-center justify-center space-x-1 mx-auto">
+                            <i class="fa-solid fa-eye"></i>
+                            <span>Detail</span>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            summary.innerText = `Menampilkan ${startIndex + 1} - ${endIndex} dari ${dataList.length} siswa`;
+            buatTombolHalamanMaster(totalPages);
+        }
+
+        // Fungsi menggambar tombol navigasi Paginasi
+        function buatTombolHalamanMaster(totalPages) {
+            const container = document.getElementById('masterPaginationControls');
+            if (!container) return;
+            container.innerHTML = '';
+
+            if (totalPages <= 1) return;
+
+            // Tombol Prev
+            const btnPrev = document.createElement('button');
+            btnPrev.innerHTML = '<i class="fa-solid fa-angle-left"></i>';
+            btnPrev.disabled = masterCurrentPage === 1;
+            btnPrev.className = `px-2.5 py-1.5 text-xs font-bold rounded-lg border transition ${masterCurrentPage === 1 ? 'text-slate-300 bg-slate-50 cursor-not-allowed border-slate-200' : 'text-slate-700 bg-white hover:bg-slate-100 border-slate-300'}`;
+            btnPrev.onclick = () => { masterCurrentPage--; renderMasterSiswa(masterFilteredDb); };
+            container.appendChild(btnPrev);
+
+            // Angka Halaman
+            for (let i = 1; i <= totalPages; i++) {
+                if (totalPages > 5 && Math.abs(i - masterCurrentPage) > 2 && i !== 1 && i !== totalPages) {
+                    if (i === 2 || i === totalPages - 1) {
+                        const dots = document.createElement('span');
+                        dots.innerText = '...';
+                        dots.className = 'px-2 py-1 text-slate-400 text-xs font-bold';
+                        container.appendChild(dots);
+                    }
+                    continue;
+                }
+
+                const btnPage = document.createElement('button');
+                btnPage.innerText = i;
+                btnPage.className = `px-3 py-1.5 text-xs font-bold rounded-lg border transition ${i === masterCurrentPage ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm' : 'bg-white text-slate-700 hover:bg-slate-100 border-slate-300'}`;
+                btnPage.onclick = () => { masterCurrentPage = i; renderMasterSiswa(masterFilteredDb); };
+                container.appendChild(btnPage);
+            }
+
+            // Tombol Next
+            const btnNext = document.createElement('button');
+            btnNext.innerHTML = '<i class="fa-solid fa-angle-right"></i>';
+            btnNext.disabled = masterCurrentPage === totalPages;
+            btnNext.className = `px-2.5 py-1.5 text-xs font-bold rounded-lg border transition ${masterCurrentPage === totalPages ? 'text-slate-300 bg-slate-50 cursor-not-allowed border-slate-200' : 'text-slate-700 bg-white hover:bg-slate-100 border-slate-300'}`;
+            btnNext.onclick = () => { masterCurrentPage++; renderMasterSiswa(masterFilteredDb); };
+            container.appendChild(btnNext);
+        }
+
+        // Filter berdasarkan tingkat & kata kunci pencarian
+        function filterMasterSiswa() {
+            const tingkat = document.getElementById('filterTingkatSiswa').value;
+            const query = document.getElementById('masterSearchInput').value.trim().toUpperCase();
+
+            if (!masterSiswaDb) return;
+
+            masterFilteredDb = masterSiswaDb.filter(siswa => {
+                const nama = siswa.nama ? String(siswa.nama).toUpperCase() : "";
+                const nisn = siswa.nisn ? String(siswa.nisn).toUpperCase() : "";
+                const kelas = siswa.kelas ? String(siswa.kelas).toUpperCase() : "";
+
+                let matchTingkat = true;
+                if (tingkat === '10') matchTingkat = kelas.startsWith('X-') || kelas.includes('10');
+                else if (tingkat === '11') matchTingkat = kelas.startsWith('XI-') || kelas.includes('11');
+                else if (tingkat === '12') matchTingkat = kelas.startsWith('XII-') || kelas.includes('12');
+
+                const matchQuery = nama.includes(query) || nisn.includes(query);
+
+                return matchTingkat && matchQuery;
+            });
+
+            masterCurrentPage = 1;
+            renderMasterSiswa(masterFilteredDb);
+        }
+
+        // Modal Pop-Up Detail Biodata Lengkap + Tautan Lampiran Berkas (Multi-Check Key)
         function lihatDetailSiswaByRow(rowNumber) {
             const s = masterSiswaDb.find(item => item.rowNumber == rowNumber);
             if (!s) return;
