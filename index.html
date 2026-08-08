@@ -1549,43 +1549,45 @@
             renderMasterSiswa(masterFilteredDb);
         }
 
-        // Modal Pop-Up Detail Biodata Lengkap + Tautan Lampiran Berkas (Multi-Check Key)
+        // Modal Pop-Up Detail Biodata Lengkap + Tautan Lampiran Berkas (Sesuai Header Sheets)
         function lihatDetailSiswaByRow(rowNumber) {
             const s = masterSiswaDb.find(item => item.rowNumber == rowNumber);
             if (!s) return;
 
-            // 1. OPSI ALAMAT LENGKAP (Cek jika ada gabungan alamat atau kolom terpisah)
-            let alamatLengkap = "";
-            if (s.alamat && String(s.alamat).trim() !== "") {
-                alamatLengkap = s.alamat;
-            } else {
-                const dusun = s.dusun || s.jalan || "";
-                const rtrw = s.rtrw || s.rt_rw || "";
-                const desa = s.desa || s.kelurahan || "";
-                const kec = s.kecamatan || s.kec || "";
-                const kab = s.kabupaten || s.kab || "";
-                
-                let bagian = [];
-                if (dusun) bagian.push(dusun);
-                if (rtrw) bagian.push(`RT/RW ${rtrw}`);
-                if (desa) bagian.push(`Desa/Kel. ${desa}`);
-                if (kec) bagian.push(`Kec. ${kec}`);
-                if (kab) bagian.push(`Kab. ${kab}`);
+            // 1. PEMBACAAN ALAMAT PRESISI
+            const dusun = s['Alamat Orang Tua (Dusun)'] || s.dusun || s.alamat || "";
+            const rtrw = s['RT/RW (Sesuai KK)'] || s.rtrw || s.rt_rw || "";
+            const desa = s['Desa'] || s.desa || "";
+            const kec = s['Kecamatan'] || s.kecamatan || "";
+            const kab = s['Kabupaten'] || s.kabupaten || "";
 
-                alamatLengkap = bagian.length > 0 ? bagian.join(', ') : '-';
-            }
+            let bagianAlamat = [];
+            if (dusun) bagianAlamat.push(dusun);
+            if (rtrw) bagianAlamat.push(`RT/RW ${rtrw}`);
+            if (desa) bagianAlamat.push(`Desa ${desa}`);
+            if (kec) bagianAlamat.push(`Kec. ${kec}`);
+            if (kab) bagianAlamat.push(`Kab. ${kab}`);
 
-            // 2. OPSI LINK TAUTAN KK (Cek semua kemungkinan nama kolom dari Sheets)
-            const urlKK = s.url_kk || s.kk_url || s.link_kk || s.file_kk || s.fileKK || s.berkas_kk || s.kk || "";
+            const alamatLengkap = bagianAlamat.length > 0 ? bagianAlamat.join(', ') : '-';
+
+            // 2. PEMBACAAN LINK KK (Kolom "KK" di Sheets)
+            const urlKK = s['KK'] || s.url_kk || s.kk_url || s.link_kk || s.file_kk || "";
             let linkKKHtml = (urlKK && String(urlKK).startsWith('http'))
-                ? `<a href="${urlKK}" target="_blank" class="inline-flex items-center space-x-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition shadow-sm"><i class="fa-solid fa-file-pdf"></i> <span>Buka File KK</span></a>`
-                : `<span class="text-slate-400 italic text-[11px] bg-slate-100 px-2.5 py-1 rounded-md border border-slate-200">Berkas KK Belum Diunggah / Tidak Ada Link</span>`;
+                ? `<a href="${urlKK}" target="_blank" class="inline-flex items-center space-x-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold px-3.5 py-2 rounded-lg text-xs transition shadow-sm"><i class="fa-solid fa-file-pdf"></i> <span>Buka File KK</span></a>`
+                : `<span class="text-slate-400 italic text-[11px] bg-slate-100 px-2.5 py-1 rounded-md border border-slate-200">Berkas KK Belum Diunggah</span>`;
 
-            // 3. OPSI LINK TAUTAN IJAZAH / SKL
-            const urlIjazah = s.url_ijazah || s.ijazah_url || s.link_ijazah || s.file_ijazah || s.file_skl || s.fileSKL || s.berkas_ijazah || s.berkas_skl || s.ijazah || s.skl || "";
+            // 3. PEMBACAAN LINK IJAZAH/SKL (Kolom "SKL / IJAZAH" di Sheets)
+            const urlIjazah = s['SKL / IJAZAH'] || s['SKL/IJAZAH'] || s.url_ijazah || s.ijazah_url || s.link_ijazah || s.file_skl || "";
             let linkIjazahHtml = (urlIjazah && String(urlIjazah).startsWith('http'))
-                ? `<a href="${urlIjazah}" target="_blank" class="inline-flex items-center space-x-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition shadow-sm"><i class="fa-solid fa-graduation-cap"></i> <span>Buka File Ijazah / SKL</span></a>`
-                : `<span class="text-slate-400 italic text-[11px] bg-slate-100 px-2.5 py-1 rounded-md border border-slate-200">Berkas Ijazah Belum Diunggah / Tidak Ada Link</span>`;
+                ? `<a href="${urlIjazah}" target="_blank" class="inline-flex items-center space-x-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3.5 py-2 rounded-lg text-xs transition shadow-sm"><i class="fa-solid fa-graduation-cap"></i> <span>Buka File Ijazah / SKL</span></a>`
+                : `<span class="text-slate-400 italic text-[11px] bg-slate-100 px-2.5 py-1 rounded-md border border-slate-200">Berkas Ijazah Belum Diunggah</span>`;
+
+            // 4. PEMBACAAN NAMA & NO WA ORANG TUA
+            const namaAyah = s['Nama Ayah (Penulisan Sesuai dengan Ijasah Siswa)'] || s.nama_ayah || s.ayah || '-';
+            const telpAyah = s['Nomor Telepon Ayah'] || s.telp_ayah || s.wa_ayah || '-';
+            const namaIbu = s['Nama Ibu (Sesuai KK atau Akta Lahir)'] || s.nama_ibu || s.ibu || '-';
+            const telpIbu = s['Nomor Telepon Ibu'] || s.telp_ibu || s.wa_ibu || '-';
+            const sekolahAsal = s['Nama Sekolah Asal'] || s.sekolah_asal || '-';
 
             Swal.fire({
                 title: `Biodata Lengkap Santriwati`,
@@ -1596,12 +1598,12 @@
                         <div class="bg-emerald-50/60 p-3.5 rounded-xl border border-emerald-100 space-y-1">
                             <h4 class="font-bold text-emerald-900 uppercase text-[11px] border-b border-emerald-200 pb-1 mb-2 flex items-center"><i class="fa-solid fa-id-card mr-1.5"></i> Identitas Siswa</h4>
                             <div class="grid grid-cols-2 gap-2">
-                                <p><strong>Nama Lengkap:</strong> ${s.nama || '-'}</p>
-                                <p><strong>NISN / NIK:</strong> ${s.nisn || '-'} / ${s.nik || '-'}</p>
-                                <p><strong>TTL:</strong> ${s.tempat_lahir || '-'}, ${s.tanggal_lahir || '-'}</p>
+                                <p><strong>Nama Lengkap:</strong> ${s['NAMA LENGKAP( Sesuai Ijazah/SKL)'] || s.nama || '-'}</p>
+                                <p><strong>NISN / NIK:</strong> ${s['NISN (Nomer Induk Siswa Nasional )'] || s.nisn || '-'} / ${s['NIK SISWA (Sesuai KK)'] || s.nik || '-'}</p>
+                                <p><strong>TTL:</strong> ${s['TEMPAT LAHIR SISWA (Sesuai KK dan Ijazah)'] || s.tempat_lahir || '-'}, ${s['TANGGAL LAHIR SISWA (Sesuai KK dan Ijazah)'] || s.tanggal_lahir || '-'}</p>
                                 <p><strong>Umur:</strong> ${s.umur || '-'}</p>
-                                <p><strong>Rombel / Madin:</strong> ${s.kelas || '-'} / ${s.kelas_madin || '-'}</p>
-                                <p><strong>Asrama / Kamar:</strong> ${s.asrama || '-'} (${s.nomor_asrama || '-'})</p>
+                                <p><strong>Rombel / Madin:</strong> ${s['KELAS SAAT INI'] || s.kelas || '-'} / ${s['KELAS MADIN (Madrasah Diniah) Yang Sekarang'] || s.kelas_madin || '-'}</p>
+                                <p><strong>Asrama / Kamar:</strong> ${s['ASRAMA'] || s.asrama || '-'} (${s['NOMOR'] || s.nomor_asrama || '-'})</p>
                             </div>
                         </div>
 
@@ -1609,10 +1611,10 @@
                         <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1">
                             <h4 class="font-bold text-slate-800 uppercase text-[11px] border-b border-slate-300 pb-1 mb-2 flex items-center"><i class="fa-solid fa-users mr-1.5"></i> Data Keluarga & Alamat</h4>
                             <div class="grid grid-cols-2 gap-2">
-                                <p><strong>Nama Ayah:</strong> ${s.nama_ayah || s.ayah || '-'}</p>
-                                <p><strong>No. WA Ayah:</strong> ${s.telp_ayah || s.wa_ayah || s.hp_ayah || '-'}</p>
-                                <p><strong>Nama Ibu:</strong> ${s.nama_ibu || s.ibu || '-'}</p>
-                                <p><strong>No. WA Ibu:</strong> ${s.telp_ibu || s.wa_ibu || s.hp_ibu || '-'}</p>
+                                <p><strong>Nama Ayah:</strong> ${namaAyah}</p>
+                                <p><strong>No. WA Ayah:</strong> ${telpAyah}</p>
+                                <p><strong>Nama Ibu:</strong> ${namaIbu}</p>
+                                <p><strong>No. WA Ibu:</strong> ${telpIbu}</p>
                                 <p class="col-span-2"><strong>Alamat Orang Tua:</strong> ${alamatLengkap}</p>
                             </div>
                         </div>
@@ -1621,8 +1623,8 @@
                         <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1">
                             <h4 class="font-bold text-slate-800 uppercase text-[11px] border-b border-slate-300 pb-1 mb-2 flex items-center"><i class="fa-solid fa-school mr-1.5"></i> Sekolah Asal</h4>
                             <div class="grid grid-cols-2 gap-2">
-                                <p><strong>Asal Sekolah:</strong> ${s.sekolah_asal || s.asal_sekolah || '-'}</p>
-                                <p><strong>NPSN / NSM:</strong> ${s.npsn || '-'} / ${s.nsm || '-'}</p>
+                                <p><strong>Asal Sekolah:</strong> ${sekolahAsal}</p>
+                                <p><strong>NPSN / NSM:</strong> ${s['NPSN ( Nomer Pokok Sekolah Nasional )'] || s.npsn || '-'} / ${s['NSM ( Nomer Statistik Madrasah) Khusus Madrasah'] || s.nsm || '-'}</p>
                             </div>
                         </div>
 
