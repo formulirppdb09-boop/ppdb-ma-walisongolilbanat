@@ -1463,7 +1463,9 @@
                     <td class="p-3">${siswa.tempat_lahir || '-'}</td>
                     <td class="p-3">${siswa.tanggal_lahir || '-'}</td>
                     <td class="p-3 text-center font-bold text-emerald-800">${siswa.kelas || '-'}</td>
-                    <td class="p-3 text-center text-[11px]">${siswa.umur || '-'}</td>
+                    <td class="p-3 text-center text-[11px] font-semibold text-slate-700">
+                        ${(siswa.umur && siswa.umur !== '-') ? siswa.umur : hitungUmurDariTanggal(siswa.tanggal_lahir)}
+                    </td>
                     <td class="p-3 text-center">${statusHtml}</td>
                     <td class="p-3 text-center">
                         <button onclick="lihatDetailSiswaByRow('${siswa.rowNumber}')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold px-2.5 py-1 rounded-lg border border-emerald-200 text-[11px] transition flex items-center justify-center space-x-1 mx-auto">
@@ -1601,7 +1603,7 @@
                                 <p><strong>Nama Lengkap:</strong> ${s['NAMA LENGKAP( Sesuai Ijazah/SKL)'] || s.nama || '-'}</p>
                                 <p><strong>NISN / NIK:</strong> ${s['NISN (Nomer Induk Siswa Nasional )'] || s.nisn || '-'} / ${s['NIK SISWA (Sesuai KK)'] || s.nik || '-'}</p>
                                 <p><strong>TTL:</strong> ${s['TEMPAT LAHIR SISWA (Sesuai KK dan Ijazah)'] || s.tempat_lahir || '-'}, ${s['TANGGAL LAHIR SISWA (Sesuai KK dan Ijazah)'] || s.tanggal_lahir || '-'}</p>
-                                <p><strong>Umur:</strong> ${s.umur || '-'}</p>
+                                <p><strong>Umur:</strong> ${(s.umur && s.umur !== '-') ? s.umur : hitungUmurDariTanggal(s.tanggal_lahir)}</p>
                                 <p><strong>Rombel / Madin:</strong> ${s['KELAS SAAT INI'] || s.kelas || '-'} / ${s['KELAS MADIN (Madrasah Diniah) Yang Sekarang'] || s.kelas_madin || '-'}</p>
                                 <p><strong>Asrama / Kamar:</strong> ${s['ASRAMA'] || s.asrama || '-'} (${s['NOMOR'] || s.nomor_asrama || '-'})</p>
                             </div>
@@ -1647,6 +1649,28 @@
                 confirmButtonText: 'Tutup Biodata',
                 confirmButtonColor: '#047857'
             });
+        }
+        // Fungsi pembantu hitung umur otomatis berdasarkan tanggal lahir
+        function hitungUmurDariTanggal(tglString) {
+            if (!tglString || tglString === "-" || tglString === "null") return "-";
+            const tglLahir = new Date(tglString);
+            if (isNaN(tglLahir.getTime())) return "-";
+
+            const tglSekarang = new Date();
+            let tahun = tglSekarang.getFullYear() - tglLahir.getFullYear();
+            let bulan = tglSekarang.getMonth() - tglLahir.getMonth();
+            let hari = tglSekarang.getDate() - tglLahir.getDate();
+
+            if (hari < 0) {
+                bulan--;
+            }
+            if (bulan < 0) {
+                tahun--;
+                bulan += 12;
+            }
+
+            if (tahun < 0) return "-";
+            return `${tahun} THN ${bulan} BLN`;
         }
     </script>
 </body>
