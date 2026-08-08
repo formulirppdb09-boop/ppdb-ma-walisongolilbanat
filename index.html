@@ -4,27 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pusat Layanan Madrasah - MA Wali Songo Lilbanat</title>
-    <!-- Tailwind CSS -->
+    <!-- Tailwind CSS untuk Desain Responsif & Modern -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- SweetAlert2 -->
+    <!-- SweetAlert2 untuk Dialog Box Elegan -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- Font Awesome -->
+    <!-- Font Awesome untuk Ikon Menu -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
         body { font-family: 'Inter', sans-serif; }
+        /* Mengubah semua input teks & textarea otomatis menjadi huruf kapital saat diketik */
         input[type="text"], textarea { text-transform: uppercase; }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.3; }
+            100% { transform: scale(0.95); opacity: 0.5; }
+        }
+        .animate-ring { animation: pulse-ring 2s infinite ease-in-out; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
-    <!-- HEADER UTAMA (MANTAP SEJAJAR) -->
+    <!-- HEADER UTAMA (MANTAP SEJAJAR & UNTUK PUBLIK) -->
     <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-20">
-                <!-- Logo & Identitas Madrasah (Kiri) -->
+                <!-- Logo & Identitas Madrasah (Sisi Kiri) -->
                 <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('beranda')">
                     <img src="logo-kemenag.png" alt="Logo Kemenag" class="h-12 w-auto" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/b/be/Logo_Kementerian_Agama_Republik_Indonesia.png'">
                     <div class="leading-tight">
@@ -34,15 +41,26 @@
                     </div>
                 </div>
 
-                <!-- Menu Navigasi Atas Ringkas (Sebelum Login) -->
-                <nav class="hidden lg:flex items-center space-x-6 text-sm font-medium text-slate-600">
+                <!-- Menu Navigasi Atas Ringkas (Untuk Publik) -->
+                <nav class="hidden lg:flex items-center space-x-8 text-sm font-medium text-slate-600">
                     <button onclick="switchTab('beranda')" class="nav-link text-emerald-600 font-semibold border-b-2 border-emerald-600 pb-1" id="nav-beranda">Beranda</button>
                     <button onclick="switchTab('statistik')" class="nav-link hover:text-emerald-600 transition pb-1" id="nav-statistik">Statistik</button>
                     <button onclick="switchTab('spmb')" class="nav-link hover:text-emerald-600 transition pb-1" id="nav-spmb">SPMB</button>
                     <button onclick="switchTab('daful')" class="nav-link hover:text-emerald-600 transition pb-1" id="nav-daful">DAFUL</button>
+                    <div class="relative group">
+                        <button class="flex items-center space-x-1 hover:text-emerald-600 transition pb-1">
+                            <span>Informasi</span>
+                            <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                        </button>
+                        <div class="absolute left-0 mt-2 w-48 bg-white border border-slate-200 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                            <a href="#" class="block px-4 py-2.5 text-xs text-slate-700 hover:bg-slate-50 rounded-t-lg">Panduan Akademik</a>
+                            <a href="#" class="block px-4 py-2.5 text-xs text-slate-700 hover:bg-slate-50">Kalender Pendidikan</a>
+                            <a href="#" class="block px-4 py-2.5 text-xs text-slate-700 hover:bg-slate-50 rounded-b-lg">Bantuan Madrasah</a>
+                        </div>
+                    </div>
                 </nav>
 
-                <!-- Area Login / Sesi User (Pojok Kanan) -->
+                <!-- Area Login / Status Sesi User (Pojok Kanan Atas) -->
                 <div id="authHeaderContainer" class="relative">
                     <button onclick="toggleLoginDropdown()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-5 py-2.5 rounded-lg text-sm flex items-center space-x-2 shadow transition-all duration-150">
                         <i class="fa-solid fa-right-to-bracket"></i>
@@ -64,12 +82,12 @@
         </div>
     </header>
 
-    <!-- WRAPPER UTAMA (BERISI SIDEBAR KIRI + KONTEN) -->
+    <!-- CONTAINER UTAMA (BERISI SIDEBAR KIRI INTERAKTIF + KONTEN APLIKASI) -->
     <div class="flex-1 flex max-w-7xl w-full mx-auto">
         
-        <!-- SIDEBAR KIRI (HANYA MUNCUL SETELAH LOGIN) -->
-        <aside id="sidebarInternal" class="w-64 bg-slate-900 text-slate-200 min-h-screen p-4 hidden flex-col border-r border-slate-800 shadow-xl transition-all">
-            <!-- Profil Singkat Petugas -->
+        <!-- SIDEBAR INTERNAL KIRI (AUTOMATIS MUNCUL HANYA SETELAH LOGIN) -->
+        <aside id="sidebarInternal" class="w-64 bg-slate-900 text-slate-200 min-h-screen p-4 hidden flex-col border-r border-slate-800 shadow-2xl transition-all">
+            <!-- Profil Ringkas Petugas Aktif -->
             <div class="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700/60 mb-6 flex items-center space-x-3">
                 <div class="w-10 h-10 rounded-full bg-emerald-600 flex items-center justify-center text-white font-bold shadow">
                     <i class="fa-solid fa-user-tie text-lg"></i>
@@ -80,32 +98,37 @@
                 </div>
             </div>
 
-            <!-- Menu Internal Samping Kiri -->
+            <!-- Menu-Menu Internal Samping Kiri -->
             <div class="space-y-1">
-                <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 px-3 mb-2">Menu Utama SIM</span>
+                <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 px-3 mb-2">Menu Internal SIM</span>
+                
                 <button onclick="switchTab('daftarsiswalengkap')" class="w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold hover:bg-emerald-800/50 hover:text-white transition flex items-center space-x-2.5 text-slate-300">
                     <i class="fa-solid fa-address-book text-emerald-400 w-4"></i>
                     <span>Daftar Siswa</span>
                 </button>
+                
                 <button onclick="switchTab('mutasi')" class="w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold hover:bg-emerald-800/50 hover:text-white transition flex items-center space-x-2.5 text-slate-300">
                     <i class="fa-solid fa-right-left text-amber-400 w-4"></i>
                     <span>Mutasi Siswa</span>
                 </button>
+                
                 <button onclick="switchTab('rombel')" class="w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold hover:bg-emerald-800/50 hover:text-white transition flex items-center space-x-2.5 text-slate-300">
                     <i class="fa-solid fa-people-roof text-blue-400 w-4"></i>
                     <span>Rombel Kelas</span>
                 </button>
+                
                 <button onclick="switchTab('gtk')" class="w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold hover:bg-emerald-800/50 hover:text-white transition flex items-center space-x-2.5 text-slate-300">
                     <i class="fa-solid fa-chalkboard-user text-purple-400 w-4"></i>
                     <span>Guru & Tendik</span>
                 </button>
+                
                 <button onclick="switchTab('laporan')" class="w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold hover:bg-emerald-800/50 hover:text-white transition flex items-center space-x-2.5 text-slate-300">
                     <i class="fa-solid fa-file-chart-column text-rose-400 w-4"></i>
                     <span>Program & Laporan</span>
                 </button>
             </div>
 
-            <!-- Tombol Keluar Samping -->
+            <!-- Tombol Keluar Samping Bawah -->
             <div class="mt-auto pt-6 border-t border-slate-800">
                 <button onclick="prosesLogout()" class="w-full bg-red-600/20 hover:bg-red-600/30 text-red-400 font-bold px-3 py-2.5 rounded-lg text-xs border border-red-500/30 transition flex items-center justify-center space-x-2">
                     <i class="fa-solid fa-right-from-bracket"></i>
@@ -116,25 +139,730 @@
 
         <!-- KONTEN HALAMAN UTAMA -->
         <main class="flex-1 w-full overflow-hidden">
-            <!-- TAB BERANDA, SPMB, DAFUL, DULL ADA DI SINI -->
+            
+            <!-- SECTION TAB: BERANDA (HERO BANNER PESANTREN) -->
+            <section id="tab-beranda-content" class="tab-content block">
+                <!-- Jumbotron Banner Hero -->
+                <div class="relative bg-emerald-950 text-white overflow-hidden min-h-[500px] flex items-center">
+                    <div class="absolute inset-0 z-0">
+                        <img src="foto-sekolah.png" alt="Madrasah" class="w-full h-full object-cover object-center filter opacity-25 scale-105" onerror="this.src='https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&q=80&w=1200'">
+                        <div class="absolute inset-0 bg-gradient-to-r from-emerald-950 via-emerald-900/90 to-transparent"></div>
+                    </div>
+
+                    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center w-full">
+                        <div class="lg:col-span-7 space-y-6">
+                            <div class="inline-flex items-center space-x-2 bg-emerald-800/80 border border-emerald-500/30 px-3.5 py-1.5 rounded-full">
+                                <span class="w-2.5 h-2.5 bg-amber-400 rounded-full animate-ping"></span>
+                                <span class="text-xs font-bold text-emerald-200 tracking-wider uppercase">Portal Layanan Terintegrasi</span>
+                            </div>
+                            <h2 class="text-4xl md:text-5xl font-black leading-tight tracking-tight text-white">
+                                Tendik Madrasah Berdedikasi <br>
+                                <span class="text-amber-400">Cermin Nilai-Nilai Islami</span>
+                            </h2>
+                            <p class="text-slate-200 text-sm md:text-base leading-relaxed max-w-xl">
+                                Selamat datang di platform digital resmi MA Wali Songo Lilbanat. Layanan administrasi mandiri, seleksi penerimaan santriwati baru, serta proses daftar ulang berkas terpadu di madrasah kami.
+                            </p>
+                            
+                            <div class="flex flex-wrap gap-4 pt-2">
+                                <button onclick="switchTab('spmb')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition flex items-center space-x-2">
+                                    <i class="fa-solid fa-graduation-cap"></i>
+                                    <span>Layanan SPMB</span>
+                                </button>
+                                <button onclick="switchTab('daful')" class="bg-slate-800/90 hover:bg-slate-800 text-white font-bold py-3 px-6 rounded-xl border border-slate-700 shadow-lg transition flex items-center space-x-2">
+                                    <i class="fa-solid fa-address-book"></i>
+                                    <span>Portal DAFUL</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-5 flex justify-center lg:justify-end relative">
+                            <div class="relative max-w-[380px] md:max-w-[420px] rounded-3xl overflow-hidden border-4 border-emerald-800/50 shadow-2xl bg-emerald-900/30">
+                                <img src="logo-madrasah.png" alt="Pendidik Islami" class="w-full h-full object-contain p-8 filter brightness-[1.05]" onerror="this.src='https://placehold.co/500x400/022c22/ffffff?text=MA+Wali+Songo+Lilbanat'">
+                                <div class="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-emerald-950 to-transparent text-center">
+                                    <span class="text-xs text-amber-300 font-semibold uppercase tracking-widest">Hilman • Ilman • Yaqinan • Islaman</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bilah Pencarian Mengambang -->
+                <div class="max-w-4xl mx-auto px-4 -mt-10 relative z-20">
+                    <div class="bg-white rounded-2xl shadow-xl border border-slate-200/80 p-5 md:p-6 grid grid-cols-1 md:grid-cols-12 gap-4">
+                        <div class="md:col-span-5 relative">
+                            <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1.5 tracking-wider">Cari Layanan / Informasi</label>
+                            <div class="relative">
+                                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                                <input type="text" placeholder="Ketik kata kunci..." class="w-full pl-9 pr-4 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            </div>
+                        </div>
+                        <div class="md:col-span-4">
+                            <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1.5 tracking-wider">Kategori Pengguna</label>
+                            <select class="w-full px-3 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-600">
+                                <option>-- Semua Kategori --</option>
+                                <option>Siswa / Calon Santri</option>
+                                <option>Pendidik & Tenaga Kependidikan</option>
+                                <option>Orang Tua / Wali Murid</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-3 flex items-end">
+                            <button onclick="Swal.fire('Fitur Cari', 'Pencarian instan layanan sedang diproses...', 'info')" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-2.5 rounded-lg text-xs transition shadow flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-filter"></i>
+                                <span>Temukan Layanan</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistik Singkat Portal -->
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                    <h3 class="text-center text-lg font-bold text-slate-700 mb-10 tracking-wide uppercase">Layanan Informasi Terkini</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-4">
+                            <div class="p-3.5 bg-emerald-100 text-emerald-700 rounded-xl"><i class="fa-solid fa-user-graduate text-xl"></i></div>
+                            <div>
+                                <span class="block text-xl font-bold text-slate-800">420+</span>
+                                <span class="text-xs text-slate-500">Santriwati Aktif</span>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-4">
+                            <div class="p-3.5 bg-amber-100 text-amber-700 rounded-xl"><i class="fa-solid fa-chalkboard-user text-xl"></i></div>
+                            <div>
+                                <span class="block text-xl font-bold text-slate-800">32</span>
+                                <span class="text-xs text-slate-500">Ustadzah & PTK</span>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-4">
+                            <div class="p-3.5 bg-blue-100 text-blue-700 rounded-xl"><i class="fa-solid fa-school text-xl"></i></div>
+                            <div>
+                                <span class="block text-xl font-bold text-slate-800">12</span>
+                                <span class="text-xs text-slate-500">Rombongan Belajar</span>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-4">
+                            <div class="p-3.5 bg-purple-100 text-purple-700 rounded-xl"><i class="fa-solid fa-circle-check text-xl"></i></div>
+                            <div>
+                                <span class="block text-xl font-bold text-slate-800">TERAKREDITASI</span>
+                                <span class="text-xs text-slate-500">Sertifikasi BAN-PDM</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION TAB: SPMB FORM -->
+            <section id="tab-spmb-content" class="tab-content hidden max-w-6xl mx-auto my-6 px-4">
+                <div class="relative text-white py-14 md:py-20 px-4 text-center shadow-lg overflow-hidden border-b-4 border-amber-500 rounded-2xl mb-8">
+                    <div class="absolute inset-0 z-0">
+                        <img src="foto-sekolah.png" alt="Lingkungan MA Wali Songo Lilbanat" class="w-full h-full object-cover object-center filter brightness-[0.35]" onerror="this.src='https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&q=80&w=1200'">
+                    </div>
+                    <div class="relative z-10 max-w-5xl mx-auto space-y-4">
+                        <div class="flex items-center justify-center space-x-6 md:space-x-10 mb-4">
+                            <img src="logo-kemenag.png" alt="Logo Kemenag" class="h-14 md:h-16 w-auto drop-shadow-md" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/b/be/Logo_Kementerian_Agama_Republik_Indonesia.png'">
+                            <img src="logo-madrasah.png" alt="Logo MA Wali Songo Lilbanat" class="h-16 md:h-20 w-auto drop-shadow-md" onerror="this.src='https://placehold.co/100x100/022c22/ffffff?text=MA'">
+                        </div>
+                        <div class="space-y-1">
+                            <span class="inline-block bg-emerald-950/70 text-emerald-300 text-xs md:text-sm font-bold tracking-widest uppercase px-4 py-1.5 rounded-full border border-emerald-500/30">
+                                Penerimaan Peserta Didik Baru
+                            </span>
+                            <h1 class="text-3xl md:text-5xl font-black tracking-wide text-amber-400 drop-shadow-lg pt-2">
+                                FORMULIR SPMB ONLINE
+                            </h1>
+                            <p class="text-xl md:text-3xl font-black text-white tracking-widest pt-1 drop-shadow-md">
+                                MA WALI SONGO LILBANAT
+                            </p>
+                        </div>
+                        <div class="flex items-center justify-center space-x-3 pt-3">
+                            <span class="h-[1px] w-12 bg-emerald-500"></span>
+                            <p class="text-sm md:text-lg text-emerald-100 tracking-widest font-bold uppercase drop-shadow">
+                                Tahun Pelajaran <span class="text-amber-400 font-extrabold">2026/2027</span> &bull; Terakreditasi
+                            </p>
+                            <span class="h-[1px] w-12 bg-emerald-500"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="max-w-4xl mx-auto p-4 md:p-8 bg-white rounded-2xl shadow-sm border border-slate-200/80">
+                    <form id="ppdbForm" action="https://script.google.com/macros/s/AKfycbzIC1j0T0OrnojIHtIs612_I9X4pGGSTUOfBm0-F5xg6-zdI4R-s7FxiNj4byYcfUz3/exec" method="POST" class="space-y-8">
+                        <!-- 1. IDENTITAS SISWA -->
+                        <div class="space-y-5">
+                            <h3 class="text-md font-bold text-emerald-800 border-b pb-2 flex items-center"><i class="fa-solid fa-id-card mr-2 text-emerald-600"></i> 1. Identitas Santriwati</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Nama Lengkap (Sesuai Ijazah/SKL) *</label>
+                                    <input type="text" id="input_nama" name="nama" required class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-slate-50" placeholder="CONTOH: SITI AMINAH">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">NISN (Wajib 10 Digit) *</label>
+                                    <input type="text" name="nisn" required inputmode="numeric" pattern="[0-9]{10}" minlength="10" maxlength="10" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-slate-50" placeholder="0012345678">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Jenis Kelamin *</label>
+                                    <select name="jk" required class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-white text-slate-600">
+                                        <option value="">-- Pilih Jenis Kelamin --</option>
+                                        <option value="P">Perempuan</option>
+                                        <option value="L">Laki-laki</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">NIK Siswa (Wajib 16 Digit) *</label>
+                                    <input type="text" name="nik" required inputmode="numeric" pattern="[0-9]{16}" minlength="16" maxlength="16" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-slate-50" placeholder="16 DIGIT NOMOR NIK">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Tempat Lahir Siswa *</label>
+                                    <input type="text" name="tempat_lahir" required class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-slate-50" placeholder="CONTOH: SITUBONDO">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Tanggal Lahir *</label>
+                                    <input type="date" id="tanggal_lahir" name="tanggal_lahir" onchange="hitungUmurOtomatis()" required class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-slate-50">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Umur (Otomatis Terhitung)</label>
+                                    <input type="text" id="umur_pendaftar" name="umur" readonly placeholder="Otomatis terisi..." class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg bg-slate-100 font-bold text-slate-700 outline-none cursor-not-allowed">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Kelas Saat Ini *</label>
+                                    <input type="text" name="kelas_sekarang" required class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-slate-50" placeholder="CONTOH: IX A">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Kelas Madin Sekarang *</label>
+                                    <input type="text" id="input_madin" name="kelas_madin" required class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-slate-50" placeholder="CONTOH: 3 ULA">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Asrama *</label>
+                                    <input type="text" id="input_asrama" name="asrama" required class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-slate-50" placeholder="CONTOH: KOMPLEK A">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Nomor Kamar *</label>
+                                    <input type="text" name="nomor_asrama" required class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-slate-50" placeholder="CONTOH: KAMAR 05">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Agama *</label>
+                                    <input type="text" name="agama" value="ISLAM" readonly class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg bg-slate-100 font-bold outline-none cursor-not-allowed">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. PENDIDIKAN ASAL -->
+                        <div class="space-y-5">
+                            <h3 class="text-md font-bold text-emerald-800 border-b pb-2 flex items-center"><i class="fa-solid fa-school mr-2 text-emerald-600"></i> 2. Riwayat Sekolah Asal</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Nama Sekolah Asal *</label>
+                                    <input type="text" id="input_sekolah" name="sekolah_asal" required class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-slate-50" placeholder="CONTOH: MTsN 1 SITUBONDO">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Jenis Sekolah *</label>
+                                    <select name="jenis_sekolah" required class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-white text-slate-600">
+                                        <option value="NEGERI">NEGERI</option>
+                                        <option value="SWASTA">SWASTA</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">NPSN (Wajib 8 Digit) *</label>
+                                    <input type="text" name="npsn" required inputmode="numeric" pattern="[0-9]{8}" minlength="8" maxlength="8" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-slate-50" placeholder="8 DIGIT NPSN">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">NSM (12 Digit - Ketik 0 jika SMP)</label>
+                                    <input type="text" name="nsm" inputmode="numeric" pattern="[0-9]{12}|0" minlength="1" maxlength="12" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-slate-50" placeholder="12 DIGIT NSM">
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Alamat Sekolah Asal *</label>
+                                    <input type="text" name="alamat_sekolah" required class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-slate-50" placeholder="CONTOH: JL. RAYA BASUKI RAHMAT NO. 10 SITUBONDO">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Tanggal Kelulusan / Tanggal Ijazah *</label>
+                                    <input type="date" name="tanggal_ijazah" required class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-slate-50">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. DATA ORANG TUA / ALAMAT -->
+                        <div class="space-y-6">
+                            <h3 class="text-md font-bold text-emerald-800 border-b pb-2 flex items-center"><i class="fa-solid fa-users mr-2 text-emerald-600"></i> 3. Data Orang Tua & Alamat</h3>
+                            <div class="bg-emerald-50/50 p-4 rounded-xl border border-emerald-100/80">
+                                <h4 class="text-xs font-bold text-emerald-900 mb-3 uppercase tracking-wider flex items-center">
+                                    <i class="fa-solid fa-address-card mr-1.5 text-emerald-600"></i> Informasi Kartu Keluarga & Struktur Anak
+                                </h4>
+                                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                    <div class="md:col-span-1">
+                                        <label class="block text-[11px] font-bold text-slate-600 mb-1">Nomor Kartu Keluarga *</label>
+                                        <input type="text" name="no_kk" required inputmode="numeric" pattern="[0-9]{16}" minlength="16" maxlength="16" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500" placeholder="16 DIGIT NO KK">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[11px] font-bold text-slate-600 mb-1">Anak Ke- *</label>
+                                        <input type="number" name="anak_ke" required min="1" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[11px] font-bold text-slate-600 mb-1">Jumlah Saudara Kandung *</label>
+                                        <input type="number" name="saudara" required min="0" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[11px] font-bold text-slate-600 mb-1">Status Anak *</label>
+                                        <select name="status_anak" required class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 text-slate-600 font-medium">
+                                            <option value="ANAK KANDUNG">ANAK KANDUNG</option>
+                                            <option value="ANAK TIRI">ANAK TIRI</option>
+                                            <option value="ANAK ANGKAT">ANAK ANGKAT</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <!-- DATA AYAH -->
+                                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/60 space-y-3">
+                                    <h4 class="text-xs font-bold text-slate-700 border-b pb-1.5 uppercase flex items-center"><i class="fa-solid fa-user-tie text-emerald-600 mr-1.5"></i> BIODATA AYAH KANDUNG</h4>
+                                    <div>
+                                        <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">NAMA AYAH (Sesuai Ijazah) *</label>
+                                        <input type="text" name="nama_ayah" required class="w-full px-3 py-1.5 text-xs border border-slate-200 rounded-md bg-white" placeholder="SUTRISNO">
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">NIK AYAH (16 Digit) *</label>
+                                            <input type="text" name="nik_ayah" required inputmode="numeric" pattern="[0-9]{16}" minlength="16" maxlength="16" class="w-full px-3 py-1.5 text-xs border border-slate-200 rounded-md bg-white" placeholder="3527...">
+                                        </div>
+                                        <div>
+                                            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">NO WA AYAH *</label>
+                                            <input type="text" name="telp_ayah" required inputmode="numeric" pattern="[0-9]{10,13}" minlength="10" maxlength="13" class="w-full px-3 py-1.5 text-xs border border-slate-200 rounded-md bg-white" placeholder="0812...">
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-3 gap-2">
+                                        <div>
+                                            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">TEMPAT LAHIR *</label>
+                                            <input type="text" name="tempat_ayah" required class="w-full px-3 py-1.5 text-xs border border-slate-200 rounded-md bg-white" placeholder="SITUBONDO">
+                                        </div>
+                                        <div>
+                                            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">TANGGAL LAHIR *</label>
+                                            <input type="date" name="tanggal_ayah" required class="w-full px-3 py-1.5 text-xs border border-slate-200 rounded-md bg-white text-slate-600">
+                                        </div>
+                                        <div>
+                                            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">AGAMA AYAH</label>
+                                            <input type="text" name="agama_ayah" value="ISLAM" readonly class="w-full px-3 py-1.5 text-xs border border-slate-200 rounded-md bg-slate-100 font-bold outline-none cursor-not-allowed">
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">PENDIDIKAN *</label>
+                                            <select name="pendidikan_ayah" required class="w-full px-2.5 py-1.5 text-xs border border-slate-200 rounded-md bg-white text-slate-600">
+                                                <option value="">-- Pilih Pendidikan --</option>
+                                                <option value="TIDAK SEKOLAH">Tidak/Belum Sekolah</option>
+                                                <option value="SD/SEDARAJAT">SD/Sederajat</option>
+                                                <option value="SMP/SEDARAJAT">SMP/Sederajat</option>
+                                                <option value="SMA/SEDARAJAT">SMA/Sederajat</option>
+                                                <option value="D1">D1/Diploma 1</option>
+                                                <option value="D2">D2/Diploma 2</option>
+                                                <option value="D3">D3/Diploma 3</option>
+                                                <option value="S1/D4">S1/Diploma 4</option>
+                                                <option value="S2">S2</option>
+                                                <option value="S3">S3</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">PEKERJAAN *</label>
+                                            <select name="pekerjaan_ayah" required class="w-full px-2.5 py-1.5 text-xs border border-slate-200 rounded-md bg-white text-slate-600">
+                                                <option value="">-- Pilih Pekerjaan --</option>
+                                                <option value="TIDAK BEKERJA">Tidak Bekerja</option>
+                                                <option value="PNS">PNS</option>
+                                                <option value="TNI/POLRI">TNI/Polri</option>
+                                                <option value="SWASTA">Pegawai Swasta</option>
+                                                <option value="WIRASWASTA">Wiraswasta</option>
+                                                <option value="PETANI">Petani/Peternak</option>
+                                                <option value="NELAYAN">Nelayan</option>
+                                                <option value="BURUH">Buruh Harian</option>
+                                                <option value="LAINNYA">Lainnya</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- DATA IBU -->
+                                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/60 space-y-3">
+                                    <h4 class="text-xs font-bold text-slate-700 border-b pb-1.5 uppercase flex items-center"><i class="fa-solid fa-user-nurse text-emerald-600 mr-1.5"></i> BIODATA IBU KANDUNG</h4>
+                                    <div>
+                                        <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">NAMA IBU (Sesuai Kartu Keluarga) *</label>
+                                        <input type="text" name="nama_ibu" required class="w-full px-3 py-1.5 text-xs border border-slate-200 rounded-md bg-white" placeholder="SITI AMINAH">
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">NIK IBU (16 Digit) *</label>
+                                            <input type="text" name="nik_ibu" required inputmode="numeric" pattern="[0-9]{16}" minlength="16" maxlength="16" class="w-full px-3 py-1.5 text-xs border border-slate-200 rounded-md bg-white" placeholder="3527...">
+                                        </div>
+                                        <div>
+                                            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">NO WA IBU *</label>
+                                            <input type="text" name="telp_ibu" required inputmode="numeric" pattern="[0-9]{10,13}" minlength="10" maxlength="13" class="w-full px-3 py-1.5 text-xs border border-slate-200 rounded-md bg-white" placeholder="0812...">
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-3 gap-2">
+                                        <div>
+                                            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">TEMPAT LAHIR *</label>
+                                            <input type="text" name="tempat_ibu" required class="w-full px-3 py-1.5 text-xs border border-slate-200 rounded-md bg-white" placeholder="SITUBONDO">
+                                        </div>
+                                        <div>
+                                            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">TANGGAL LAHIR *</label>
+                                            <input type="date" name="tanggal_ibu" required class="w-full px-3 py-1.5 text-xs border border-slate-200 rounded-md bg-white text-slate-600">
+                                        </div>
+                                        <div>
+                                            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">AGAMA IBU</label>
+                                            <input type="text" name="agama_ibu" value="ISLAM" readonly class="w-full px-3 py-1.5 text-xs border border-slate-200 rounded-md bg-slate-100 font-bold outline-none cursor-not-allowed">
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">PENDIDIKAN *</label>
+                                            <select name="pendidikan_ibu" required class="w-full px-2.5 py-1.5 text-xs border border-slate-200 rounded-md bg-white text-slate-600">
+                                                <option value="">-- Pilih Pendidikan --</option>
+                                                <option value="TIDAK SEKOLAH">Tidak/Belum Sekolah</option>
+                                                <option value="SD/SEDARAJAT">SD/Sederajat</option>
+                                                <option value="SMP/SEDARAJAT">SMP/Sederajat</option>
+                                                <option value="SMA/SEDARAJAT">SMA/Sederajat</option>
+                                                <option value="D1">D1/Diploma 1</option>
+                                                <option value="D2">D2/Diploma 2</option>
+                                                <option value="D3">D3/Diploma 3</option>
+                                                <option value="S1/D4">S1/Diploma 4</option>
+                                                <option value="S2">S2</option>
+                                                <option value="S3">S3</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">PEKERJAAN *</label>
+                                            <select name="pekerjaan_ibu" required class="w-full px-2.5 py-1.5 text-xs border border-slate-200 rounded-md bg-white text-slate-600">
+                                                <option value="">-- Pilih Pekerjaan --</option>
+                                                <option value="IBU RUMAH TANGGA">Ibu Rumah Tangga</option>
+                                                <option value="TIDAK BEKERJA">Tidak Bekerja</option>
+                                                <option value="PNS">PNS</option>
+                                                <option value="TNI/POLRI">TNI/Polri</option>
+                                                <option value="SWASTA">Pegawai Swasta</option>
+                                                <option value="WIRASWASTA">Wiraswasta</option>
+                                                <option value="PETANI">Petani/Peternak</option>
+                                                <option value="NELAYAN">Nelayan</option>
+                                                <option value="BURUH">Buruh Harian</option>
+                                                <option value="LAINNYA">Lainnya</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                <h4 class="text-xs font-bold text-slate-700 border-b pb-1.5 uppercase flex items-center mb-3"><i class="fa-solid fa-map-location-dot text-emerald-600 mr-1.5"></i> ALAMAT ORANG TUA</h4>
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                    <div class="col-span-2 md:col-span-1">
+                                        <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">DUSUN / JALAN *</label>
+                                        <input type="text" name="dusun" required class="w-full px-3 py-1.5 text-xs border border-slate-200 rounded-md bg-white" placeholder="DUSUN KRAJAN RT 01">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">RT/RW *</label>
+                                        <input type="text" name="rtrw" required class="w-full px-3 py-1.5 text-xs border border-slate-200 rounded-md bg-white" placeholder="001/002">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">DESA / KELURAHAN *</label>
+                                        <input type="text" name="desa" required class="w-full px-3 py-1.5 text-xs border border-slate-200 rounded-md bg-white" placeholder="MIMBAAN">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">KECAMATAN *</label>
+                                        <input type="text" name="kecamatan" required class="w-full px-3 py-1.5 text-xs border border-slate-200 rounded-md bg-white" placeholder="PANJI">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">KABUPATEN *</label>
+                                        <input type="text" name="kabupaten" required class="w-full px-3 py-1.5 text-xs border border-slate-200 rounded-md bg-white" placeholder="SITUBONDO">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">PROVINSI *</label>
+                                        <input type="text" name="provinsi" required class="w-full px-3 py-1.5 text-xs border border-slate-200 rounded-md bg-white" placeholder="JAWA TIMUR">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">KODE POS *</label>
+                                        <input type="text" name="kodepos" required inputmode="numeric" pattern="[0-9]{5}" minlength="5" maxlength="5" class="w-full px-3 py-1.5 text-xs border border-slate-200 rounded-md bg-white" placeholder="68323">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 4. PETUGAS & FILE -->
+                        <div class="space-y-5">
+                            <h3 class="text-md font-bold text-emerald-800 border-b pb-2 flex items-center"><i class="fa-solid fa-file-arrow-up mr-2 text-emerald-600"></i> 4. Petugas & Berkas</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Petugas SPMB yang Melayani *</label>
+                                    <select name="petugas" required class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-white text-slate-600">
+                                        <option value="">-- Pilih Nama Petugas --</option>
+                                        <option value="NURUL TADZQIRAH">NURUL TADZQIRAH</option>
+                                        <option value="LAILATUL QOMARIYAH">LAILATUL QOMARIYAH</option>
+                                        <option value="TRIYANTI MANDASARI">TRIYANTI MANDASARI</option>
+                                        <option value="DESI SRI AGUSTIN">DESI SRI AGUSTIN</option>
+                                        <option value="NUN HUDAIFAH">NUN HUDAIFAH</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Unggah KK & Ijazah / SKL *</label>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <input type="file" id="inputKK" accept="image/*,application/pdf" required class="text-[10px] w-full p-1.5 border border-dashed rounded-lg bg-white">
+                                        <input type="file" id="inputSKL" accept="image/*,application/pdf" required class="text-[10px] w-full p-1.5 border border-dashed rounded-lg bg-white">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <input type="hidden" name="berkas_centang" value="Sudah Upload">
+                        <input type="hidden" name="status_siswa" value="SISWA BARU">
+
+                        <button type="submit" id="btnSubmit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow text-md transition duration-150">
+                            Kirim Data & Berkas Pendaftaran
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- SECTION TAB: DAFUL -->
+            <section id="tab-daful-content" class="tab-content hidden max-w-6xl mx-auto my-10 p-4 md:p-8">
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between border-b pb-5 gap-4">
+                        <div>
+                            <span class="bg-amber-100 text-amber-800 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full">Layanan Daftar Ulang</span>
+                            <h2 class="text-xl font-bold text-slate-900 mt-2">Daftar Rombongan Belajar & Promosi Kelas</h2>
+                            <p class="text-xs text-slate-500">Cari siswa yang sudah ada, lalu pilih target kelas promosi baru untuk memperbarui data otomatis.</p>
+                        </div>
+
+                        <button onclick="togglePasteWizard()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-4 py-2 rounded-lg text-xs border flex items-center space-x-2 transition">
+                            <i class="fa-solid fa-file-import text-emerald-600"></i>
+                            <span>Paste Data Siswa (Excel/TSV)</span>
+                        </button>
+                    </div>
+
+                    <div id="pasteWizardArea" class="hidden bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl p-5 space-y-3">
+                        <h4 class="text-xs font-bold text-slate-700 flex items-center"><i class="fa-solid fa-paste text-emerald-600 mr-1.5"></i> Tempelkan Spreadsheet Siswa Anda</h4>
+                        <p class="text-[11px] text-slate-500">Copy baris data dari Excel (Kolom: <strong>Nama | NISN | NIK | Kelas Sekarang | Kelas Madin Sekarang</strong>) lalu paste di kotak bawah.</p>
+                        <textarea id="excelPasteArea" rows="4" placeholder="SITI AMINAH	0123456789	3527010203040005	X-1A	3 ULA" class="w-full p-3 border rounded-lg text-xs focus:ring-2 focus:ring-emerald-500 bg-white font-mono"></textarea>
+                        <div class="flex justify-end space-x-2">
+                            <button onclick="togglePasteWizard()" class="bg-white border text-slate-600 px-3 py-1.5 rounded-lg text-xs font-semibold">Batal</button>
+                            <button onclick="importPastedData()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow">Muat ke Daftar Cari</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                        <div class="md:col-span-9 relative">
+                            <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                            <input type="text" id="dafulSearchInput" onkeyup="filterDafulStudents()" placeholder="Ketik Nama Lengkap, NISN, atau NIK siswa..." class="w-full pl-10 pr-4 py-2.5 text-xs bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-700">
+                        </div>
+                        <div class="md:col-span-3">
+                            <button onclick="fetchSiswaAktifFromSheets()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg text-xs shadow flex items-center justify-center space-x-1.5 transition">
+                                <i class="fa-solid fa-arrows-rotate"></i>
+                                <span>Sinkronkan Sheets</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto border rounded-xl bg-white shadow-sm">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-600 border-b font-semibold">
+                                    <th class="p-3">Nama Siswa</th>
+                                    <th class="p-3">NISN</th>
+                                    <th class="p-3">NIK</th>
+                                    <th class="p-3 text-center">Kelas Saat Ini</th>
+                                    <th class="p-3 text-center">Kelas Madin</th>
+                                    <th class="p-3 text-center w-64">Action: Naik Kelas Target</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dafulStudentTableBody" class="divide-y text-slate-700">
+                                <tr>
+                                    <td colspan="6" class="p-8 text-center text-slate-400 italic">
+                                        <i class="fa-solid fa-circle-info text-emerald-600 mb-2 text-xl block"></i>
+                                        Gunakan bilah cari di atas atau hubungkan ke Google Sheets untuk menyinkronkan daftar siswa aktif madrasah Anda.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 border-t bg-slate-50 mt-2 rounded-b-xl">
+                        <div class="flex items-center space-x-2 text-xs">
+                            <span class="text-slate-500">Tampilkan:</span>
+                            <select id="dafulPageSize" onchange="resetDanRender()" class="border p-1 rounded bg-white text-slate-700 font-bold focus:ring-1 focus:ring-emerald-500">
+                                <option value="50">50 Baris</option>
+                                <option value="100">100 Baris</option>
+                                <option value="all">Semua</option>
+                            </select>
+                        </div>
+                        <div id="paginationControls" class="flex flex-wrap items-center justify-center gap-1"></div>
+                    </div>
+
+                    <div class="flex items-center justify-between text-xs text-slate-500 pt-3 px-1">
+                        <span id="dafulSummaryCount">Menampilkan 0 siswa</span>
+                        <span class="italic text-slate-400">MA Wali Songo Lilbanat • Akademik Online</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION TAB: STATISTIK -->
+            <section id="tab-statistik-content" class="tab-content hidden max-w-6xl mx-auto my-10 px-4">
+                <div class="bg-white p-8 rounded-2xl border shadow-sm space-y-6">
+                    <h3 class="text-lg font-bold text-slate-800 border-b pb-3">Statistik Akreditasi & Rapor Pendidikan</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="space-y-4">
+                            <h4 class="font-bold text-emerald-800 text-sm">Persentase Rombel Naik Kelas (Tahun Ini)</h4>
+                            <div class="space-y-2">
+                                <div>
+                                    <div class="flex justify-between text-xs mb-1"><span>Kelas XI Promoted</span><span class="font-bold">98%</span></div>
+                                    <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden"><div class="bg-emerald-600 h-full rounded-full" style="width: 98%"></div></div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs mb-1"><span>Kelas XII Promoted</span><span class="font-bold">100%</span></div>
+                                    <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden"><div class="bg-amber-500 h-full rounded-full" style="width: 100%"></div></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 p-5 rounded-xl border border-slate-100 flex flex-col justify-center">
+                            <p class="text-xs text-slate-500 italic">"Kami senantiasi berdedikasi tinggi memberikan kemudahan layanan berbasis teknologi mutakhir untuk mempercepat validitas administrasi madrasah."</p>
+                            <span class="block text-xs font-bold text-slate-700 mt-2">— TIM SIM Madrasah</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CONTAINER PLACEHOLDER UNTUK MENU INTERNAL (DAFTAR SISWA, MUTASI, ROMBEL, GTK) -->
+            <section id="tab-daftarsiswalengkap-content" class="tab-content hidden p-6">
+                <div class="bg-white p-6 rounded-2xl border shadow-sm"><h3 class="font-bold text-lg text-emerald-800">Modul Master Daftar Siswa</h3><p class="text-xs text-slate-500">Modul ini siap kita lengkapi dengan detail biodata lengkap.</p></div>
+            </section>
+            <section id="tab-mutasi-content" class="tab-content hidden p-6">
+                <div class="bg-white p-6 rounded-2xl border shadow-sm"><h3 class="font-bold text-lg text-amber-800">Modul Mutasi Siswa (Masuk & Keluar)</h3><p class="text-xs text-slate-500">Siap mencetak Surat Mutasi PDF.</p></div>
+            </section>
+            <section id="tab-rombel-content" class="tab-content hidden p-6">
+                <div class="bg-white p-6 rounded-2xl border shadow-sm"><h3 class="font-bold text-lg text-blue-800">Modul Rombongan Belajar</h3><p class="text-xs text-slate-500">Tampilan per kelas dan wali kelas.</p></div>
+            </section>
+            <section id="tab-gtk-content" class="tab-content hidden p-6">
+                <div class="bg-white p-6 rounded-2xl border shadow-sm"><h3 class="font-bold text-lg text-purple-800">Modul Guru & Tendik</h3><p class="text-xs text-slate-500">Daftar Pendidik dan Tenaga Kependidikan.</p></div>
+            </section>
+            <section id="tab-laporan-content" class="tab-content hidden p-6">
+                <div class="bg-white p-6 rounded-2xl border shadow-sm"><h3 class="font-bold text-lg text-rose-800">Modul Program & Laporan</h3><p class="text-xs text-slate-500">Rekapitulasi laporan madrasah.</p></div>
+            </section>
+
         </main>
     </div>
 
-    <!-- LOGIKA JAVASCRIPT PEMBARUAN TAMPILAN SESI -->
+    <!-- MODAL POPUP LOGIN -->
+    <div id="loginModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl border w-full max-w-md overflow-hidden transform transition-all">
+            <div class="bg-gradient-to-r from-emerald-800 to-emerald-950 text-white px-6 py-4 flex justify-between items-center">
+                <h3 class="font-bold text-sm uppercase tracking-wide flex items-center">
+                    <i class="fa-solid fa-user-lock mr-2 text-amber-400"></i>
+                    <span id="loginRoleLabel">Login Pengguna</span>
+                </h3>
+                <button onclick="closeLoginModal()" class="text-white/80 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <form onsubmit="handleLoginSubmit(event)" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Nama Pengguna (Username)</label>
+                    <input type="text" id="loginUsername" required class="w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50" placeholder="Ketik username...">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Kata Sandi (Password)</label>
+                    <input type="password" id="loginPassword" required class="w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50" placeholder="••••••••">
+                </div>
+                <div class="pt-2">
+                    <button type="submit" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-2.5 rounded-lg text-xs shadow transition">
+                        Masuk Sekarang
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- FOOTER HALAMAN -->
+    <footer class="bg-emerald-950 text-slate-300 py-6 border-t-4 border-amber-500 text-center text-xs mt-12">
+        <div class="max-w-7xl mx-auto px-4">
+            <p class="font-semibold">&copy; 2026 MA WALI SONGO LILBANAT. All Rights Reserved.</p>
+            <p class="text-emerald-400/80 mt-1">Sistem Informasi Manajemen Madrasah Terakreditasi • Situbondo, Jatim</p>
+        </div>
+    </footer>
+
+    <!-- LOGIKA JAVASCRIPT APLIKASI -->
     <script>
+        let localSiswaDb = [];
         let currentUser = JSON.parse(localStorage.getItem('sim_user')) || null;
 
+        // Cek Sesi Login saat Halaman Dimuat
         window.addEventListener('DOMContentLoaded', () => {
             perbaruiTampilanSesi();
+            
+            // Validasi Input Angka
+            const inputsKustom = [
+                { name: 'nisn', label: 'NISN', digit: 10 },
+                { name: 'nik', label: 'NIK Siswa', digit: 16 },
+                { name: 'no_kk', label: 'Nomor Kartu Keluarga', digit: 16 },
+                { name: 'nik_ayah', label: 'NIK Ayah', digit: 16 },
+                { name: 'nik_ibu', label: 'NIK Ibu', digit: 16 },
+                { name: 'npsn', label: 'NPSN Sekolah', digit: 8 },
+                { name: 'kodepos', label: 'Kode Pos', digit: 5 }
+            ];
+
+            inputsKustom.forEach(item => {
+                const inputEl = document.querySelector(`input[name="${item.name}"]`);
+                if (inputEl) {
+                    inputEl.addEventListener('blur', function() {
+                        if (this.value.trim() === '') { this.setCustomValidity(''); return; }
+                        if (this.value.length < item.digit) {
+                            this.setCustomValidity(`${item.label} KURANG dari seharusnya! Harus tepat ${item.digit} digit.`);
+                            this.reportValidity();
+                        } else if (this.value.length > item.digit) {
+                            this.setCustomValidity(`${item.label} KELEBIHAN! Harus tepat ${item.digit} digit.`);
+                            this.reportValidity();
+                        } else { this.setCustomValidity(''); }
+                    });
+                    inputEl.addEventListener('input', function() { this.setCustomValidity(''); });
+                }
+            });
         });
 
-        // --- UPDATE LAYOUT & SIDEBAR SETELAH LOGIN ---
+        // --- SISTEM NAVIGASI TAB TERPROTEKSI ---
+        function switchTab(tabId) {
+            const menuTerproteksi = ['daftarsiswalengkap', 'mutasi', 'rombel', 'gtk', 'laporan'];
+
+            if (menuTerproteksi.includes(tabId) && !currentUser) {
+                Swal.fire({
+                    title: 'Akses Terbatas!',
+                    text: `Menu ${tabId.toUpperCase()} hanya dapat diakses oleh Admin / PTK yang telah login.`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#047857',
+                    confirmButtonText: '<i class="fa-solid fa-right-to-bracket mr-1"></i> Login Sekarang',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) { openLoginModal('Admin'); }
+                });
+                return;
+            }
+
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('block');
+            });
+            
+            const targetContent = document.getElementById(`tab-${tabId}-content`);
+            if (targetContent) {
+                targetContent.classList.remove('hidden');
+                targetContent.classList.add('block');
+            }
+
+            document.querySelectorAll('.nav-link').forEach(el => {
+                el.classList.remove('text-emerald-600', 'font-semibold', 'border-b-2', 'border-emerald-600');
+            });
+
+            const activeBtn = document.getElementById(`nav-${tabId}`);
+            if (activeBtn) {
+                activeBtn.classList.add('text-emerald-600', 'font-semibold', 'border-b-2', 'border-emerald-600');
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // --- UPDATE TAMPILAN KARENA SESI LOGIN ---
         function perbaruiTampilanSesi() {
             const containerLogin = document.getElementById('authHeaderContainer');
             const sidebar = document.getElementById('sidebarInternal');
 
             if (currentUser) {
-                // Jika SUDAH LOGIN: Tampilkan Sidebar Kiri & Ringkasan Akun di Header
                 if (sidebar) {
                     sidebar.classList.remove('hidden');
                     sidebar.classList.add('flex');
@@ -157,13 +885,415 @@
                     `;
                 }
             } else {
-                // Jika BELUM LOGIN: Sembunyikan Sidebar Kiri
                 if (sidebar) {
                     sidebar.classList.add('hidden');
                     sidebar.classList.remove('flex');
                 }
             }
         }
+
+        // --- MANAJEMEN DROPDOWN & MODAL LOGIN ---
+        function toggleLoginDropdown() {
+            document.getElementById('loginDropdown').classList.toggle('hidden');
+        }
+
+        function openLoginModal(role) {
+            document.getElementById('loginDropdown').classList.add('hidden');
+            document.getElementById('loginRoleLabel').innerText = `Otentikasi Login ${role}`;
+            document.getElementById('loginModal').classList.remove('hidden');
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.add('hidden');
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+        }
+
+        // --- PROSES EKSEKUSI LOGIN KE SHEETS ---
+        async function handleLoginSubmit(e) {
+            e.preventDefault();
+            const usernameInput = document.getElementById('loginUsername').value.trim();
+            const passwordInput = document.getElementById('loginPassword').value.trim();
+            const scriptUrl = document.getElementById('ppdbForm').action;
+
+            Swal.fire({
+                title: 'Memeriksa Kredensial...',
+                text: 'Menghubungkan ke database otentikasi madrasah.',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+
+            try {
+                const response = await fetch(scriptUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({
+                        action: 'login',
+                        username: usernameInput,
+                        password: passwordInput
+                    })
+                });
+
+                const result = await response.json();
+                Swal.close();
+
+                if (result.status === 'success') {
+                    currentUser = {
+                        username: result.username,
+                        nama: result.nama,
+                        jabatan: result.jabatan,
+                        role: result.role
+                    };
+
+                    localStorage.setItem('sim_user', JSON.stringify(currentUser));
+                    Swal.fire('Login Berhasil!', `Selamat datang kembali, ${currentUser.nama}!`, 'success');
+                    closeLoginModal();
+                    perbaruiTampilanSesi();
+                } else {
+                    Swal.fire('Akses Ditolak', result.message || 'Username atau Password salah!', 'error');
+                }
+            } catch (err) {
+                console.error(err);
+                Swal.fire('Gagal Login', 'Terjadi gangguan jaringan.', 'error');
+            }
+        }
+
+        function prosesLogout() {
+            Swal.fire({
+                title: 'Konfirmasi Keluar',
+                text: 'Apakah Anda yakin ingin keluar dari sistem?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                confirmButtonText: 'Ya, Keluar'
+            }).then((res) => {
+                if (res.isConfirmed) {
+                    localStorage.removeItem('sim_user');
+                    currentUser = null;
+                    location.reload();
+                }
+            });
+        }
+
+        // --- FUNGSI PENDUKUNG FORM SPMB ---
+        function hitungUmurOtomatis() {
+            const inputTanggal = document.getElementById('tanggal_lahir').value;
+            const inputUmur = document.getElementById('umur_pendaftar');
+            if (!inputTanggal) { inputUmur.value = ""; return; }
+
+            const tglLahir = new Date(inputTanggal);
+            const tglSekarang = new Date();
+            let tahun = tglSekarang.getFullYear() - tglLahir.getFullYear();
+            let bulan = tglSekarang.getMonth() - tglLahir.getMonth();
+            let hari = tglSekarang.getDate() - tglLahir.getDate();
+
+            if (hari < 0) { bulan--; const bulanLalu = new Date(tglSekarang.getFullYear(), tglSekarang.getMonth(), 0).getDate(); hari += bulanLalu; }
+            if (bulan < 0) { tahun--; bulan += 12; }
+            inputUmur.value = tahun < 0 ? "TANGGAL LAHIR TIDAK VALID" : `${tahun} TAHUN ${bulan} BULAN`;
+        }
+
+        // --- FUNGSI DAFUL & SINKRONISASI SHEETS ---
+        function togglePasteWizard() { document.getElementById('pasteWizardArea').classList.toggle('hidden'); }
+
+        function importPastedData() {
+            const text = document.getElementById('excelPasteArea').value.trim();
+            if (!text) { Swal.fire('Data Kosong', 'Harap tempelkan data baris tabel excel terlebih dahulu!', 'warning'); return; }
+
+            const lines = text.split('\n');
+            let tempDb = [];
+            lines.forEach((line, index) => {
+                const cols = line.split('\t');
+                if (cols.length >= 2) {
+                    tempDb.push({
+                        rowNumber: localSiswaDb.length + tempDb.length + 2,
+                        id: 'PASTED_' + index,
+                        nama: cols[0] ? cols[0].trim().toUpperCase() : 'TANPA NAMA',
+                        nisn: cols[1] ? cols[1].trim() : '-',
+                        nik: cols[2] ? cols[2].trim() : '-',
+                        kelas: cols[3] ? cols[3].trim().toUpperCase() : 'BELUM SET',
+                        kelas_madin: cols[4] ? cols[4].trim().toUpperCase() : '3 ULA'
+                    });
+                }
+            });
+
+            if (tempDb.length > 0) {
+                localSiswaDb = [...tempDb, ...localSiswaDb];
+                renderDafulStudents(localSiswaDb);
+                togglePasteWizard();
+                document.getElementById('excelPasteArea').value = '';
+                Swal.fire('Impor Sukses!', `${tempDb.length} siswa berhasil dimuat.`, 'success');
+            }
+        }
+
+        async function fetchSiswaAktifFromSheets() {
+            const scriptUrl = document.getElementById('ppdbForm').action;
+            Swal.fire({ title: 'Menyambungkan...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+
+            try {
+                const response = await fetch(`${scriptUrl}?action=ambilDataSiswaAktif`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ action: 'ambilDataSiswaAktif' })
+                });
+
+                const result = await response.json();
+                Swal.close();
+
+                if (result.status === "success" && result.data) {
+                    localSiswaDb = result.data;
+                    renderDafulStudents(localSiswaDb);
+                    Swal.fire('Sinkron Sukses!', `Memuat ${localSiswaDb.length} siswa.`, 'success');
+                } else { throw new Error(result.message); }
+            } catch (err) {
+                console.error(err);
+                Swal.fire('Gagal Sinkron', 'Gunakan Paste Data Siswa untuk mengisi data manual.', 'warning');
+            }
+        }
+
+        let dafulCurrentPage = 1;
+        function resetDanRender() { dafulCurrentPage = 1; renderDafulStudents(localSiswaDb); }
+
+        function renderDafulStudents(students) {
+            const tbody = document.getElementById('dafulStudentTableBody');
+            const pageSizeSelect = document.getElementById('dafulPageSize');
+            
+            if (!students || students.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400 italic">Tidak ada data.</td></tr>`;
+                document.getElementById('dafulSummaryCount').innerText = "Menampilkan 0 siswa";
+                document.getElementById('paginationControls').innerHTML = '';
+                return;
+            }
+
+            const valSize = pageSizeSelect ? pageSizeSelect.value : "50";
+            const pageSize = valSize === 'all' ? students.length : parseInt(valSize);
+            const totalPages = Math.ceil(students.length / pageSize);
+            
+            if (dafulCurrentPage > totalPages) dafulCurrentPage = totalPages;
+            if (dafulCurrentPage < 1) dafulCurrentPage = 1;
+
+            const startIndex = (dafulCurrentPage - 1) * pageSize;
+            const endIndex = Math.min(startIndex + pageSize, students.length);
+            const paginatedStudents = students.slice(startIndex, endIndex);
+
+            tbody.innerHTML = '';
+            paginatedStudents.forEach(siswa => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition border-b";
+                const namaAman = siswa.nama ? String(siswa.nama).replace(/'/g, "`") : "";
+                
+                tr.innerHTML = `
+                    <td class="p-3 font-semibold text-slate-800">${siswa.nama}</td>
+                    <td class="p-3 font-mono">${siswa.nisn}</td>
+                    <td class="p-3 text-slate-500 font-mono">${siswa.nik}</td>
+                    <td class="p-3 text-center"><span class="px-2.5 py-1 bg-slate-100 rounded-full font-bold text-[11px]">${siswa.kelas}</span></td>
+                    <td class="p-3 text-center"><span class="px-2.5 py-1 bg-amber-50 text-amber-800 rounded-full font-bold text-[11px]">${siswa.kelas_madin || '-'}</span></td>
+                    <td class="p-3 text-center space-y-1.5">
+                        <select onchange="prosesKenaikanKelas(this, '${siswa.rowNumber}', '${namaAman}', 'akademik')" class="w-full text-xs px-2.5 py-1.5 border rounded-lg font-semibold text-emerald-800 mb-1">
+                            <option value="">-- Pilih Kelas Umum --</option>
+                            <optgroup label="STATUS KHUSUS"><option value="TETAP DI KELAS X">TETAP DI KELAS X</option><option value="TETAP DI KELAS XI">TETAP DI KELAS XI</option></optgroup>
+                            <optgroup label="PROMOSI KELAS XI"><option value="XI-1A">XI-1A</option><option value="XI-1B">XI-1B</option><option value="XI-2A">XI-2A</option><option value="XI-2B">XI-2B</option></optgroup>
+                            <optgroup label="PROMOSI KELAS XII"><option value="XII-1A">XII-1A</option><option value="XII-1B">XII-1B</option><option value="XII-2A">XII-2A</option><option value="XII-2B">XII-2B</option></optgroup>
+                        </select>
+                        <div class="flex items-center space-x-1 justify-center">
+                            <select id="madin_level_${siswa.rowNumber}" class="w-1/2 text-[10px] px-1 py-1.5 border rounded-lg font-semibold text-amber-800">
+                                <option value="">-- Madin --</option>
+                                <option value="SHIFIR">SHIFIR</option><option value="1 ULA">1 ULA</option><option value="2 ULA">2 ULA</option><option value="3 ULA">3 ULA</option>
+                            </select>
+                            <input type="text" id="madin_par_${siswa.rowNumber}" maxlength="1" placeholder="A-P" oninput="this.value = this.value.toUpperCase()" class="w-1/4 text-[10px] p-1.5 border rounded-lg font-bold text-center">
+                            <button onclick="simpanMadinManual('${siswa.rowNumber}', '${namaAman}')" class="bg-amber-500 hover:bg-amber-600 text-white p-1.5 px-2 rounded-lg text-xs"><i class="fa-solid fa-floppy-disk"></i></button>
+                        </div>
+                        <button onclick="bukaModalUploadBerkas('${siswa.rowNumber}', '${namaAman}')" class="w-full bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold py-1.5 rounded-lg border text-[10px] flex items-center justify-center space-x-1">
+                            <i class="fa-solid fa-cloud-arrow-up"></i><span>Update Berkas (Optional)</span>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('dafulSummaryCount').innerText = `Menampilkan ${startIndex + 1} - ${endIndex} dari ${students.length} siswa`;
+            buatTombolHalaman(totalPages, students);
+        }
+
+        function buatTombolHalaman(totalPages, students) {
+            const container = document.getElementById('paginationControls');
+            if (!container || totalPages <= 1) { if(container) container.innerHTML = ''; return; }
+            container.innerHTML = '';
+
+            const btnPrev = document.createElement('button');
+            btnPrev.innerHTML = '<i class="fa-solid fa-angle-left"></i>';
+            btnPrev.disabled = dafulCurrentPage === 1;
+            btnPrev.className = `px-2.5 py-1.5 text-xs font-bold rounded-lg border ${dafulCurrentPage === 1 ? 'text-slate-300 bg-slate-50' : 'text-slate-700 bg-white'}`;
+            btnPrev.onclick = () => { dafulCurrentPage--; renderDafulStudents(students); };
+            container.appendChild(btnPrev);
+
+            for (let i = 1; i <= totalPages; i++) {
+                const btnPage = document.createElement('button');
+                btnPage.innerText = i;
+                btnPage.className = `px-3 py-1.5 text-xs font-bold rounded-lg border ${i === dafulCurrentPage ? 'bg-emerald-600 text-white' : 'bg-white text-slate-700'}`;
+                btnPage.onclick = () => { dafulCurrentPage = i; renderDafulStudents(students); };
+                container.appendChild(btnPage);
+            }
+
+            const btnNext = document.createElement('button');
+            btnNext.innerHTML = '<i class="fa-solid fa-angle-right"></i>';
+            btnNext.disabled = dafulCurrentPage === totalPages;
+            btnNext.className = `px-2.5 py-1.5 text-xs font-bold rounded-lg border ${dafulCurrentPage === totalPages ? 'text-slate-300 bg-slate-50' : 'text-slate-700 bg-white'}`;
+            btnNext.onclick = () => { dafulCurrentPage++; renderDafulStudents(students); };
+            container.appendChild(btnNext);
+        }
+
+        function filterDafulStudents() {
+            const query = document.getElementById('dafulSearchInput').value.trim().toUpperCase();
+            if (!localSiswaDb) return;
+            if (!query) { dafulCurrentPage = 1; renderDafulStudents(localSiswaDb); return; }
+
+            const filtered = localSiswaDb.filter(siswa => {
+                const nama = siswa.nama ? String(siswa.nama).toUpperCase() : "";
+                const nisn = siswa.nisn ? String(siswa.nisn).toUpperCase() : "";
+                const nik = siswa.nik ? String(siswa.nik).toUpperCase() : "";
+                return nama.includes(query) || nisn.includes(query) || nik.includes(query);
+            });
+            dafulCurrentPage = 1;
+            renderDafulStudents(filtered);
+        }
+
+        async function simpanMadinManual(rowNumber, namaSiswa) {
+            const levelSelect = document.getElementById(`madin_level_${rowNumber}`);
+            const parInput = document.getElementById(`madin_par_${rowNumber}`);
+            const level = levelSelect.value;
+            const parallel = parInput.value.trim().toUpperCase();
+            
+            if (!level) { Swal.fire('Pilih Tingkatan', 'Pilih tingkatan kelas Madin!', 'warning'); return; }
+            const kelasBaru = parallel ? `${level} ${parallel}` : level;
+
+            const confirm = await Swal.fire({ title: 'Konfirmasi Madin', text: `Ubah kelas ${namaSiswa} ke ${kelasBaru}?`, icon: 'question', showCancelButton: true });
+            if (!confirm.isConfirmed) return;
+
+            const scriptUrl = document.getElementById('ppdbForm').action;
+            try {
+                const response = await fetch(scriptUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ action: 'updateRombel', rowNumber: rowNumber, kelasBaru: kelasBaru, tipe: 'madin' })
+                });
+                const result = await response.json();
+                if (result.status === "success") {
+                    Swal.fire('Berhasil!', `Kelas Madin ${namaSiswa} diperbarui.`, 'success');
+                    const index = localSiswaDb.findIndex(s => s.rowNumber == rowNumber);
+                    if (index !== -1) { localSiswaDb[index].kelas_madin = kelasBaru; renderDafulStudents(localSiswaDb); }
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        async function prosesKenaikanKelas(selectElement, rowNumber, namaSiswa, tipe) {
+            const kelasBaru = selectElement.value;
+            if (!kelasBaru) return;
+
+            const confirm = await Swal.fire({ title: 'Konfirmasi Naik Kelas', text: `Naikkan ${namaSiswa} ke ${kelasBaru}?`, icon: 'question', showCancelButton: true });
+            if (!confirm.isConfirmed) { selectElement.value = ""; return; }
+
+            const scriptUrl = document.getElementById('ppdbForm').action;
+            try {
+                const response = await fetch(scriptUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ action: 'updateRombel', rowNumber: rowNumber, kelasBaru: kelasBaru, tipe: tipe })
+                });
+                const result = await response.json();
+                if (result.status === "success") {
+                    Swal.fire('Berhasil!', `${namaSiswa} dipromosikan.`, 'success');
+                    const index = localSiswaDb.findIndex(s => s.rowNumber == rowNumber);
+                    if (index !== -1) { localSiswaDb[index].kelas = kelasBaru; renderDafulStudents(localSiswaDb); }
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        function bukaModalUploadBerkas(rowNumber, namaSiswa) {
+            Swal.fire({
+                title: `Update Berkas - ${namaSiswa}`,
+                html: `
+                    <div class="text-left space-y-3">
+                        <div><label class="block text-xs font-bold mb-1">Unggah KK Baru</label><input type="file" id="modalUploadKK" accept="image/*,application/pdf" class="w-full text-xs p-2 border rounded"></div>
+                        <div><label class="block text-xs font-bold mb-1">Unggah Ijazah Baru</label><input type="file" id="modalUploadIjazah" accept="image/*,application/pdf" class="w-full text-xs p-2 border rounded"></div>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Unggah',
+                preConfirm: async () => {
+                    const fileKK = document.getElementById('modalUploadKK').files[0];
+                    const fileIjazah = document.getElementById('modalUploadIjazah').files[0];
+                    if (!fileKK && !fileIjazah) { Swal.showValidationMessage('Pilih minimal satu berkas!'); return false; }
+                    let payload = {};
+                    const toBase64 = file => new Promise((resolve) => {
+                        const r = new FileReader(); r.readAsDataURL(file); r.onload = () => resolve(r.result.split(',')[1]);
+                    });
+                    if (fileKK) { payload.fileKKData = await toBase64(fileKK); payload.fileKKName = fileKK.name; payload.fileKKMime = fileKK.type; }
+                    if (fileIjazah) { payload.fileIjazahData = await toBase64(fileIjazah); payload.fileIjazahName = fileIjazah.name; payload.fileIjazahMime = fileIjazah.type; }
+                    return payload;
+                }
+            }).then((result) => {
+                if (result.isConfirmed) { kirimBerkasUpdateKeSheets(rowNumber, namaSiswa, result.value); }
+            });
+        }
+
+        async function kirimBerkasUpdateKeSheets(rowNumber, namaSiswa, dataPayload) {
+            Swal.fire({ title: 'Mengirim...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+            const scriptUrl = document.getElementById('ppdbForm').action;
+            dataPayload.action = "updateBerkasDaful";
+            dataPayload.rowNumber = rowNumber;
+
+            try {
+                const response = await fetch(scriptUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams(dataPayload)
+                });
+                const result = await response.json();
+                Swal.close();
+                if (result.status === "success") { Swal.fire('Sukses!', `Berkas ${namaSiswa} diperbarui.`, 'success'); }
+            } catch (err) { Swal.fire('Gagal', 'Terjadi kesalahan upload.', 'error'); }
+        }
+
+        // SUBMIT SPMB FORM
+        document.getElementById('ppdbForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmit');
+            btn.disabled = true; btn.innerText = "Memproses...";
+
+            try {
+                const formData = new FormData(e.target);
+                const plainData = Object.fromEntries(formData.entries());
+                plainData.umur = document.getElementById('umur_pendaftar').value;
+
+                for (let key in plainData) { if (typeof plainData[key] === 'string') plainData[key] = plainData[key].toUpperCase(); }
+
+                const fileKK = document.getElementById('inputKK').files[0];
+                const fileSKL = document.getElementById('inputSKL').files[0];
+                const toBase64 = file => new Promise((resolve) => {
+                    const r = new FileReader(); r.readAsDataURL(file); r.onload = () => resolve(r.result.split(',')[1]);
+                });
+
+                if (fileKK) { plainData.fileKKData = await toBase64(fileKK); plainData.fileKKName = fileKK.name; plainData.fileKKMime = fileKK.type; }
+                if (fileSKL) { plainData.fileSKLData = await toBase64(fileSKL); plainData.fileSKLName = fileSKL.name; plainData.fileSKLMime = fileSKL.type; }
+
+                const response = await fetch(this.action, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams(plainData)
+                });
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    Swal.fire('Sukses Terkirim!', 'Pendaftaran SPMB online baru berhasil disimpan.', 'success');
+                    this.reset();
+                    document.getElementById('umur_pendaftar').value = "";
+                }
+            } catch (err) {
+                Swal.fire('Gagal Menyimpan', 'Periksa isian form Anda.', 'error');
+            } finally {
+                btn.disabled = false; btn.innerText = "Kirim Data & Berkas Pendaftaran";
+            }
+        });
     </script>
 </body>
 </html>
