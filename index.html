@@ -48,16 +48,27 @@
                 </div>
 
                 <!-- Menu Navigasi Tengah -->
-                <nav class="hidden lg:flex items-center space-x-8 text-sm font-medium text-slate-600">
-                    <button onclick="switchTab('beranda')" class="nav-link text-emerald-600 font-semibold border-b-2 border-emerald-600 pb-1" id="nav-beranda">Beranda</button>
-                    <button onclick="switchTab('statistik')" class="nav-link hover:text-emerald-600 transition pb-1" id="nav-statistik">Statistik</button>
-                    <button onclick="switchTab('spmb')" class="nav-link hover:text-emerald-600 transition pb-1" id="nav-spmb">SPMB</button>
-                    <button onclick="switchTab('daful')" class="nav-link hover:text-emerald-600 transition pb-1" id="nav-daful">DAFUL</button>
-                    <div class="relative group">
-                        <button class="flex items-center space-x-1 hover:text-emerald-600 transition pb-1">
-                            <span>Informasi</span>
-                            <i class="fa-solid fa-chevron-down text-[10px]"></i>
-                        </button>
+                <nav class="hidden lg:flex items-center space-x-6 text-sm font-medium text-slate-600">
+    <button onclick="switchTab('beranda')" class="nav-link text-emerald-600 font-semibold border-b-2 border-emerald-600 pb-1" id="nav-beranda">Beranda</button>
+    <button onclick="switchTab('spmb')" class="nav-link hover:text-emerald-600 transition pb-1" id="nav-spmb">SPMB</button>
+    <button onclick="switchTab('daful')" class="nav-link hover:text-emerald-600 transition pb-1" id="nav-daful">DAFUL</button>
+    
+    <!-- MENU BARU YANG DITAMBAHKAN -->
+    <button onclick="switchTab('daftarsiswalengkap')" class="nav-link hover:text-emerald-600 transition pb-1" id="nav-daftarsiswalengkap">Daftar Siswa</button>
+    <button onclick="switchTab('mutasi')" class="nav-link hover:text-emerald-600 transition pb-1" id="nav-mutasi">Mutasi</button>
+    <button onclick="switchTab('rombel')" class="nav-link hover:text-emerald-600 transition pb-1" id="nav-rombel">Rombel</button>
+    <button onclick="switchTab('gtk')" class="nav-link hover:text-emerald-600 transition pb-1" id="nav-gtk">Guru & Tendik</button>
+    
+    <div class="relative group">
+        <button class="flex items-center space-x-1 hover:text-emerald-600 transition pb-1">
+            <span>Laporan</span>
+            <i class="fa-solid fa-chevron-down text-[10px]"></i>
+        </button>
+        <div class="absolute left-0 mt-2 w-48 bg-white border border-slate-200 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+            <button onclick="switchTab('laporan')" class="w-full text-left px-4 py-2.5 text-xs text-slate-700 hover:bg-slate-50 rounded-lg">Program & Laporan Tendik</button>
+        </div>
+    </div>
+</nav>
                         <!-- Dropdown Menu Informasi -->
                         <div class="absolute left-0 mt-2 w-48 bg-white border border-slate-200 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                             <a href="#" class="block px-4 py-2.5 text-xs text-slate-700 hover:bg-slate-50 rounded-t-lg">Panduan Akademik</a>
@@ -813,55 +824,52 @@
         });
 
         // --- SISTEM NAVIGASI TAB DENGAN PROTEKSI AKSES LOGIN ---
-        function switchTab(tabId) {
-            // Menu yang Wajib Login (SPMB & DAFUL)
-            const menuTerproteksi = ['spmb', 'daful'];
+function switchTab(tabId) {
+    // Daftar menu yang WAJIB LOGIN untuk membukanya
+    const menuTerproteksi = ['spmb', 'daful', 'daftarsiswalengkap', 'mutasi', 'rombel', 'gtk', 'laporan'];
 
-            // Jika pengguna mencoba membuka SPMB atau DAFUL tapi BELUM LOGIN
-            if (menuTerproteksi.includes(tabId) && !currentUser) {
-                Swal.fire({
-                    title: 'Akses Terbatas!',
-                    text: `Menu ${tabId.toUpperCase()} hanya dapat diakses oleh Admin / PTK yang telah login.`,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#047857',
-                    cancelButtonColor: '#64748b',
-                    confirmButtonText: '<i class="fa-solid fa-right-to-bracket mr-1"></i> Login Sekarang',
-                    cancelButtonText: 'Batal'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        openLoginModal('Admin'); // Buka modal login otomatis jika diklik
-                    }
-                });
-                return; // Batalkan perpindahan tab
+    if (menuTerproteksi.includes(tabId) && !currentUser) {
+        Swal.fire({
+            title: 'Akses Terbatas!',
+            text: `Menu ${tabId.toUpperCase()} hanya dapat diakses oleh Admin / PTK yang telah login.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#047857',
+            confirmButtonText: '<i class="fa-solid fa-right-to-bracket mr-1"></i> Login Sekarang',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                openLoginModal('Admin');
             }
+        });
+        return;
+    }
 
-            // Sembunyikan semua tab content
-            document.querySelectorAll('.tab-content').forEach(el => {
-                el.classList.add('hidden');
-                el.classList.remove('block');
-            });
-            
-            // Tampilkan tab yang dipilih
-            const targetContent = document.getElementById(`tab-${tabId}-content`);
-            if (targetContent) {
-                targetContent.classList.remove('hidden');
-                targetContent.classList.add('block');
-            }
+    // Sembunyikan semua tab
+    document.querySelectorAll('.tab-content').forEach(el => {
+        el.classList.add('hidden');
+        el.classList.remove('block');
+    });
+    
+    // Tampilkan tab yang dipilih
+    const targetContent = document.getElementById(`tab-${tabId}-content`);
+    if (targetContent) {
+        targetContent.classList.remove('hidden');
+        targetContent.classList.add('block');
+    }
 
-            // Atur gaya status menu aktif
-            document.querySelectorAll('.nav-link').forEach(el => {
-                el.classList.remove('text-emerald-600', 'font-semibold', 'border-b-2', 'border-emerald-600');
-            });
+    // Ubah status tombol navigasi aktif
+    document.querySelectorAll('.nav-link').forEach(el => {
+        el.classList.remove('text-emerald-600', 'font-semibold', 'border-b-2', 'border-emerald-600');
+    });
 
-            const activeBtn = document.getElementById(`nav-${tabId}`);
-            if (activeBtn) {
-                activeBtn.classList.add('text-emerald-600', 'font-semibold', 'border-b-2', 'border-emerald-600');
-            }
+    const activeBtn = document.getElementById(`nav-${tabId}`);
+    if (activeBtn) {
+        activeBtn.classList.add('text-emerald-600', 'font-semibold', 'border-b-2', 'border-emerald-600');
+    }
 
-            // Scroll ke atas halaman otomatis
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
         // --- MANAJEMEN DROPDOWN LOGIN ---
         function toggleLoginDropdown() {
