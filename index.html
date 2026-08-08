@@ -1574,25 +1574,23 @@
             renderMasterSiswa(masterFilteredDb);
         }
 
-        // Modal Pop-Up Detail Biodata Lengkap (Presisi RT/RW & Kode Pos)
+        // Modal Pop-Up Detail Biodata Lengkap (Presisi Kode Pos)
         function lihatDetailSiswaByRow(rowNumber) {
             const s = masterSiswaDb.find(item => item.rowNumber == rowNumber);
             if (!s) return;
 
             // 1. FORMAT RT/RW & KODE POS
             let rtrwText = s['RT/RW (Sesuai KK)'] || s['RT/RW'] || s.rtrw || s.rt_rw || "";
-            // Jika nilai RT/RW terbaca sebagai tanggal ISO karena Sheets, atur pembersihan
             if (rtrwText && String(rtrwText).includes('T') && String(rtrwText).includes('Z')) {
                 rtrwText = ""; 
             }
 
-            let kodePosText = s['Kode Pos'] || s['KODE POS'] || s.kodepos || s.kode_pos || "";
-            // Jika Kode Pos terbaca tanggal ISO dari Sheets, ambil angka tahun/potong
+            let kodePosText = s.kodepos || s['Kode Pos'] || s['KODE POS'] || s.kode_pos || "";
             if (kodePosText && String(kodePosText).includes('T') && String(kodePosText).includes('Z')) {
                 kodePosText = ""; 
             }
 
-            // 2. RANGKAI ALAMAT LENGKAP LENGKAP
+            // 2. RANGKAI ALAMAT LENGKAP
             let bagianAlamat = [];
             const dusun = s['Alamat Orang Tua (Dusun)'] || s.dusun || s.alamat || "";
             const desa = s['Desa'] || s.desa || "";
@@ -1606,15 +1604,15 @@
             if (kec) bagianAlamat.push(`Kec. ${kec}`);
             if (kab) bagianAlamat.push(`Kab. ${kab}`);
             if (prov) bagianAlamat.push(prov);
-            if (kodePosText) bagianAlamat.push(`Kode Pos ${kodePosText}`);
+            if (kodePosText && String(kodePosText).trim() !== "") bagianAlamat.push(`Kode Pos ${kodePosText}`);
 
             const alamatLengkap = bagianAlamat.length > 0 ? bagianAlamat.join(', ') : '-';
 
-            // 3. PEMBACAAN NOMOR TELEPON AYAH & IBU
+            // 3. TELEPON ORANG TUA
             const telpAyah = s['Nomor Telepon Ayah'] || s.telp_ayah || s.wa_ayah || s.hp_ayah || '-';
             const telpIbu = s['Nomor Telepon Ibu'] || s.telp_ibu || s.wa_ibu || s.hp_ibu || '-';
 
-            // 4. PEMBACAAN NSM & NPSN
+            // 4. NSM & NPSN
             const nsmVal = s['NSM ( Nomer Statistik Madrasah) Khusus Madrasah'] || s.nsm || s.nism || '-';
             const npsnVal = s['NPSN ( Nomer Pokok Sekolah Nasional )'] || s.npsn || '-';
 
