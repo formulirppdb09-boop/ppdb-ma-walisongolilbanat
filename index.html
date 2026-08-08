@@ -721,9 +721,77 @@
             </section>
 
             <!-- CONTAINER PLACEHOLDER UNTUK MENU INTERNAL (DAFTAR SISWA, MUTASI, ROMBEL, GTK) -->
-            <section id="tab-daftarsiswalengkap-content" class="tab-content hidden p-6">
-                <div class="bg-white p-6 rounded-2xl border shadow-sm"><h3 class="font-bold text-lg text-emerald-800">Modul Master Daftar Siswa</h3><p class="text-xs text-slate-500">Modul ini siap kita lengkapi dengan detail biodata lengkap.</p></div>
-            </section>
+            <!-- SECTION TAB: DAFTAR SISWA LENGKAP (MASTER DATA) -->
+<section id="tab-daftarsiswalengkap-content" class="tab-content hidden p-4 md:p-8 space-y-6">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
+        
+        <!-- Header & Filter Area -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between border-b pb-5 gap-4">
+            <div>
+                <span class="bg-emerald-100 text-emerald-800 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full">Database Utama</span>
+                <h2 class="text-xl font-bold text-slate-900 mt-2">Master Data Siswa Aktif</h2>
+                <p class="text-xs text-slate-500">Seluruh rekapitulasi biodata santriwati MA Wali Songo Lilbanat.</p>
+            </div>
+
+            <button onclick="fetchMasterSiswaFromSheets()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-lg text-xs shadow flex items-center space-x-2 transition">
+                <i class="fa-solid fa-arrows-rotate"></i>
+                <span>Muat / Sinkronkan Data</span>
+            </button>
+        </div>
+
+        <!-- Filter & Pencarian -->
+        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+            <div class="md:col-span-4">
+                <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Filter Tingkat Kelas</label>
+                <select id="filterTingkatSiswa" onchange="filterMasterSiswa()" class="w-full text-xs p-2.5 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 font-semibold text-slate-700">
+                    <option value="ALL">-- Semua Tingkat Kelas --</option>
+                    <option value="10">Kelas 10 (X)</option>
+                    <option value="11">Kelas 11 (XI)</option>
+                    <option value="12">Kelas 12 (XII)</option>
+                </select>
+            </div>
+            <div class="md:col-span-8">
+                <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Cari Nama / NISN Siswa</label>
+                <div class="relative">
+                    <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    <input type="text" id="masterSearchInput" onkeyup="filterMasterSiswa()" placeholder="Ketik Nama Lengkap atau NISN..." class="w-full pl-10 pr-4 py-2.5 text-xs bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500">
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabel Data Master Siswa -->
+        <div class="overflow-x-auto border rounded-xl bg-white shadow-sm">
+            <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                    <tr class="bg-slate-50 text-slate-600 border-b font-semibold">
+                        <th class="p-3 text-center w-12">NO</th>
+                        <th class="p-3">NAMA LENGKAP</th>
+                        <th class="p-3">NISN</th>
+                        <th class="p-3">TEMPAT LAHIR</th>
+                        <th class="p-3">TGL LAHIR</th>
+                        <th class="p-3 text-center">ROMBEL</th>
+                        <th class="p-3 text-center">UMUR</th>
+                        <th class="p-3 text-center">STATUS</th>
+                        <th class="p-3 text-center w-28">AKSI</th>
+                    </tr>
+                </thead>
+                <tbody id="masterStudentTableBody" class="divide-y text-slate-700">
+                    <tr>
+                        <td colspan="9" class="p-8 text-center text-slate-400 italic">
+                            <i class="fa-solid fa-address-book text-emerald-600 mb-2 text-xl block"></i>
+                            Klik tombol "Muat / Sinkronkan Data" untuk menampilkan seluruh daftar siswa dari Google Sheets.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="flex items-center justify-between text-xs text-slate-500 pt-2">
+            <span id="masterSummaryCount">Menampilkan 0 siswa</span>
+            <span class="italic text-slate-400">Database SIM MA Wali Songo Lilbanat</span>
+        </div>
+    </div>
+</section>
             <section id="tab-mutasi-content" class="tab-content hidden p-6">
                 <div class="bg-white p-6 rounded-2xl border shadow-sm"><h3 class="font-bold text-lg text-amber-800">Modul Mutasi Siswa (Masuk & Keluar)</h3><p class="text-xs text-slate-500">Siap mencetak Surat Mutasi PDF.</p></div>
             </section>
@@ -1294,6 +1362,161 @@
                 btn.disabled = false; btn.innerText = "Kirim Data & Berkas Pendaftaran";
             }
         });
+        // --- LOGIKA MASTER DAFTAR SISWA LENGKAP ---
+        let masterSiswaDb = [];
+
+        // Sinkronkan data master dari Google Sheets
+        async function fetchMasterSiswaFromSheets() {
+            const scriptUrl = document.getElementById('ppdbForm').action;
+            Swal.fire({
+                title: 'Menarik Master Data...',
+                text: 'Mengunduh seluruh biodata siswa dari database Sheets.',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+
+            try {
+                const response = await fetch(`${scriptUrl}?action=ambilDataSiswaAktif`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ action: 'ambilDataSiswaAktif' })
+                });
+
+                const result = await response.json();
+                Swal.close();
+
+                if (result.status === "success" && result.data) {
+                    masterSiswaDb = result.data;
+                    renderMasterSiswa(masterSiswaDb);
+                    Swal.fire('Sukses!', `Berhasil memuat ${masterSiswaDb.length} data siswa.`, 'success');
+                } else {
+                    throw new Error(result.message || 'Gagal memuat data');
+                }
+            } catch (err) {
+                console.error(err);
+                Swal.fire('Gagal Sinkron', 'Pastikan koneksi internet stabil atau sheet tidak kosong.', 'error');
+            }
+        }
+
+        // Render tabel data master
+        function renderMasterSiswa(dataList) {
+            const tbody = document.getElementById('masterStudentTableBody');
+            const summary = document.getElementById('masterSummaryCount');
+
+            if (!dataList || dataList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" class="p-8 text-center text-slate-400 italic">Data siswa tidak ditemukan.</td></tr>`;
+                summary.innerText = "Menampilkan 0 siswa";
+                return;
+            }
+
+            tbody.innerHTML = '';
+            dataList.forEach((siswa, index) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition border-b";
+
+                // Format tampilan status
+                const statusHtml = siswa.status_siswa && siswa.status_siswa.includes('MUTASI') 
+                    ? `<span class="px-2 py-0.5 bg-red-100 text-red-700 font-bold rounded-full text-[10px]">${siswa.status_siswa}</span>`
+                    : `<span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 font-bold rounded-full text-[10px]">${siswa.status_siswa || 'AKTIF'}</span>`;
+
+                tr.innerHTML = `
+                    <td class="p-3 text-center font-bold text-slate-400">${index + 1}</td>
+                    <td class="p-3 font-semibold text-slate-800">${siswa.nama}</td>
+                    <td class="p-3 font-mono">${siswa.nisn || '-'}</td>
+                    <td class="p-3">${siswa.tempat_lahir || '-'}</td>
+                    <td class="p-3">${siswa.tanggal_lahir || '-'}</td>
+                    <td class="p-3 text-center font-bold text-emerald-800">${siswa.kelas || '-'}</td>
+                    <td class="p-3 text-center text-[11px]">${siswa.umur || '-'}</td>
+                    <td class="p-3 text-center">${statusHtml}</td>
+                    <td class="p-3 text-center">
+                        <button onclick="lihatDetailSiswa(${index})" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold px-2.5 py-1 rounded-lg border border-emerald-200 text-[11px] transition flex items-center justify-center space-x-1 mx-auto">
+                            <i class="fa-solid fa-eye"></i>
+                            <span>Detail</span>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            summary.innerText = `Menampilkan ${dataList.length} siswa`;
+        }
+
+        // Filter berdasarkan tingkat & kata kunci pencarian
+        function filterMasterSiswa() {
+            const tingkat = document.getElementById('filterTingkatSiswa').value;
+            const query = document.getElementById('masterSearchInput').value.trim().toUpperCase();
+
+            if (!masterSiswaDb) return;
+
+            const filtered = masterSiswaDb.filter(siswa => {
+                const nama = siswa.nama ? String(siswa.nama).toUpperCase() : "";
+                const nisn = siswa.nisn ? String(siswa.nisn).toUpperCase() : "";
+                const kelas = siswa.kelas ? String(siswa.kelas).toUpperCase() : "";
+
+                // Cek filter tingkat kelas (X, XI, XII)
+                let matchTingkat = true;
+                if (tingkat === '10') matchTingkat = kelas.startsWith('X-') || kelas.includes('10');
+                else if (tingkat === '11') matchTingkat = kelas.startsWith('XI-') || kelas.includes('11');
+                else if (tingkat === '12') matchTingkat = kelas.startsWith('XII-') || kelas.includes('12');
+
+                // Cek filter pencarian
+                const matchQuery = nama.includes(query) || nisn.includes(query);
+
+                return matchTingkat && matchQuery;
+            });
+
+            renderMasterSiswa(filtered);
+        }
+
+        // Modal Pop-Up Rincian Biodata Lengkap Siswa
+        function lihatDetailSiswa(index) {
+            const s = masterSiswaDb[index];
+            if (!s) return;
+
+            Swal.fire({
+                title: `Biodata Lengkap Santriwati`,
+                width: '700px',
+                html: `
+                    <div class="text-left text-xs space-y-4 max-h-[70vh] overflow-y-auto p-2">
+                        <!-- Identitas Utama -->
+                        <div class="bg-emerald-50/60 p-3.5 rounded-xl border border-emerald-100 space-y-1">
+                            <h4 class="font-bold text-emerald-900 uppercase text-[11px] border-b border-emerald-200 pb-1 mb-2"><i class="fa-solid fa-id-card mr-1"></i> Identitas Siswa</h4>
+                            <div class="grid grid-cols-2 gap-2">
+                                <p><strong>Nama Lengkap:</strong> ${s.nama || '-'}</p>
+                                <p><strong>NISN / NIK:</strong> ${s.nisn || '-'} / ${s.nik || '-'}</p>
+                                <p><strong>TTL:</strong> ${s.tempat_lahir || '-'}, ${s.tanggal_lahir || '-'}</p>
+                                <p><strong>Umur:</strong> ${s.umur || '-'}</p>
+                                <p><strong>Rombel / Madin:</strong> ${s.kelas || '-'} / ${s.kelas_madin || '-'}</p>
+                                <p><strong>Asrama / Kamar:</strong> ${s.asrama || '-'} (${s.nomor_asrama || '-'})</p>
+                            </div>
+                        </div>
+
+                        <!-- Data Orang Tua & Alamat -->
+                        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1">
+                            <h4 class="font-bold text-slate-800 uppercase text-[11px] border-b border-slate-300 pb-1 mb-2"><i class="fa-solid fa-users mr-1"></i> Data Keluarga & Alamat</h4>
+                            <div class="grid grid-cols-2 gap-2">
+                                <p><strong>Nama Ayah:</strong> ${s.nama_ayah || '-'}</p>
+                                <p><strong>No. WA Ayah:</strong> ${s.telp_ayah || '-'}</p>
+                                <p><strong>Nama Ibu:</strong> ${s.nama_ibu || '-'}</p>
+                                <p><strong>No. WA Ibu:</strong> ${s.telp_ibu || '-'}</p>
+                                <p class="col-span-2"><strong>Alamat Orang Tua:</strong> ${s.dusun || ''} RT/RW ${s.rtrw || ''}, Des. ${s.desa || ''}, Kec. ${s.kecamatan || ''}, Kab. ${s.kabupaten || ''}</p>
+                            </div>
+                        </div>
+
+                        <!-- Riwayat Sekolah Asal -->
+                        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1">
+                            <h4 class="font-bold text-slate-800 uppercase text-[11px] border-b border-slate-300 pb-1 mb-2"><i class="fa-solid fa-school mr-1"></i> Sekolah Asal</h4>
+                            <div class="grid grid-cols-2 gap-2">
+                                <p><strong>Asal Sekolah:</strong> ${s.sekolah_asal || '-'}</p>
+                                <p><strong>NPSN / NSM:</strong> ${s.npsn || '-'} / ${s.nsm || '-'}</p>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                confirmButtonText: 'Tutup Biodata',
+                confirmButtonColor: '#047857'
+            });
+        }
     </script>
 </body>
 </html>
